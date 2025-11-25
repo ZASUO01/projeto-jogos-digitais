@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "/home/pedro-souza/Documentos/ufmg/jogos-digitais/teste/cmake-build-debug",
-		"source" : "/home/pedro-souza/Documentos/ufmg/jogos-digitais/teste"
+		"build" : "/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug",
+		"source" : "/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters"
 	},
 	"version" : 
 	{
