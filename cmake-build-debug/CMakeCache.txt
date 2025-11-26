@@ -151,7 +151,7 @@ CMAKE_PROJECT_DESCRIPTION:STATIC=
 CMAKE_PROJECT_HOMEPAGE_URL:STATIC=
 
 //Value Computed by CMake
-CMAKE_PROJECT_NAME:STATIC=lion-casters
+CMAKE_PROJECT_NAME:STATIC=line-casters
 
 //Path to a program.
 CMAKE_RANLIB:FILEPATH=/usr/bin/ranlib
@@ -277,6 +277,15 @@ OPENGL_xmesa_INCLUDE_DIR:PATH=OPENGL_xmesa_INCLUDE_DIR-NOTFOUND
 
 //The directory containing a CMake configuration file for SDL2.
 SDL2_DIR:PATH=/opt/SDL2/lib/cmake/SDL2
+
+//Value Computed by CMake
+line-casters_BINARY_DIR:STATIC=/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug
+
+//Value Computed by CMake
+line-casters_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+line-casters_SOURCE_DIR:STATIC=/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters
 
 //Value Computed by CMake
 lion-casters_BINARY_DIR:STATIC=/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug

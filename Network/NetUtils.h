@@ -8,4 +8,6 @@
 
 namespace  NetUtils {
     uint16_t getNetChecksum(const void *data, size_t dataSize);
+    uint32_t getNonce();
+    uint32_t getRandomNonce(uint32_t baseNonce);
 };

@@ -27,7 +27,7 @@
 					[
 						0
 					],
-					"name" : "lion-casters",
+					"name" : "line-casters",
 					"targetIndexes" : 
 					[
 						0
@@ -38,9 +38,9 @@
 			[
 				{
 					"directoryIndex" : 0,
-					"id" : "lion-casters::@6890427a1f51a3e7e1df",
-					"jsonFile" : "target-lion-casters-Debug-7c1078963c98226ebf37.json",
-					"name" : "lion-casters",
+					"id" : "line-casters::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-line-casters-Debug-2f498a58478d827f22ef.json",
+					"name" : "line-casters",
 					"projectIndex" : 0
 				}
 			]

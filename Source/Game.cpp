@@ -26,6 +26,7 @@ Game::Game()
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
+        ,mClient(nullptr)
 {}
 
 bool Game::Initialize()
@@ -47,6 +48,11 @@ bool Game::Initialize()
 
     mRenderer = new Renderer(mWindow);
     mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+    mClient = new Client();
+    mClient->Initialize();
+    mClient->AddServerAddr("192.168.1.13");
+    mClient->Connect();
 
     // Init all game actors
     InitializeActors();

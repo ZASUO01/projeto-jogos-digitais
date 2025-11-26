@@ -2,16 +2,13 @@
 // Created by pedro-souza on 24/11/2025.
 //
 
-#ifndef TESTE_CLIENTOPERATIONS_H
-#define TESTE_CLIENTOPERATIONS_H
+#pragma once
 
+#include "Client.h"
 
 namespace ClientOperations {
-    void sendSynToServer();
-    void receiveSynAckFromServer();
-    void sendAckToServer();
+    void sendSynToServer(const Client *client);
+    bool receiveSynAckFromServer(Client *client);
+    void sendAckToServer(const Client *client);
     void sendDataToServer();
 };
-
-
-#endif //TESTE_CLIENTOPERATIONS_H

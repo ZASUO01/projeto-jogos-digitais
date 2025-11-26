@@ -11,7 +11,7 @@
 # =============================================================================
 
 # =============================================================================
-# Project: lion-casters
+# Project: line-casters
 # Configurations: Debug
 # =============================================================================
 
@@ -41,174 +41,201 @@ include CMakeFiles/rules.ninja
 
 cmake_ninja_workdir = /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug/
 # =============================================================================
-# Object build statements for EXECUTABLE target lion-casters
+# Object build statements for EXECUTABLE target line-casters
 
 
 #############################################
-# Order-only phony target for lion-casters
+# Order-only phony target for line-casters
 
-build cmake_object_order_depends_target_lion-casters: phony || .
+build cmake_object_order_depends_target_line-casters: phony || .
 
-build CMakeFiles/lion-casters.dir/Source/Renderer/Shader.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Renderer/Shader.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Renderer/Shader.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Renderer/Shader.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Renderer/Shader.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Renderer/Shader.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Renderer
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Renderer
 
-build CMakeFiles/lion-casters.dir/Source/Math.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Math.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Math.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Math.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Math.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Math.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source
 
-build CMakeFiles/lion-casters.dir/Source/Random.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Random.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Random.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Random.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Random.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Random.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source
 
-build CMakeFiles/lion-casters.dir/Source/Renderer/VertexArray.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Renderer/VertexArray.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Renderer/VertexArray.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Renderer/VertexArray.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Renderer/VertexArray.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Renderer/VertexArray.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Renderer
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Renderer
 
-build CMakeFiles/lion-casters.dir/Source/Renderer/Renderer.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Renderer/Renderer.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Renderer/Renderer.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Renderer/Renderer.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Renderer/Renderer.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Renderer/Renderer.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Renderer
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Renderer
 
-build CMakeFiles/lion-casters.dir/Source/Actors/Actor.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Actors/Actor.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Actors/Actor.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Actors/Actor.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Actors/Actor.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Actors/Actor.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Actors
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Actors
 
-build CMakeFiles/lion-casters.dir/Source/Game.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Game.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Game.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Game.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Game.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Game.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source
 
-build CMakeFiles/lion-casters.dir/Source/Components/Component.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/Component.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Components/Component.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/Component.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Components/Component.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Components/Component.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Components
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Components
 
-build CMakeFiles/lion-casters.dir/Source/Components/DrawComponent.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/DrawComponent.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Components/DrawComponent.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/DrawComponent.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Components/DrawComponent.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Components/DrawComponent.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Components
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Components
 
-build CMakeFiles/lion-casters.dir/Source/Components/RigidBodyComponent.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/RigidBodyComponent.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Components/RigidBodyComponent.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/RigidBodyComponent.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Components/RigidBodyComponent.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Components/RigidBodyComponent.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Components
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Components
 
-build CMakeFiles/lion-casters.dir/Source/Components/ParticleSystemComponent.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/ParticleSystemComponent.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Components/ParticleSystemComponent.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/ParticleSystemComponent.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Components/ParticleSystemComponent.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Components/ParticleSystemComponent.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Components
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Components
 
-build CMakeFiles/lion-casters.dir/Source/Components/CircleColliderComponent.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/CircleColliderComponent.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Components/CircleColliderComponent.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Components/CircleColliderComponent.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Components/CircleColliderComponent.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Components/CircleColliderComponent.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Components
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Components
 
-build CMakeFiles/lion-casters.dir/Source/Actors/Ship.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Actors/Ship.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Actors/Ship.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Actors/Ship.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Actors/Ship.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Actors/Ship.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source/Actors
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source/Actors
 
-build CMakeFiles/lion-casters.dir/Source/Main.cpp.o: CXX_COMPILER__lion-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Main.cpp || cmake_object_order_depends_target_lion-casters
+build CMakeFiles/line-casters.dir/Source/Main.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Source/Main.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/Source/Main.cpp.o.d
+  DEP_FILE = CMakeFiles/line-casters.dir/Source/Main.cpp.o.d
   FLAGS = -g -fdiagnostics-color=always
   INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
-  OBJECT_FILE_DIR = CMakeFiles/lion-casters.dir/Source
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_PDB = lion-casters.pdb
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Source
+
+build CMakeFiles/line-casters.dir/Client/Client.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Client/Client.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Client/Client.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Client
+
+build CMakeFiles/line-casters.dir/Client/ClientOperations.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Client/ClientOperations.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Client/ClientOperations.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Client
+
+build CMakeFiles/line-casters.dir/Network/Packet.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Network/Packet.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Network/Packet.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Network
+
+build CMakeFiles/line-casters.dir/Network/NetUtils.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Network/NetUtils.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Network/NetUtils.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Network
+
+build CMakeFiles/line-casters.dir/Network/Socket.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Network/Socket.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Network/Socket.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Network
+
+build CMakeFiles/line-casters.dir/Network/Logger.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Network/Logger.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Network/Logger.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Network
+
+build CMakeFiles/line-casters.dir/Network/Addresses.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Network/Addresses.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Network/Addresses.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Network
 
 
 # =============================================================================
-# Link build statements for EXECUTABLE target lion-casters
+# Link build statements for EXECUTABLE target line-casters
 
 
 #############################################
-# Link the executable lion-casters
+# Link the executable line-casters
 
-build lion-casters: CXX_EXECUTABLE_LINKER__lion-casters_Debug CMakeFiles/lion-casters.dir/Source/Renderer/Shader.cpp.o CMakeFiles/lion-casters.dir/Source/Math.cpp.o CMakeFiles/lion-casters.dir/Source/Random.cpp.o CMakeFiles/lion-casters.dir/Source/Renderer/VertexArray.cpp.o CMakeFiles/lion-casters.dir/Source/Renderer/Renderer.cpp.o CMakeFiles/lion-casters.dir/Source/Actors/Actor.cpp.o CMakeFiles/lion-casters.dir/Source/Game.cpp.o CMakeFiles/lion-casters.dir/Source/Components/Component.cpp.o CMakeFiles/lion-casters.dir/Source/Components/DrawComponent.cpp.o CMakeFiles/lion-casters.dir/Source/Components/RigidBodyComponent.cpp.o CMakeFiles/lion-casters.dir/Source/Components/ParticleSystemComponent.cpp.o CMakeFiles/lion-casters.dir/Source/Components/CircleColliderComponent.cpp.o CMakeFiles/lion-casters.dir/Source/Actors/Ship.cpp.o CMakeFiles/lion-casters.dir/Source/Main.cpp.o | /usr/lib/x86_64-linux-gnu/libGLEW.so /opt/SDL2/lib/libSDL2-2.0.so.0.3200.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so
+build line-casters: CXX_EXECUTABLE_LINKER__line-casters_Debug CMakeFiles/line-casters.dir/Source/Renderer/Shader.cpp.o CMakeFiles/line-casters.dir/Source/Math.cpp.o CMakeFiles/line-casters.dir/Source/Random.cpp.o CMakeFiles/line-casters.dir/Source/Renderer/VertexArray.cpp.o CMakeFiles/line-casters.dir/Source/Renderer/Renderer.cpp.o CMakeFiles/line-casters.dir/Source/Actors/Actor.cpp.o CMakeFiles/line-casters.dir/Source/Game.cpp.o CMakeFiles/line-casters.dir/Source/Components/Component.cpp.o CMakeFiles/line-casters.dir/Source/Components/DrawComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/RigidBodyComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/ParticleSystemComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/CircleColliderComponent.cpp.o CMakeFiles/line-casters.dir/Source/Actors/Ship.cpp.o CMakeFiles/line-casters.dir/Source/Main.cpp.o CMakeFiles/line-casters.dir/Client/Client.cpp.o CMakeFiles/line-casters.dir/Client/ClientOperations.cpp.o CMakeFiles/line-casters.dir/Network/Packet.cpp.o CMakeFiles/line-casters.dir/Network/NetUtils.cpp.o CMakeFiles/line-casters.dir/Network/Socket.cpp.o CMakeFiles/line-casters.dir/Network/Logger.cpp.o CMakeFiles/line-casters.dir/Network/Addresses.cpp.o | /usr/lib/x86_64-linux-gnu/libGLEW.so /opt/SDL2/lib/libSDL2-2.0.so.0.3200.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so
   CONFIG = Debug
-  DEP_FILE = CMakeFiles/lion-casters.dir/link.d
+  DEP_FILE = CMakeFiles/line-casters.dir/link.d
   FLAGS = -g
-  LINK_FLAGS = -Wl,--dependency-file=CMakeFiles/lion-casters.dir/link.d
+  LINK_FLAGS = -Wl,--dependency-file=CMakeFiles/line-casters.dir/link.d
   LINK_LIBRARIES = -Wl,-rpath,/opt/SDL2/lib  /usr/lib/x86_64-linux-gnu/libGLEW.so  /opt/SDL2/lib/libSDL2-2.0.so.0.3200.2  /usr/lib/x86_64-linux-gnu/libGLX.so  /usr/lib/x86_64-linux-gnu/libOpenGL.so
-  OBJECT_DIR = CMakeFiles/lion-casters.dir
+  OBJECT_DIR = CMakeFiles/line-casters.dir
   POST_BUILD = :
   PRE_LINK = :
-  TARGET_COMPILE_PDB = CMakeFiles/lion-casters.dir/
-  TARGET_FILE = lion-casters
-  TARGET_PDB = lion-casters.pdb
+  TARGET_FILE = line-casters
+  TARGET_PDB = line-casters.dbg
 
 
 #############################################
@@ -244,7 +271,7 @@ build rebuild_cache: phony CMakeFiles/rebuild_cache.util
 #############################################
 # Folder: /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug
 
-build all: phony lion-casters
+build all: phony line-casters
 
 # =============================================================================
 # Built-in targets
@@ -253,14 +280,14 @@ build all: phony lion-casters
 #############################################
 # Re-run CMake if any of its inputs changed.
 
-build build.ninja /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug/cmake_install.cmake: RERUN_CMAKE | /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/CMakeLists.txt /lib/x86_64-linux-gnu/cmake/SDL2/sdl2-config-version.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Config.cmake /opt/SDL2/lib/cmake/SDL2/SDL2ConfigVersion.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets.cmake /opt/SDL2/lib/cmake/SDL2/sdlfind.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCCompiler.cmake.in /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCCompilerABI.c /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXCompiler.cmake.in /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXCompilerABI.cpp /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCompilerIdDetection.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCXXCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompilerABI.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompilerId.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompilerSupport.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineSystem.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeFindBinUtils.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeParseImplicitIncludeInfo.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeParseImplicitLinkInfo.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeParseLibraryArchitecture.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystem.cmake.in /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeTestCCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeTestCXXCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeTestCompilerCommon.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/ADSP-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/ARMCC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/ARMClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/AppleClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Borland-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Clang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Cray-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CrayClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GHS-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX-CXXImportStd.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-FindBinUtils.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/HP-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IAR-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Intel-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/LCC-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/MSVC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVHPC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/OrangeC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/PGI-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/PathScale-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SCO-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/TI-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/TIClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Tasking-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Watcom-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XL-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/zOS-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FeatureSummary.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindGLEW.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindOpenGL.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageMessage.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeDetermineLinkerId.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeInspectCLinker.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeInspectCXXLinker.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/FeatureTesting.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Determine-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/SelectLibraryConfigurations.cmake /usr/lib/x86_64-linux-gnu/cmake/SDL2/sdl2-config-version.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCCompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake
+build build.ninja /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug/cmake_install.cmake: RERUN_CMAKE | /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/CMakeLists.txt /opt/SDL2/lib/cmake/SDL2/SDL2Config.cmake /opt/SDL2/lib/cmake/SDL2/SDL2ConfigVersion.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets.cmake /opt/SDL2/lib/cmake/SDL2/sdlfind.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FeatureSummary.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindGLEW.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindOpenGL.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageMessage.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/SelectLibraryConfigurations.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCCompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake
   pool = console
 
 
 #############################################
 # A missing CMake input file is not an error.
 
-build /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/CMakeLists.txt /lib/x86_64-linux-gnu/cmake/SDL2/sdl2-config-version.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Config.cmake /opt/SDL2/lib/cmake/SDL2/SDL2ConfigVersion.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets.cmake /opt/SDL2/lib/cmake/SDL2/sdlfind.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCCompiler.cmake.in /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCCompilerABI.c /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXCompiler.cmake.in /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXCompilerABI.cpp /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCompilerIdDetection.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCXXCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompilerABI.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompilerId.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineCompilerSupport.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeDetermineSystem.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeFindBinUtils.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeParseImplicitIncludeInfo.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeParseImplicitLinkInfo.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeParseLibraryArchitecture.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystem.cmake.in /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeTestCCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeTestCXXCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeTestCompilerCommon.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/ADSP-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/ARMCC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/ARMClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/AppleClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Borland-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Bruce-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Clang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Clang-DetermineCompilerInternal.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Compaq-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Compaq-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Cray-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CrayClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Embarcadero-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Fujitsu-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/FujitsuClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GHS-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX-CXXImportStd.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-FindBinUtils.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/HP-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/HP-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IAR-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMCPP-C-DetermineVersionInternal.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMClang-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IBMClang-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Intel-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/IntelLLVM-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/LCC-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/LCC-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/MSVC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVHPC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/NVIDIA-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/OpenWatcom-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/OrangeC-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/PGI-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/PathScale-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SCO-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SDCC-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SunPro-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/SunPro-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/TI-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/TIClang-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Tasking-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/TinyCC-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/VisualAge-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/VisualAge-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/Watcom-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XL-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XL-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XLClang-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/XLClang-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/zOS-C-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/zOS-CXX-DetermineCompiler.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FeatureSummary.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindGLEW.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindOpenGL.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageMessage.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeDetermineLinkerId.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeInspectCLinker.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeInspectCXXLinker.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/FeatureTesting.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Determine-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/SelectLibraryConfigurations.cmake /usr/lib/x86_64-linux-gnu/cmake/SDL2/sdl2-config-version.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCCompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake: phony
+build /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/CMakeLists.txt /opt/SDL2/lib/cmake/SDL2/SDL2Config.cmake /opt/SDL2/lib/cmake/SDL2/SDL2ConfigVersion.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2Targets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2mainTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2staticTargets.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets-noconfig.cmake /opt/SDL2/lib/cmake/SDL2/SDL2testTargets.cmake /opt/SDL2/lib/cmake/SDL2/sdlfind.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCXXInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeCommonLanguageInclude.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeGenericSystem.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeInitializeConfigs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeLanguageInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/CMakeSystemSpecificInitialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/CMakeCommonCompilerMacros.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Compiler/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FeatureSummary.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindGLEW.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindOpenGL.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageHandleStandardArgs.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindPackageMessage.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCXXLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Internal/CMakeCommonLinkerInformation.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linker/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-C.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU-CXX.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-GNU.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux-Initialize.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/Linux.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/Platform/UnixPaths.cmake /snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/SelectLibraryConfigurations.cmake CMakeCache.txt CMakeFiles/4.0.2/CMakeCCompiler.cmake CMakeFiles/4.0.2/CMakeCXXCompiler.cmake CMakeFiles/4.0.2/CMakeSystem.cmake: phony
 
 
 #############################################

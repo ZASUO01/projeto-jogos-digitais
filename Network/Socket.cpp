@@ -39,23 +39,23 @@ bool SocketUtils::socketReadyToReceive(const int sock, const int ms) {
     return false;
 }
 
-bool SocketUtils::sendPacketToV4(const int sock, const char *pk, const size_t pkSize, sockaddr_in addr4) {
+bool SocketUtils::sendPacketToV4(const int sock, const Packet *pk, const size_t pkSize, sockaddr_in* addr4) {
     constexpr socklen_t addr_size = sizeof(sockaddr_in);
 
-    if (const ssize_t bytes_sent = socket_sendto(sock, pk, pkSize, 0, reinterpret_cast<sockaddr *>(&addr4), addr_size);
+    if (const ssize_t bytes_sent = socket_sendto(sock, pk, pkSize, 0, reinterpret_cast<sockaddr *>(addr4), addr_size);
         bytes_sent < 0 || static_cast<size_t>(bytes_sent) != pkSize) {
         return false;
         }
     return true;
 }
 
-bool SocketUtils::receivePacketFromV4(const int sock, Packet *pk, sockaddr_in addr4) {
+bool SocketUtils::receivePacketFromV4(const int sock, Packet *pk, sockaddr_in* addr4) {
     constexpr size_t pkSize = Packet::PACKET_HEADER_BYTES + Packet::MAX_PACKET_DATA_BYTES;
     std::memset(pk, 0, pkSize);
 
     socklen_t addrSize = sizeof(sockaddr_in);
 
-    if (const ssize_t bytes_received = socket_recvfrom(sock, pk, pkSize, 0, reinterpret_cast<sockaddr *>(&addr4), &addrSize); bytes_received <= 0) {
+    if (const ssize_t bytes_received = socket_recvfrom(sock, pk, pkSize, 0, reinterpret_cast<sockaddr *>(addr4), &addrSize); bytes_received <= 0) {
         return false;
     }
     return true;

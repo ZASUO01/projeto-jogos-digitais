@@ -4,6 +4,8 @@
 
 #include "NetUtils.h"
 #include <cstring>
+#include <ctime>
+#include "../Source/Random.h"
 
 uint16_t NetUtils::getNetChecksum(const void *data, const size_t dataSize){
     const auto *buf = static_cast<const uint8_t *>(data);
@@ -24,4 +26,14 @@ uint16_t NetUtils::getNetChecksum(const void *data, const size_t dataSize){
     }
 
     return static_cast<uint16_t>(~sum);
+}
+
+uint32_t NetUtils::getNonce() {
+    return static_cast<uint32_t>(std::time(nullptr));
+}
+
+uint32_t NetUtils::getRandomNonce(const uint32_t baseNonce) {
+    const uint32_t randomFactor = Random::GetIntRange(0, static_cast<int>(baseNonce));
+
+    return baseNonce ^ randomFactor;
 }

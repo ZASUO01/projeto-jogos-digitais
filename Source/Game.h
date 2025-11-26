@@ -13,6 +13,7 @@
 #include "Actors/Ship.h"
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
+#include "../Client/Client.h"
 
 class Game{
 public:
@@ -69,4 +70,7 @@ private:
 
     // Game-specific
     Ship* mShip;
+
+    // Network specific
+    Client *mClient;
 };

@@ -871,7 +871,7 @@
 				}
 			],
 			"type" : "STATIC",
-			"value" : "lion-casters"
+			"value" : "line-casters"
 		},
 		{
 			"name" : "CMAKE_RANLIB",
@@ -1504,6 +1504,42 @@
 			],
 			"type" : "PATH",
 			"value" : "/opt/SDL2/lib/cmake/SDL2"
+		},
+		{
+			"name" : "line-casters_BINARY_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/cmake-build-debug"
+		},
+		{
+			"name" : "line-casters_IS_TOP_LEVEL",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "ON"
+		},
+		{
+			"name" : "line-casters_SOURCE_DIR",
+			"properties" : 
+			[
+				{
+					"name" : "HELPSTRING",
+					"value" : "Value Computed by CMake"
+				}
+			],
+			"type" : "STATIC",
+			"value" : "/home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters"
 		},
 		{
 			"name" : "lion-casters_BINARY_DIR",

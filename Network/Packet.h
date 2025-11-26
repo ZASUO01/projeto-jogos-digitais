@@ -5,6 +5,7 @@
 
 #include <cstdint>
 #include <cstdlib>
+#include "Platforms.h"
 
 #pragma pack(1)
 class Packet {
@@ -17,6 +18,22 @@ public:
     void PrintPacket() const;
 
     [[nodiscard]] const void* GetData() const { return data; }
+    [[nodiscard]] uint8_t GetFlag() const { return flag; }
+
+    [[nodiscard]] uint16_t GetSequence() const {
+        if (state == PACKET_READY) {
+            return ntohs(sequence);
+        }
+        return sequence;
+    }
+
+    [[nodiscard]] uint32_t GetNonce() const {
+        if (state == PACKET_READY) {
+            return ntohl(nonce);
+        }
+        return nonce;
+    }
+
 
     static constexpr size_t MAX_PACKET_DATA_BYTES = 1024;
     static constexpr size_t PACKET_HEADER_BYTES = 20;
