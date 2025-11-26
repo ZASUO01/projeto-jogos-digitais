@@ -1,3 +1,0 @@
-/home/pedro-souza/Documentos/ufmg/jogos-digitais/teste/cmake-build-debug/CMakeFiles/lion-casters.dir
-/home/pedro-souza/Documentos/ufmg/jogos-digitais/teste/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/pedro-souza/Documentos/ufmg/jogos-digitais/teste/cmake-build-debug/CMakeFiles/rebuild_cache.dir
