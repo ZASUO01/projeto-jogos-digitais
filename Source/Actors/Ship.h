@@ -16,12 +16,24 @@ public:
     void OnUpdate(float deltaTime) override;
 
 private:
+    enum class Direction {
+        Right,          // 0°
+        UpRight,        // 30°
+        Down,           // 90°
+        DownRight,      // -30° ou 330°
+        DownLeft,       // 150°
+        Left,           // 180°
+        UpLeft,         // 210°
+        Up              // 270° ou -90°
+    };
+
     float mForwardSpeed;
     float mRotationForce;
     float mLaserCooldown;
     float mHeight;
     float mSpawnPointTimer;
     float mBurnCooldown;
+    float mRotationCooldown;
 
     Vector2 mTarget;
 
@@ -33,4 +45,13 @@ private:
 
     std::vector<Vector2> CreateShipVertices();
     std::vector<Vector2> CreateParticleVertices(float size);
+    
+    // Converte ângulo para a direção mais próxima
+    Direction GetClosestDirection(float rotation) const;
+    
+    // Converte direção para ângulo em radianos
+    float DirectionToRadians(Direction dir) const;
+    
+    // Obtém a próxima direção na sequência (horário ou anti-horário)
+    Direction GetNextDirection(Direction current, bool clockwise) const;
 };

@@ -6,10 +6,11 @@
 #include "CircleColliderComponent.h"
 #include "../Game.h"
 
-DrawComponent::DrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color)
+DrawComponent::DrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color, bool filled)
     :Component(owner)
     ,mDrawOrder(drawOrder)
     ,mIsVisible(true)
+    ,mIsFilled(filled)
     ,mColor(color)
 {
     mOwner->GetGame()->AddDrawable(this);
@@ -36,10 +37,18 @@ DrawComponent::~DrawComponent()
 void DrawComponent::Draw(Renderer *renderer)
 {
     if (mOwner->GetState() == ActorState::Active) {
-        renderer->Draw(
-            mOwner->GetModelMatrix(),
-            mDrawArray,
-            mColor
-        );
+        if (mIsFilled) {
+            renderer->DrawFilled(
+                mOwner->GetModelMatrix(),
+                mDrawArray,
+                mColor
+            );
+        } else {
+            renderer->Draw(
+                mOwner->GetModelMatrix(),
+                mDrawArray,
+                mColor
+            );
+        }
     }
 }
