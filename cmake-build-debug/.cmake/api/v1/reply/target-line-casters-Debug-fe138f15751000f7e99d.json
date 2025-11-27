@@ -19,7 +19,7 @@
 		"files" : 
 		[
 			"CMakeLists.txt",
-			"/snap/clion/393/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindOpenGL.cmake"
+			"/snap/clion/401/bin/cmake/linux/x64/share/cmake-4.0/Modules/FindOpenGL.cmake"
 		],
 		"nodes" : 
 		[
@@ -35,7 +35,7 @@
 			{
 				"command" : 1,
 				"file" : 0,
-				"line" : 58,
+				"line" : 59,
 				"parent" : 0
 			},
 			{
@@ -111,11 +111,11 @@
 				26,
 				27,
 				29,
-				32,
-				34,
-				36,
-				38,
-				40
+				33,
+				35,
+				37,
+				39,
+				41
 			]
 		}
 	],
@@ -184,11 +184,11 @@
 				26,
 				27,
 				29,
-				32,
-				34,
-				36,
-				38,
-				40
+				33,
+				35,
+				37,
+				39,
+				41
 			]
 		},
 		{
@@ -211,12 +211,13 @@
 				28,
 				30,
 				31,
-				33,
-				35,
-				37,
-				39,
-				41,
-				42
+				32,
+				34,
+				36,
+				38,
+				40,
+				42,
+				43
 			]
 		}
 	],
@@ -391,6 +392,11 @@
 		{
 			"backtrace" : 1,
 			"path" : "Client/ClientOperations.h",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"path" : "Client/InputData.h",
 			"sourceGroupIndex" : 1
 		},
 		{

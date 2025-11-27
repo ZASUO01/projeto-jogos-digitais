@@ -27,6 +27,7 @@ Game::Game()
         ,mUpdatingActors(false)
         ,mShip(nullptr)
         ,mClient(nullptr)
+        ,mNetTicksCount(0)
 {}
 
 bool Game::Initialize()
@@ -58,6 +59,7 @@ bool Game::Initialize()
     InitializeActors();
 
     mTicksCount = SDL_GetTicks();
+    mNetTicksCount = SDL_GetTicks();
 
     return true;
 }
@@ -110,6 +112,11 @@ void Game::UpdateGame()
     }
 
     mTicksCount = SDL_GetTicks();
+
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), mNetTicksCount + 66)) {
+        mClient->SendCommandsToServer();
+        mNetTicksCount = SDL_GetTicks();
+    }
 
     // Update all actors and pending actors
     UpdateActors(deltaTime);
@@ -218,6 +225,8 @@ void Game::Shutdown()
     mRenderer->Shutdown();
     delete mRenderer;
     mRenderer = nullptr;
+
+    mClient->Shutdown();
 
     SDL_DestroyWindow(mWindow);
     SDL_Quit();

@@ -5,10 +5,13 @@
 #include "../Network/Platforms.h"
 #include <cstdint>
 
+#include "InputData.h"
+
 enum class ClientState {
     CLIENT_DOWN,
     CLIENT_SET,
     CLIENT_READY,
+    CLIENT_RUNNING,
 };
 
 class Client {
@@ -19,6 +22,8 @@ public:
     void Initialize();
     bool AddServerAddr(const char *serverIp);
     bool Connect();
+    void SendCommandsToServer() const;
+    void Shutdown();
 
     void SetNonce(const uint32_t nonce) { mClientNonce = nonce; }
     void IncreasePacketSequence() { mCurrentPacketSequence++; }
@@ -30,8 +35,10 @@ public:
 
     static constexpr int MAX_CONNECTION_ATTEMPTS = 6;
     static constexpr int CONNECTION_RECEIVING_TIMEOUT_IN_MS = 2000;
-private:
 
+    // Inputs Control
+    [[nodiscard]] InputData *GetInputData() const { return mInputData; }
+private:
     ClientState mState;
     int mSocket;
     sockaddr_in mServerAddrV4;
@@ -39,4 +46,7 @@ private:
     // Connection control
     uint16_t mCurrentPacketSequence;
     uint32_t mClientNonce;
+
+    // // Inputs Control
+    InputData *mInputData;
 };

@@ -34,6 +34,12 @@ public:
         return nonce;
     }
 
+    [[nodiscard]] uint16_t GetLength() const {
+        if (state == PACKET_READY) {
+            return ntohs(length);
+        }
+        return length;
+    }
 
     static constexpr size_t MAX_PACKET_DATA_BYTES = 1024;
     static constexpr size_t PACKET_HEADER_BYTES = 20;

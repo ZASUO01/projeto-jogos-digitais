@@ -78,3 +78,23 @@ void ClientOperations::sendAckToServer(const Client *client) {
         &addr
     );
 }
+
+void ClientOperations::sendDataToServer(const Client *client) {
+    Packet packet(
+        client->GetCurrentPacketSequence(),
+        Packet::DATA_FLAG,
+        client->GetClientNonce()
+    );
+    packet.SetData(client->GetInputData(), sizeof(InputData));
+    packet.BuildPacket();
+
+    const size_t packetSize = Packet::PACKET_HEADER_BYTES + packet.GetLength();
+    sockaddr_in addr = client->GetServerAddress();
+
+    SocketUtils::sendPacketToV4(
+        client->GetSocket(),
+        &packet,
+        packetSize,
+        &addr
+    );
+}

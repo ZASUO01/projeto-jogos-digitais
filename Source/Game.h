@@ -43,6 +43,9 @@ public:
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
     Ship *GetShip() const {return mShip; }
+
+    // Network specific
+    [[nodiscard]] Client *GetClient() const { return mClient; }
 private:
     void ProcessInput();
     void UpdateGame();
@@ -73,4 +76,5 @@ private:
 
     // Network specific
     Client *mClient;
+    Uint32 mNetTicksCount;
 };

@@ -10,5 +10,5 @@ namespace ClientOperations {
     void sendSynToServer(const Client *client);
     bool receiveSynAckFromServer(Client *client);
     void sendAckToServer(const Client *client);
-    void sendDataToServer();
+    void sendDataToServer(const Client *client);
 };

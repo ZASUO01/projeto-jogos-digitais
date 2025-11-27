@@ -16,6 +16,7 @@ Client::Client()
 ,mServerAddrV4{}
 ,mCurrentPacketSequence(0)
 ,mClientNonce(0)
+,mInputData(nullptr)
 {}
 
 void Client::Initialize() {
@@ -25,6 +26,7 @@ void Client::Initialize() {
 
     mSocket = SocketUtils::createSocketV4();
     mClientNonce = NetUtils::getNonce();
+    mInputData = new InputData();
     mState = ClientState::CLIENT_SET;
 
     SDL_Log("Client initialized");
@@ -62,6 +64,7 @@ bool Client::Connect() {
         ClientOperations::sendAckToServer(this);
 
         SDL_Log("Client connected");
+        mState = ClientState::CLIENT_RUNNING;
         return true;
     }
 
@@ -69,3 +72,20 @@ bool Client::Connect() {
     return false;
 }
 
+void Client::SendCommandsToServer() const {
+    if (mState != ClientState::CLIENT_RUNNING) {
+        return;
+    }
+
+    ClientOperations::sendDataToServer(this);
+}
+
+
+void Client::Shutdown() {
+    if (mState != ClientState::CLIENT_RUNNING) {
+        return;
+    }
+
+    delete mInputData;
+    mInputData = nullptr;
+}

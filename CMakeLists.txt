@@ -42,6 +42,7 @@ add_executable(${PROJECT_NAME}
         Client/Client.h
         Client/ClientOperations.cpp
         Client/ClientOperations.h
+        Client/InputData.h
         Network/Platforms.h
         Network/Packet.cpp
         Network/Packet.h
