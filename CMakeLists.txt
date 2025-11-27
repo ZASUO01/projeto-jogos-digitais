@@ -43,8 +43,12 @@ add_executable(${PROJECT_NAME}
         Source/Components/ParticleSystemComponent.h
         Source/Components/CircleColliderComponent.cpp
         Source/Components/CircleColliderComponent.h
+        Source/Components/GridDrawComponent.cpp
+        Source/Components/GridDrawComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
+        Source/Actors/Floor.cpp
+        Source/Actors/Floor.h
         Source/UI/UIElement.cpp
         Source/UI/UIElement.h
         Source/UI/UIImage.cpp

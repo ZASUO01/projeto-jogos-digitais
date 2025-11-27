@@ -14,6 +14,7 @@
 #include <vector>
 #include "Game.h"
 #include "Actors/Ship.h"
+#include "Actors/Floor.h"
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
 #include "Random.h"
@@ -72,6 +73,9 @@ bool Game::Initialize()
 
 void Game::InitializeActors()
 {
+    // Create floor with grid background
+    new Floor(this);
+    
     mShip = new Ship(this, 40, 300, 3);
     // Posicionar a nave no centro da janela atual
     int windowWidth = GetWindowWidth();
