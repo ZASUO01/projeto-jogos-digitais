@@ -28,11 +28,11 @@ Ship::Ship(Game* game,
 {
     std::vector<Vector2> vertices = CreateShipVertices();
     
-    // Create filled blue component (drawn first, behind)
-    new DrawComponent(this, vertices, 99, Vector3(0.0f, 0.0f, 1.0f), true);
+    // Create filled bright cyan component (drawn first, behind) - more visible
+    new DrawComponent(this, vertices, 99, Vector3(0.0f, 1.0f, 1.0f), true); // Bright cyan
     
-    // Create black outline component (drawn on top)
-    mDrawComponent = new DrawComponent(this, vertices, 100, Vector3(0.0f, 0.0f, 0.0f), false);
+    // Create bright outline component (drawn on top) - white/cyan for visibility
+    mDrawComponent = new DrawComponent(this, vertices, 100, Vector3(1.0f, 1.0f, 1.0f), false); // White outline
     
     mRigidBodyComponent = new RigidBodyComponent(this);
     mCircleColliderComponent = new CircleColliderComponent(this, mHeight / 3);

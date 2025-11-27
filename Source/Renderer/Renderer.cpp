@@ -77,6 +77,7 @@ void Renderer::Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 c
 	mBaseShader->SetActive();
 	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
 	mBaseShader->SetVectorUniform("uColor", color);
+	mBaseShader->SetFloatUniform("uAlpha", 1.0f); // Full opacity for normal objects
 
     vertices->SetActive();
     glDrawElements(GL_LINE_LOOP, vertices->GetNumIndices(), GL_UNSIGNED_INT,nullptr);
@@ -87,6 +88,7 @@ void Renderer::DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vec
 	mBaseShader->SetActive();
 	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
 	mBaseShader->SetVectorUniform("uColor", color);
+	mBaseShader->SetFloatUniform("uAlpha", 1.0f); // Full opacity for normal objects
 
     vertices->SetActive();
     glDrawElements(GL_TRIANGLE_FAN, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
