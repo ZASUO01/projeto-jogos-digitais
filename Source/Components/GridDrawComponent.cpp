@@ -19,50 +19,63 @@ GridDrawComponent::GridDrawComponent(class Actor* owner, float width, float heig
     , mCellSize(cellSize)
     , mGridArray(nullptr)
 {
-    // Create grid vertices
+    // Create grid vertices with isometric projection
     std::vector<float> floatVertices;
     std::vector<unsigned int> indices;
     
+    // Isometric transformation constants
+    // Typical isometric projection: angle of ~30 degrees
+    const float isoAngle = Math::ToRadians(30.0f);
+    const float cosIso = Math::Cos(isoAngle);  // ~0.866
+    const float sinIso = Math::Sin(isoAngle);  // ~0.5
+    
+    // Function to convert cartesian coordinates to isometric
+    auto ToIsometric = [cosIso, sinIso](float x, float y) -> Vector2 {
+        float isoX = (x - y) * cosIso;
+        float isoY = (x + y) * sinIso;
+        return Vector2(isoX, isoY);
+    };
+    
     unsigned int index = 0;
     
-    // Vertical lines - always start at x=0 and end at x=width
-    // Draw lines at each cell boundary
-    for (float x = 0.0f; x <= width; x += cellSize) {
-        // Clamp to exact width boundary
+    // Calculate number of cells
+    int numCellsX = static_cast<int>(width / cellSize) + 1;
+    int numCellsY = static_cast<int>(height / cellSize) + 1;
+    
+    // Vertical lines (diagonal left-right in isometric view)
+    for (int i = 0; i <= numCellsX; ++i) {
+        float x = i * cellSize;
         if (x > width) x = width;
         
-        // Start point (top) at y=0
-        floatVertices.push_back(x);
-        floatVertices.push_back(0.0f);
+        // Start point at y=0
+        Vector2 start = ToIsometric(x, 0.0f);
+        floatVertices.push_back(start.x);
+        floatVertices.push_back(start.y);
         indices.push_back(index++);
         
-        // End point (bottom) at y=height
-        floatVertices.push_back(x);
-        floatVertices.push_back(height);
+        // End point at y=height
+        Vector2 end = ToIsometric(x, height);
+        floatVertices.push_back(end.x);
+        floatVertices.push_back(end.y);
         indices.push_back(index++);
-        
-        // Break if we've reached the boundary
-        if (x >= width) break;
     }
     
-    // Horizontal lines - always start at y=0 and end at y=height
-    // Draw lines at each cell boundary
-    for (float y = 0.0f; y <= height; y += cellSize) {
-        // Clamp to exact height boundary
+    // Horizontal lines (diagonal right-left in isometric view)
+    for (int i = 0; i <= numCellsY; ++i) {
+        float y = i * cellSize;
         if (y > height) y = height;
         
-        // Start point (left) at x=0
-        floatVertices.push_back(0.0f);
-        floatVertices.push_back(y);
+        // Start point at x=0
+        Vector2 start = ToIsometric(0.0f, y);
+        floatVertices.push_back(start.x);
+        floatVertices.push_back(start.y);
         indices.push_back(index++);
         
-        // End point (right) at x=width
-        floatVertices.push_back(width);
-        floatVertices.push_back(y);
+        // End point at x=width
+        Vector2 end = ToIsometric(width, y);
+        floatVertices.push_back(end.x);
+        floatVertices.push_back(end.y);
         indices.push_back(index++);
-        
-        // Break if we've reached the boundary
-        if (y >= height) break;
     }
     
     mGridArray = new VertexArray(floatVertices.data(), static_cast<unsigned int>(floatVertices.size()), 

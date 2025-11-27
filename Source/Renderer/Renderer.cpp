@@ -82,6 +82,16 @@ void Renderer::Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 c
     glDrawElements(GL_LINE_LOOP, vertices->GetNumIndices(), GL_UNSIGNED_INT,nullptr);
 }
 
+void Renderer::DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color)
+{
+	mBaseShader->SetActive();
+	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
+	mBaseShader->SetVectorUniform("uColor", color);
+
+    vertices->SetActive();
+    glDrawElements(GL_TRIANGLE_FAN, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+}
+
 void Renderer::Present()
 {
 	// Swap the buffers

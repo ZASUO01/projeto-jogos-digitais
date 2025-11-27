@@ -21,6 +21,7 @@ public:
 
     void Clear();
     void Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
+    void DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
 
     void Present();
 
