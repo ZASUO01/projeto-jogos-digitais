@@ -32,8 +32,8 @@ public:
     // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
 
-    static const int WINDOW_WIDTH = 1024;
-    static const int WINDOW_HEIGHT = 768;
+    static const int WINDOW_WIDTH = 1280;
+    static const int WINDOW_HEIGHT = 720;
 
     // Draw functions
     void AddDrawable(class DrawComponent* drawable);

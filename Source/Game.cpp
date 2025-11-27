@@ -14,6 +14,7 @@
 #include <vector>
 #include "Game.h"
 #include "Actors/Ship.h"
+#include "Actors/Floor.h"
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
 #include "Random.h"
@@ -38,7 +39,7 @@ bool Game::Initialize()
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    mWindow = SDL_CreateWindow("TP2: Asteroids", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
@@ -58,6 +59,9 @@ bool Game::Initialize()
 
 void Game::InitializeActors()
 {
+    // Create floor with grid background
+    new Floor(this);
+    
     mShip = new Ship(this, 40, 300, 3);
     mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
 }

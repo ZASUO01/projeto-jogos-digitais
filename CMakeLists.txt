@@ -35,8 +35,12 @@ add_executable(${PROJECT_NAME}
         Source/Components/ParticleSystemComponent.h
         Source/Components/CircleColliderComponent.cpp
         Source/Components/CircleColliderComponent.h
+        Source/Components/GridDrawComponent.cpp
+        Source/Components/GridDrawComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
+        Source/Actors/Floor.cpp
+        Source/Actors/Floor.h
         Source/Main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL)
