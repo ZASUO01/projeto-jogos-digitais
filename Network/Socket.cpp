@@ -13,6 +13,8 @@ SocketType SocketUtils::createSocketV4() {
     if (sock == INVALID_SOCKET) {
         Logger::sysLogExit("create socket");
     }
+
+    ignore_not_reachable_error(sock);
     return sock;
 }
 

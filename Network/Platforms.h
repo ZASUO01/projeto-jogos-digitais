@@ -23,13 +23,19 @@
     #include <windows.h>
     #pragma comment(lib, "ws2_32.lib")
 
-    // disable not reachable error messages
-    #define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR, 12)
-    BOOL bNewBehavior = FALSE;
-    DWORD dwBytesReturned = 0;
-    WSAIoctl(mySock, SIO_UDP_CONNRESET, &bNewBehavior, sizeof(bNewBehavior), NULL, 0, &dwBytesReturned, NULL, NULL)
-
+    // socket setup
     typedef SOCKET SocketType;
+    #define ignore_not_reachable_error(sock) \
+        do { \
+            if ((sock) == INVALID_SOCKET) break; \
+            const int __SIO_UDP_CONNRESET_CODE = _WSAIOW(IOC_VENDOR, 12); \
+            BOOL __bNewBehavior = FALSE; \
+            DWORD __dwBytesReturned = 0; \
+            if (WSAIoctl((sock), __SIO_UDP_CONNRESET_CODE, &__bNewBehavior, sizeof(__bNewBehavior), NULL, 0, &__dwBytesReturned, NULL, NULL) == SOCKET_ERROR) { \
+                printf("set socket failure\n"); \
+                exit(EXIT_FAILURE); \
+            } \
+        } while (0)
 
     #define POLL_FD_TYPE WSAPOLLFD
     #define socket_poll WSAPoll
@@ -73,6 +79,7 @@
     typedef int SocketType;
     #define INVALID_SOCKET (-1)
     #define SOCKET_ERROR (-1)
+    #define ignore_not_reachable_error(sock) (void)0
 
     #define POLL_FD_TYPE struct pollfd
     #define socket_poll poll
