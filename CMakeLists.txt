@@ -6,7 +6,7 @@ set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_NAME "line-casters")
 project(${PROJECT_NAME})
 
-find_package(SDL2 2.32.2 EXACT REQUIRED)
+find_package(SDL2 REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
@@ -57,3 +57,7 @@ add_executable(${PROJECT_NAME}
         Network/Defs.h)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL)
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
+endif ()
