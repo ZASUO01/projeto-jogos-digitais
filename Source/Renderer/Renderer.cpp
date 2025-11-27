@@ -173,6 +173,7 @@ void Renderer::Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 c
 	mBaseShader->SetActive();
 	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
 	mBaseShader->SetVectorUniform("uColor", color);
+	mBaseShader->SetFloatUniform("uAlpha", 1.0f); // Full opacity for normal objects
 
     vertices->SetActive();
     // For 2D line drawing, we use GL_LINE_LOOP with the base shader
@@ -218,6 +219,7 @@ void Renderer::DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vec
 	mBaseShader->SetActive();
 	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
 	mBaseShader->SetVectorUniform("uColor", color);
+	mBaseShader->SetFloatUniform("uAlpha", 1.0f); // Full opacity for normal objects
 
     vertices->SetActive();
     glDrawElements(GL_TRIANGLE_FAN, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);

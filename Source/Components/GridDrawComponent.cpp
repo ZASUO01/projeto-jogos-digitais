@@ -93,10 +93,34 @@ void GridDrawComponent::Draw(Renderer* renderer)
     if (mOwner->GetState() == ActorState::Active) {
         renderer->GetBaseShader()->SetActive();
         renderer->GetBaseShader()->SetMatrixUniform("uWorldTransform", mOwner->GetModelMatrix());
-        renderer->GetBaseShader()->SetVectorUniform("uColor", mColor);
+        
+        // Enable blending for neon glow effect
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        
+        // First pass: Draw the glow (wider lines with cyan color and reduced alpha)
+        Vector3 glowColor(0.0f, 0.7f, 1.0f); // Cyan-blue glow color
+        renderer->GetBaseShader()->SetVectorUniform("uColor", glowColor);
+        renderer->GetBaseShader()->SetFloatUniform("uAlpha", 0.3f); // Reduced alpha for subtle glow
+        
+        // Set wider line width for glow (note: glLineWidth may be limited by implementation)
+        // If glLineWidth doesn't work, the glow effect will still be visible due to blending
+        glLineWidth(4.0f);
         
         mGridArray->SetActive();
         glDrawElements(GL_LINES, mGridArray->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+        
+        // Second pass: Draw the black line on top (thinner, opaque)
+        Vector3 lineColor(0.0f, 0.0f, 0.0f); // Black line
+        renderer->GetBaseShader()->SetVectorUniform("uColor", lineColor);
+        renderer->GetBaseShader()->SetFloatUniform("uAlpha", 1.0f); // Full opacity
+        
+        // Set thinner line width for the actual line
+        glLineWidth(1.0f);
+        
+        glDrawElements(GL_LINES, mGridArray->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+        
+        glDisable(GL_BLEND);
     }
 }
 

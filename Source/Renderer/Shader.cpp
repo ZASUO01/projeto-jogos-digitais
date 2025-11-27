@@ -70,13 +70,10 @@ void Shader::SetVectorUniform(const char* name, const Vector3& vector) const
 	glUniform3fv(loc, 1, vector.GetAsFloatPtr());
 }
 
-void Shader::SetVectorUniform(const char* name, const Vector4& vector) const
+void Shader::SetVector2Uniform(const char* name, const Vector2& vector) const
 {
-	// Find the uniform by this name
 	GLint loc = glGetUniformLocation(mShaderProgram, name);
-
-	// Send the vector data to the uniform
-	glUniform4fv(loc, 1, vector.GetAsFloatPtr());
+	glUniform2f(loc, vector.x, vector.y);
 }
 
 void Shader::SetMatrixUniform(const char* name, const Matrix4& matrix) const

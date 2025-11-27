@@ -26,6 +26,7 @@ public:
     void SetVectorUniform (const char* name, const Vector4& vector) const;
     void SetMatrixUniform(const char* name, const Matrix4& matrix) const;
     void SetFloatUniform(const char* name, float value) const;
+    void SetVector2Uniform(const char* name, const Vector2& vector) const;
     void SetTextureUniform(const char *name, int value) const;
 
 private:
