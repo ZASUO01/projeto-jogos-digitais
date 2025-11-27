@@ -23,6 +23,12 @@
     #include <windows.h>
     #pragma comment(lib, "ws2_32.lib")
 
+    // disable not reachable error messages
+    #define SIO_UDP_CONNRESET _WSAIOW(IOC_VENDOR, 12)
+    BOOL bNewBehavior = FALSE;
+    DWORD dwBytesReturned = 0;
+    WSAIoctl(mySock, SIO_UDP_CONNRESET, &bNewBehavior, sizeof(bNewBehavior), NULL, 0, &dwBytesReturned, NULL, NULL)
+
     typedef SOCKET SocketType;
 
     #define POLL_FD_TYPE WSAPOLLFD

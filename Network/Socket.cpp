@@ -35,7 +35,7 @@ bool SocketUtils::socketReadyToReceive(const SocketType sock, const int ms) {
     tv.tv_sec = ms / 1000;
     tv.tv_usec = (ms % 1000) * 1000;
 
-    if (const int result = select(sock + 1, &read_fds, nullptr, nullptr, &tv); result > 0) {
+    if (const int result = select(static_cast<int>(sock) + 1, &read_fds, nullptr, nullptr, &tv); result > 0) {
         if (FD_ISSET(sock, &read_fds)) {
             return true;
         }
@@ -54,7 +54,7 @@ bool SocketUtils::socketReadyToReceive(const SocketType sock, const int ms) {
     return false;
 }
 
-bool SocketUtils::sendPacketToV4(const int sock, Packet *pk, const size_t pkSize, sockaddr_in * addr4) {
+bool SocketUtils::sendPacketToV4(const SocketType sock, Packet *pk, const size_t pkSize, sockaddr_in * addr4) {
     constexpr socklen_t addr_size = sizeof(sockaddr_in);
 
     if (const ssize_t bytes_sent = socket_sendto(sock, pk, pkSize, 0, reinterpret_cast<sockaddr *>(addr4), addr_size);
@@ -64,7 +64,7 @@ bool SocketUtils::sendPacketToV4(const int sock, Packet *pk, const size_t pkSize
     return true;
 }
 
-bool SocketUtils::receivePacketFromV4(const int sock, Packet *pk, sockaddr_in * addr4) {
+bool SocketUtils::receivePacketFromV4(const SocketType sock, Packet *pk, sockaddr_in * addr4) {
     constexpr size_t pkSize = Packet::PACKET_HEADER_BYTES + Packet::MAX_PACKET_DATA_BYTES;
     std::memset(pk, 0, pkSize);
 
