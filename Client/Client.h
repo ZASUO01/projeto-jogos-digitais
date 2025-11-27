@@ -40,7 +40,7 @@ public:
     [[nodiscard]] InputData *GetInputData() const { return mInputData; }
 private:
     ClientState mState;
-    int mSocket;
+    SocketType mSocket;
     sockaddr_in mServerAddrV4;
 
     // Connection control

@@ -23,6 +23,8 @@
     #include <windows.h>
     #pragma comment(lib, "ws2_32.lib")
 
+    typedef SOCKET SocketType;
+
     #define POLL_FD_TYPE WSAPOLLFD
     #define socket_poll WSAPoll
     #define create_socket(domain, type, protocol) (static_cast<int>(socket(domain, type, protocol)))
@@ -56,9 +58,15 @@
 
 #elif defined(PLATFORM_LINUX) || defined(PLATFORM_MACOS)
     #include <sys/socket.h>
+    #include <sys/select.h>
+    #include <sys/time.h>
     #include <arpa/inet.h>
     #include <unistd.h>
     #include <poll.h>
+
+    typedef int SocketType;
+    #define INVALID_SOCKET (-1)
+    #define SOCKET_ERROR (-1)
 
     #define POLL_FD_TYPE struct pollfd
     #define socket_poll poll

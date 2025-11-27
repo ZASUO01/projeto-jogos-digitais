@@ -6,9 +6,9 @@
 #include "Packet.h"
 
 namespace  SocketUtils {
-    int createSocketV4();
-    void bindSocketToAnyV4(int sock);
-    bool socketReadyToReceive(int sock, int ms);
-    bool sendPacketToV4(int sock, const Packet *pk, size_t pkSize, sockaddr_in* addr4);
-    bool receivePacketFromV4(int sock, Packet *pk, sockaddr_in* addr4);
+    SocketType createSocketV4();
+    void bindSocketToAnyV4(SocketType sock);
+    bool socketReadyToReceive(SocketType sock, int ms);
+    bool sendPacketToV4(SocketType sock, Packet *pk, size_t pkSize, sockaddr_in* addr4);
+    bool receivePacketFromV4(SocketType sock, Packet *pk, sockaddr_in* addr4);
 };
