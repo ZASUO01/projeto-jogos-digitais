@@ -6,9 +6,18 @@ set(CMAKE_CXX_STANDARD 17)
 set(PROJECT_NAME "lion-casters")
 project(${PROJECT_NAME})
 
+#set(GLEW_ROOT "C:/Program Files/GLEW")
+#set(GLEW_INCLUDE_DIRS "${GLEW_ROOT}/include")
+#set(GLEW_LIBRARIES "${GLEW_ROOT}/lib/Release/x64/glew32.lib")
+#
+#find_package(SDL2_mixer REQUIRED)
+#
+#set(OPENGL "C:/Users/fabio/OneDrive/Documentos/opengl32/opengl32.dll")
+
 find_package(SDL2 2.32.2 EXACT REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 
 add_executable(${PROJECT_NAME}
         Source/Renderer/Shader.cpp
@@ -39,4 +48,6 @@ add_executable(${PROJECT_NAME}
         Source/Actors/Ship.h
         Source/Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL SDL2_mixer::SDL2_mixer)
+
+#target_link_libraries(${PROJECT_NAME} PRIVATE ${OPENGL} ${GLEW_LIBRARIES} SDL2::SDL2 SDL2_mixer::SDL2_mixer)
