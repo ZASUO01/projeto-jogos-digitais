@@ -49,6 +49,7 @@ void Ship::OnProcessInput(const uint8_t* state)
         if (mBurnCooldown <= 0.f) {
             mTurbine->EmitParticle(0.1f, 25000);
             mBurnCooldown = 0.2f;
+            mGame->GetAudio()->PlaySound("Boost.wav", false, 60);
         }
 
     }
@@ -64,6 +65,7 @@ void Ship::OnProcessInput(const uint8_t* state)
     else if (state[SDL_SCANCODE_SPACE]) {
         if (mLaserCooldown <= 0.f) {
             mWeapon->EmitParticle(1  , 16000);
+            mGame->GetAudio()->PlaySound("Shoot.wav", false);
             mLaserCooldown = 0.2f;
         }
     }

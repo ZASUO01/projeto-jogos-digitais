@@ -47,7 +47,7 @@ void AudioSystem::Update(float deltaTime)
 // NOTE: The soundName is without the "Assets/Sounds/" part of the file
 //       For example, pass in "ChompLoop.wav" rather than
 //       "Assets/Sounds/ChompLoop.wav".
-SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping)
+SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping, int volume)
 {
     // Get the sound with the given name
     Mix_Chunk *sound = GetSound(soundName);
@@ -123,6 +123,18 @@ SoundHandle AudioSystem::PlaySound(const std::string& soundName, bool looping)
             mHandleMap.emplace(last, info);
         }
     }
+
+    if (volume > 128)
+    {
+        volume = 128;
+    }
+
+    if (volume < 0)
+    {
+        volume = 0;
+    }
+
+    Mix_Volume(info.mChannel, volume);
 
     Mix_PlayChannel(info.mChannel, sound, looping);
 
