@@ -46,6 +46,8 @@ add_executable(${PROJECT_NAME}
         Source/Components/CircleColliderComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
+        Source/AudioSystem.cpp
+        Source/AudioSystem.h
         Source/Main.cpp)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL SDL2_mixer::SDL2_mixer)

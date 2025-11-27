@@ -12,6 +12,7 @@
 
 #include <algorithm>
 #include <vector>
+#include <SDL_mixer.h>
 #include "Game.h"
 #include "Actors/Ship.h"
 #include "Components/DrawComponent.h"
@@ -32,6 +33,13 @@ bool Game::Initialize()
 {
     Random::Init();
 
+    // Initialize SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+    {
+        SDL_Log("Failed to initialize SDL_mixer");
+        return false;
+    }
+
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
@@ -47,6 +55,9 @@ bool Game::Initialize()
 
     mRenderer = new Renderer(mWindow);
     mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    mAudio = new AudioSystem();
+    mGameSound = mAudio->PlaySound("MainTitleSong.mp3", true);
+    mAudio->SetVolume(mGameSound, 30);
 
     // Init all game actors
     InitializeActors();
@@ -107,6 +118,7 @@ void Game::UpdateGame()
 
     // Update all actors and pending actors
     UpdateActors(deltaTime);
+    mAudio->Update(deltaTime);
 }
 
 void Game::UpdateActors(float deltaTime)
