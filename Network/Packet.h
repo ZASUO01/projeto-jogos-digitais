@@ -49,7 +49,8 @@ public:
     static constexpr uint8_t ACK_FLAG = 0x03;
     static constexpr uint8_t DATA_FLAG = 0x04;
     static constexpr uint8_t END_FLAG = 0x05;
-    static constexpr uint8_t RST_FLAG = 0x06;
+    static constexpr uint8_t END_ACK_FLAG = 0x06;
+    static constexpr uint8_t RST_FLAG = 0x07;
 
 private:
     uint32_t sync1;

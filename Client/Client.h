@@ -11,7 +11,8 @@ enum class ClientState {
     CLIENT_DOWN,
     CLIENT_SET,
     CLIENT_READY,
-    CLIENT_RUNNING,
+    CLIENT_CONNECTED,
+    CLIENT_DISCONNECTED,
 };
 
 class Client {
@@ -23,12 +24,13 @@ public:
     bool AddServerAddr(const char *serverIp);
     bool Connect();
     void SendCommandsToServer() const;
+    bool Disconnect();
     void Shutdown();
 
     void SetNonce(const uint32_t nonce) { mClientNonce = nonce; }
     void IncreasePacketSequence() { mCurrentPacketSequence++; }
 
-    [[nodiscard]] int GetSocket() const { return mSocket;}
+    [[nodiscard]] SocketType GetSocket() const { return mSocket;}
     [[nodiscard]] sockaddr_in GetServerAddress() const { return mServerAddrV4; }
     [[nodiscard]] uint32_t GetClientNonce() const { return mClientNonce; }
     [[nodiscard]] uint16_t GetCurrentPacketSequence() const { return mCurrentPacketSequence; }

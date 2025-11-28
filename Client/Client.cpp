@@ -54,17 +54,17 @@ bool Client::Connect() {
     }
 
     for (int i = 0; i < MAX_CONNECTION_ATTEMPTS; i++) {
-        ClientOperations::sendSynToServer(this);
+        ClientOperations::sendSinglePacketToServer(this, Packet::SYN_FLAG);
 
-        if (!ClientOperations::receiveSynAckFromServer(this)) {
+        if (!ClientOperations::receiveSinglePacketFromServer(this, Packet::SYN_ACK_FLAG)) {
             SDL_Log("Response not received, trying again...");
             continue;
         }
 
-        ClientOperations::sendAckToServer(this);
+        ClientOperations::sendSinglePacketToServer(this, Packet::ACK_FLAG);
 
         SDL_Log("Client connected");
-        mState = ClientState::CLIENT_RUNNING;
+        mState = ClientState::CLIENT_CONNECTED;
         return true;
     }
 
@@ -73,16 +73,40 @@ bool Client::Connect() {
 }
 
 void Client::SendCommandsToServer() const {
-    if (mState != ClientState::CLIENT_RUNNING) {
+    if (mState != ClientState::CLIENT_CONNECTED) {
         return;
     }
 
     ClientOperations::sendDataToServer(this);
 }
 
+bool Client::Disconnect() {
+    if (mState != ClientState::CLIENT_CONNECTED) {
+        return false;
+    }
+
+    for (int i = 0; i < MAX_CONNECTION_ATTEMPTS; i++) {
+        ClientOperations::sendSinglePacketToServer(this, Packet::END_FLAG);
+
+        if (!ClientOperations::receiveSinglePacketFromServer(this, Packet::END_ACK_FLAG)) {
+            SDL_Log("Response not received, trying again...");
+            continue;
+        }
+
+        ClientOperations::sendSinglePacketToServer(this, Packet::ACK_FLAG);
+
+        SDL_Log("Client disconnected");
+        mState = ClientState::CLIENT_DISCONNECTED;
+        return true;
+    }
+
+    SDL_Log("Max connection attempts reached");
+    return false;
+}
+
 
 void Client::Shutdown() {
-    if (mState != ClientState::CLIENT_RUNNING) {
+    if (mState != ClientState::CLIENT_CONNECTED && mState != ClientState::CLIENT_DISCONNECTED) {
         return;
     }
 

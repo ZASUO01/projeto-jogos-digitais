@@ -5,11 +5,16 @@
 #include "ClientOperations.h"
 #include "../Network/Packet.h"
 #include "../Network/Socket.h"
+#include "SDL.h"
 
-void ClientOperations::sendSynToServer(const Client *client) {
+void ClientOperations::sendSinglePacketToServer(const Client *client, const uint8_t flag) {
+    if (flag != Packet::SYN_FLAG && flag != Packet::ACK_FLAG && flag != Packet::END_FLAG) {
+        return;
+    }
+
     Packet packet(
         client->GetCurrentPacketSequence(),
-        Packet::SYN_FLAG,
+        flag,
         client->GetClientNonce()
     );
     packet.BuildPacket();
@@ -25,7 +30,11 @@ void ClientOperations::sendSynToServer(const Client *client) {
     );
 }
 
-bool ClientOperations::receiveSynAckFromServer(Client *client) {
+bool ClientOperations::receiveSinglePacketFromServer(Client *client, const uint8_t flag) {
+    if (flag != Packet::SYN_ACK_FLAG && flag != Packet::END_ACK_FLAG) {
+        return false;
+    }
+
     if (!SocketUtils::socketReadyToReceive(
         client->GetSocket(), Client::CONNECTION_RECEIVING_TIMEOUT_IN_MS)) {
         return false;
@@ -46,7 +55,7 @@ bool ClientOperations::receiveSynAckFromServer(Client *client) {
         return false;
     }
 
-    if (packet.GetFlag() != Packet::SYN_ACK_FLAG) {
+    if (packet.GetFlag() != flag) {
         return false;
     }
 
@@ -58,25 +67,6 @@ bool ClientOperations::receiveSynAckFromServer(Client *client) {
     client->IncreasePacketSequence();
 
     return true;
-}
-
-void ClientOperations::sendAckToServer(const Client *client) {
-    Packet packet(
-        client->GetCurrentPacketSequence(),
-        Packet::ACK_FLAG,
-        client->GetClientNonce()
-    );
-    packet.BuildPacket();
-
-    constexpr size_t packetSize = Packet::PACKET_HEADER_BYTES;
-    sockaddr_in addr = client->GetServerAddress();
-
-    SocketUtils::sendPacketToV4(
-        client->GetSocket(),
-        &packet,
-        packetSize,
-        &addr
-    );
 }
 
 void ClientOperations::sendDataToServer(const Client *client) {

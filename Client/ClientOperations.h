@@ -7,8 +7,7 @@
 #include "Client.h"
 
 namespace ClientOperations {
-    void sendSynToServer(const Client *client);
-    bool receiveSynAckFromServer(Client *client);
-    void sendAckToServer(const Client *client);
+    void sendSinglePacketToServer(const Client *client, uint8_t flag);
+    bool receiveSinglePacketFromServer(Client *client, uint8_t flag);
     void sendDataToServer(const Client *client);
 };

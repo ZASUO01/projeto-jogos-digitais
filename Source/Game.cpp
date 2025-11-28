@@ -226,6 +226,7 @@ void Game::Shutdown()
     delete mRenderer;
     mRenderer = nullptr;
 
+    mClient->Disconnect();
     mClient->Shutdown();
 
     SDL_DestroyWindow(mWindow);
