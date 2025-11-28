@@ -29,21 +29,6 @@ void SocketUtils::bindSocketToAnyV4(const SocketType sock) {
 }
 
 bool SocketUtils::socketReadyToReceive(const SocketType sock, const int ms) {
-    fd_set read_fds;
-    FD_ZERO(&read_fds);
-    FD_SET(sock, &read_fds);
-
-    timeval tv{};
-    tv.tv_sec = ms / 1000;
-    tv.tv_usec = (ms % 1000) * 1000;
-
-    if (const int result = select(static_cast<int>(sock) + 1, &read_fds, nullptr, nullptr, &tv); result > 0) {
-        if (FD_ISSET(sock, &read_fds)) {
-            return true;
-        }
-    }
-
-    /*
     POLL_FD_TYPE fds[1];
     fds[0].fd = sock;
     fds[0].events = POLLIN;
@@ -52,7 +37,7 @@ bool SocketUtils::socketReadyToReceive(const SocketType sock, const int ms) {
     if (const int result = socket_poll(fds, 1, ms); result > 0 && (fds[0].revents & POLLIN)) {
         return true;
     }
-    */
+    
     return false;
 }
 
