@@ -50,7 +50,7 @@ bool Game::Initialize()
     mRenderer = new Renderer(mWindow);
     mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    mClient = new Client();
+    mClient = new Client(this);
     mClient->Initialize();
     mClient->AddServerAddr("192.168.1.13");
     mClient->Connect();
@@ -117,9 +117,11 @@ void Game::UpdateGame()
         mClient->SendCommandsToServer();
         mNetTicksCount = SDL_GetTicks();
     }
+    mClient->ReceiveDataFromServer();
+
 
     // Update all actors and pending actors
-    UpdateActors(deltaTime);
+    //UpdateActors(deltaTime);
 }
 
 void Game::UpdateActors(float deltaTime)

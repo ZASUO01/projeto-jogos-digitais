@@ -10,13 +10,16 @@
 #include "SDL.h"
 #include "../Network/NetUtils.h"
 
-Client::Client()
+Client::Client(Game *game)
 :mState(ClientState::CLIENT_DOWN)
 ,mSocket(-1)
 ,mServerAddrV4{}
 ,mCurrentPacketSequence(0)
 ,mClientNonce(0)
+,mConnecting(false)
+,mDisconnecting(false)
 ,mInputData(nullptr)
+,mGame(game)
 {}
 
 void Client::Initialize() {
@@ -53,6 +56,8 @@ bool Client::Connect() {
         return false;
     }
 
+    mConnecting = true;
+
     for (int i = 0; i < MAX_CONNECTION_ATTEMPTS; i++) {
         ClientOperations::sendSinglePacketToServer(this, Packet::SYN_FLAG);
 
@@ -65,25 +70,42 @@ bool Client::Connect() {
 
         SDL_Log("Client connected");
         mState = ClientState::CLIENT_CONNECTED;
+        mConnecting = false;
         return true;
     }
 
     SDL_Log("Max connection attempts reached");
+    mConnecting = false;
     return false;
 }
 
 void Client::SendCommandsToServer() const {
-    if (mState != ClientState::CLIENT_CONNECTED) {
+    if (mState != ClientState::CLIENT_CONNECTED || mConnecting || mDisconnecting) {
         return;
     }
 
     ClientOperations::sendDataToServer(this);
 }
 
+void Client::ReceiveDataFromServer()  {
+    if (mState != ClientState::CLIENT_CONNECTED) {
+        return;
+    }
+    if (!ClientOperations::receiveDataPacketFromServer(this)) {
+        return;
+    }
+
+    float newX = mLastRawState.posX;
+    float newY = mLastRawState.posY;
+    mGame->GetShip()->SetPosition(Vector2(newX, newY));
+}
+
 bool Client::Disconnect() {
     if (mState != ClientState::CLIENT_CONNECTED) {
         return false;
     }
+
+    mDisconnecting = true;
 
     for (int i = 0; i < MAX_CONNECTION_ATTEMPTS; i++) {
         ClientOperations::sendSinglePacketToServer(this, Packet::END_FLAG);
@@ -97,10 +119,12 @@ bool Client::Disconnect() {
 
         SDL_Log("Client disconnected");
         mState = ClientState::CLIENT_DISCONNECTED;
+        mDisconnecting = false;
         return true;
     }
 
-    SDL_Log("Max connection attempts reached");
+    SDL_Log("Max disconnection attempts reached");
+    mDisconnecting = false;
     return false;
 }
 

@@ -5,7 +5,6 @@
 #include "ClientOperations.h"
 #include "../Network/Packet.h"
 #include "../Network/Socket.h"
-#include "SDL.h"
 
 void ClientOperations::sendSinglePacketToServer(const Client *client, const uint8_t flag) {
     if (flag != Packet::SYN_FLAG && flag != Packet::ACK_FLAG && flag != Packet::END_FLAG) {
@@ -87,4 +86,35 @@ void ClientOperations::sendDataToServer(const Client *client) {
         packetSize,
         &addr
     );
+}
+
+bool ClientOperations::receiveDataPacketFromServer(Client *client) {
+    if (!SocketUtils::socketReadyToReceive(
+        client->GetSocket(), Client::CONNECTION_RECEIVING_TIMEOUT_IN_MS)) {
+        return false;
+        }
+
+    Packet packet;
+    sockaddr_in addr = client->GetServerAddress();
+
+    if (!SocketUtils::receivePacketFromV4(
+        client->GetSocket(),
+        &packet,
+        &addr
+    )) {
+        return false;
+    }
+
+    if (!packet.IsValid()) {
+        return false;
+    }
+
+    if (packet.GetFlag() != Packet::DATA_FLAG) {
+        return false;
+    }
+
+    const auto state = static_cast<const RawState*>(packet.GetData());
+    client->SetRawState(*state);
+
+    return true;
 }

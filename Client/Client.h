@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "InputData.h"
+#include "../Source/Game.h"
 
 enum class ClientState {
     CLIENT_DOWN,
@@ -15,15 +16,22 @@ enum class ClientState {
     CLIENT_DISCONNECTED,
 };
 
+struct RawState {
+    float posX, posY;
+
+    RawState() : posX(0), posY(0) {}
+};
+
 class Client {
 public:
-    Client();
+    explicit Client(Game *game);
     ~Client() = default;
 
     void Initialize();
     bool AddServerAddr(const char *serverIp);
     bool Connect();
     void SendCommandsToServer() const;
+    void ReceiveDataFromServer();
     bool Disconnect();
     void Shutdown();
 
@@ -35,11 +43,13 @@ public:
     [[nodiscard]] uint32_t GetClientNonce() const { return mClientNonce; }
     [[nodiscard]] uint16_t GetCurrentPacketSequence() const { return mCurrentPacketSequence; }
 
-    static constexpr int MAX_CONNECTION_ATTEMPTS = 6;
+    static constexpr int MAX_CONNECTION_ATTEMPTS = 10;
     static constexpr int CONNECTION_RECEIVING_TIMEOUT_IN_MS = 2000;
 
     // Inputs Control
     [[nodiscard]] InputData *GetInputData() const { return mInputData; }
+
+    void SetRawState(const RawState& state) { mLastRawState = state; }
 private:
     ClientState mState;
     SocketType mSocket;
@@ -48,7 +58,13 @@ private:
     // Connection control
     uint16_t mCurrentPacketSequence;
     uint32_t mClientNonce;
+    bool mConnecting;
+    bool mDisconnecting;
 
-    // // Inputs Control
+    // Inputs Control
     InputData *mInputData;
+
+    // State control
+    RawState mLastRawState;
+    Game *mGame;
 };

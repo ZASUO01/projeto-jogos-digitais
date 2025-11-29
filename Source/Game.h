@@ -45,7 +45,7 @@ public:
     Ship *GetShip() const {return mShip; }
 
     // Network specific
-    [[nodiscard]] Client *GetClient() const { return mClient; }
+    [[nodiscard]] class Client *GetClient() const { return mClient; }
 private:
     void ProcessInput();
     void UpdateGame();

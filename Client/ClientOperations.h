@@ -10,4 +10,5 @@ namespace ClientOperations {
     void sendSinglePacketToServer(const Client *client, uint8_t flag);
     bool receiveSinglePacketFromServer(Client *client, uint8_t flag);
     void sendDataToServer(const Client *client);
+    bool receiveDataPacketFromServer(Client *client);
 };
