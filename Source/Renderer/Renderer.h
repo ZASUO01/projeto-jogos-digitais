@@ -26,6 +26,9 @@ public:
     void Clear();
     void Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
     void DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
+    
+    // Desenha o grid isométrico neon como fundo
+    void DrawAdvancedGrid(float screenWidth, float screenHeight, float time);
 
     void Present();
 
@@ -34,9 +37,9 @@ public:
 
     // Getters
     class Shader* GetBaseShader() const { return mBaseShader; }
-    class Shader* GetSpriteShader() const { return mSpriteShader; }
     float GetScreenWidth() const { return mScreenWidth; }
     float GetScreenHeight() const { return mScreenHeight; }
+    class Shader* GetSpriteShader() const { return mSpriteShader; }
     class Texture* GetTexture(const std::string& fileName);
     class Font* GetFont(const std::string& fileName);
 
@@ -51,6 +54,12 @@ private:
     class Shader* mSpriteShader;
     // Base shader for game
     class Shader* mBaseShader;
+    
+    // Advanced Grid shader e recursos
+    class Shader* mAdvancedGridShader;
+    class VertexArray* mFullScreenQuad;
+    float mScreenWidth;
+    float mScreenHeight;
 
     // Sprite vertex array
     class VertexArray *mSpriteVerts;

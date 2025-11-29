@@ -159,6 +159,12 @@ void Game::ProcessInput()
     }
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
+    
+    // Fecha o jogo com a tecla ESC
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        Quit();
+    }
 
     unsigned int size = mActors.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -261,6 +267,13 @@ void Game::GenerateOutput()
 {
     // Clear back buffer
     mRenderer->Clear();
+    
+    // Desenha o grid isométrico neon como fundo (antes de todos os outros objetos)
+    // O grid é renderizado diretamente no fragment shader, sem precisar de vértices
+    float currentTime = SDL_GetTicks() / 1000.0f; // Converte milissegundos para segundos
+    mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
+                                mRenderer->GetScreenHeight(), 
+                                currentTime);
 
     unsigned int size = mDrawables.size();
     unsigned int size2;
