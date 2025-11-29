@@ -10,6 +10,7 @@
 #include <SDL.h>
 #include <vector>
 
+#include "AudioSystem.h"
 #include "Actors/Ship.h"
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
@@ -28,6 +29,11 @@ public:
     void UpdateActors(float deltaTime);
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
+
+    // Audio
+    AudioSystem* GetAudio() { return mAudio; }
+
+    SoundHandle GetGameSound() { return mGameSound; }
 
     // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
@@ -69,4 +75,8 @@ private:
 
     // Game-specific
     Ship* mShip;
+
+    // Audio system
+    AudioSystem* mAudio;
+    SoundHandle mGameSound;
 };

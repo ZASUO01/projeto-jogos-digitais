@@ -1,6 +1,9 @@
 //
 // Created by pedro-souza on 23/11/2025.
 //
+
+#define SDL_MAIN_HANDLED
+
 #include "Game.h"
 
 int main() {
