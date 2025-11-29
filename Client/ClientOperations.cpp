@@ -55,7 +55,33 @@ bool ClientOperations::receiveSinglePacketFromServer(Client *client, const uint8
     }
 
     if (packet.GetFlag() != flag) {
-        return false;
+        constexpr int maxTrials = 100;
+        int trials = 0;
+
+        while (trials < maxTrials) {
+            trials++;
+            if (!SocketUtils::socketReadyToReceive(client->GetSocket(), 0)) {
+               return false;
+            }
+
+            Packet temp;
+
+            if (!SocketUtils::receivePacketFromV4(
+                client->GetSocket(),
+                &temp,
+                &addr
+            )) {
+                return false;
+            }
+
+            if (!temp.IsValid()) {
+                return false;
+            }
+
+            if (temp.GetFlag() == flag) {
+                break;
+            }
+        }
     }
 
     if (packet.GetSequence() != client->GetCurrentPacketSequence() + 1) {
