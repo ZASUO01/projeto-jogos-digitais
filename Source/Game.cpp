@@ -39,15 +39,21 @@ bool Game::Initialize()
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    // Cria janela em tela cheia
+    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
+                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
+    
+    // Obtém a resolução real da tela em modo fullscreen
+    int actualWidth, actualHeight;
+    SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
 
     mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    mRenderer->Initialize(static_cast<float>(actualWidth), static_cast<float>(actualHeight));
 
     // Init all game actors
     InitializeActors();
@@ -90,6 +96,12 @@ void Game::ProcessInput()
     }
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
+    
+    // Fecha o jogo com a tecla ESC
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        Quit();
+    }
 
     unsigned int size = mActors.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -178,6 +190,13 @@ void Game::GenerateOutput()
 {
     // Clear back buffer
     mRenderer->Clear();
+    
+    // Desenha o grid isométrico neon como fundo (antes de todos os outros objetos)
+    // O grid é renderizado diretamente no fragment shader, sem precisar de vértices
+    float currentTime = SDL_GetTicks() / 1000.0f; // Converte milissegundos para segundos
+    mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
+                                mRenderer->GetScreenHeight(), 
+                                currentTime);
 
     unsigned int size = mDrawables.size();
     unsigned int size2;

@@ -20,7 +20,8 @@ VertexArray::VertexArray(const float* verts, unsigned int numVerts, const unsign
     // Create vertex buffer
     glGenBuffers(1, &mVertexBuffer);
     glBindBuffer(GL_ARRAY_BUFFER, mVertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, numVerts * sizeof(verts), verts, GL_STATIC_DRAW);
+    // numVerts é o número de floats, então multiplicamos por sizeof(float)
+    glBufferData(GL_ARRAY_BUFFER, numVerts * sizeof(float), verts, GL_STATIC_DRAW);
 
     // Create index buffer
     glGenBuffers(1, &mIndexBuffer);
