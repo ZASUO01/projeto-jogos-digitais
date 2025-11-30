@@ -9,7 +9,8 @@
 // Request GLSL 3.3
 #version 330
 
-// Attribute 0 is position
+// Vertex shader base para transformação de vértices 2D com projeção ortográfica
+
 layout (location = 0) in vec2 inPosition;
 
 uniform mat4 uWorldTransform;
@@ -18,5 +19,5 @@ uniform vec3 uColor;
 
 void main()
 {
-	gl_Position = uOrthoProj * uWorldTransform * vec4(inPosition, 0.0, 1.0); // Transforma ponto 2D para coordenada homogênea
+	gl_Position = uOrthoProj * uWorldTransform * vec4(inPosition, 0.0, 1.0);
 }

@@ -44,7 +44,6 @@ bool Game::Initialize()
         return false;
     }
 
-    // Cria janela em modo janela com resolução fixa
     mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
     if (!mWindow)
@@ -56,7 +55,6 @@ bool Game::Initialize()
     mRenderer = new Renderer(mWindow);
     mRenderer->Initialize(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT));
 
-    // Init all game actors
     InitializeActors();
 
     mTicksCount = SDL_GetTicks();
@@ -66,18 +64,14 @@ bool Game::Initialize()
 
 void Game::InitializeActors()
 {
-    // Create floor with grid background
     new Floor(this);
     
-    // Nave 1: canto superior direito (ciano mais escuro)
     mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
     mShip1->SetPosition(Vector2(Game::WINDOW_WIDTH - 100, 100));
     
-    // Nave 2: canto inferior esquerdo (vermelha)
     mShip2 = new Ship(this, 40, 300, 3, Vector3(1.0f, 0.0f, 0.0f), true);
     mShip2->SetPosition(Vector2(100, Game::WINDOW_HEIGHT - 100));
     
-    // Mantém mShip para compatibilidade (aponta para ship1)
     mShip = mShip1;
 }
 
@@ -106,7 +100,6 @@ void Game::ProcessInput()
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
     
-    // Fecha o jogo com a tecla ESC
     if (state[SDL_SCANCODE_ESCAPE])
     {
         Quit();
@@ -130,7 +123,6 @@ void Game::UpdateGame()
 
     mTicksCount = SDL_GetTicks();
 
-    // Update all actors and pending actors
     UpdateActors(deltaTime);
 }
 
@@ -147,7 +139,6 @@ void Game::UpdateActors(float deltaTime)
     }
     mPendingActors.clear();
 
-    // Detecção de colisão entre lasers e naves
     CheckLaserCollisions();
 
     std::vector<Actor*> deadActors;
@@ -200,12 +191,9 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
 
 void Game::GenerateOutput()
 {
-    // Clear back buffer
     mRenderer->Clear();
     
-    // Desenha o grid isométrico neon como fundo (antes de todos os outros objetos)
-    // O grid é renderizado diretamente no fragment shader, sem precisar de vértices
-    float currentTime = SDL_GetTicks() / 1000.0f; // Converte milissegundos para segundos
+    float currentTime = SDL_GetTicks() / 1000.0f;
     mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
                                 mRenderer->GetScreenHeight(), 
                                 currentTime);
@@ -223,7 +211,6 @@ void Game::GenerateOutput()
 
     }
 
-    // Swap front buffer and back buffer
     mRenderer->Present();
 }
 
@@ -262,29 +249,26 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
 
 void Game::CheckLaserCollisions()
 {
-    // Verifica colisões entre lasers e naves
     for (auto actor : mActors) {
         LaserBeam* laser = dynamic_cast<LaserBeam*>(actor);
         if (laser && laser->GetState() == ActorState::Active) {
             LaserBeamComponent* laserComp = laser->GetLaserComponent();
             Ship* ownerShip = laser->GetOwnerShip();
             if (laserComp && laserComp->IsActive()) {
-                // Verifica colisão com nave 1 (apenas se não for a dona do laser e não estiver invencível)
                 if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1 != ownerShip && !mShip1->IsInvincible()) {
                     CircleColliderComponent* collider = mShip1->GetComponent<CircleColliderComponent>();
                     if (collider) {
                         if (laserComp->IntersectCircle(mShip1->GetPosition(), collider->GetRadius())) {
-                            mShip1->TakeDamage(); // Remove apenas 1 vida e ativa invencibilidade
+                            mShip1->TakeDamage();
                         }
                     }
                 }
                 
-                // Verifica colisão com nave 2 (apenas se não for a dona do laser e não estiver invencível)
                 if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2 != ownerShip && !mShip2->IsInvincible()) {
                     CircleColliderComponent* collider = mShip2->GetComponent<CircleColliderComponent>();
                     if (collider) {
                         if (laserComp->IntersectCircle(mShip2->GetPosition(), collider->GetRadius())) {
-                            mShip2->TakeDamage(); // Remove apenas 1 vida e ativa invencibilidade
+                            mShip2->TakeDamage();
                         }
                     }
                 }

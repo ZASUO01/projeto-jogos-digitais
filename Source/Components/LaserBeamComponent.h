@@ -1,14 +1,9 @@
-//
-// Created for laser beam system
-//
-
 #pragma once
 #include "Component.h"
 #include "DrawComponent.h"
 #include "../Math.h"
 #include <vector>
 
-// DrawComponent customizado para laser com glow
 class LaserDrawComponent : public DrawComponent
 {
 public:
@@ -22,7 +17,6 @@ private:
     float mAlpha;
 };
 
-// DrawComponent customizado para círculo de colisão com glow
 class ColliderDrawComponent : public DrawComponent
 {
 public:
@@ -41,8 +35,6 @@ public:
     bool IsActive() const { return mIsActive && mLifetime > 0.0f; }
     float GetAlpha() const { return mLifetime / mMaxLifetime; }
     void Activate(const Vector2& startPos, float rotation, float screenWidth, float screenHeight);
-    
-    // Verifica se a linha intersecta com um círculo
     bool IntersectCircle(const Vector2& circleCenter, float radius) const;
 
 private:

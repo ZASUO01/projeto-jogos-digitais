@@ -1,11 +1,3 @@
-// ----------------------------------------------------------------
-// From Game Programming in C++ by Sanjay Madhav
-// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
-//
-// Released under the BSD License
-// See LICENSE in root directory for full details.
-// ----------------------------------------------------------------
-
 #pragma once
 #include <SDL.h>
 #include <vector>
@@ -29,18 +21,12 @@ public:
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
 
-    // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
 
-    // Aumente a resolução base
-    static const int WINDOW_WIDTH = 1920;  // Aumentado de 1280
-    static const int WINDOW_HEIGHT = 1080; // Aumentado de 720
-
-    // Adicione suporte a diferentes resoluções
+    static const int WINDOW_WIDTH = 1920;
+    static const int WINDOW_HEIGHT = 1080;
     static const int RENDER_WIDTH = 1920;
     static const int RENDER_HEIGHT = 1080;
-
-    // Draw functions
     void AddDrawable(class DrawComponent* drawable);
     void RemoveDrawable(class DrawComponent* drawable);
 
@@ -56,27 +42,18 @@ private:
     void RemoveActorFromVector(std::vector< Actor*> &actors,  Actor *actor);
     void CheckLaserCollisions();
 
-    // All the actors in the game
     std::vector<class Actor*> mActors;
     std::vector<class Actor*> mPendingActors;
-
-    // All the draw components
     std::vector<class DrawComponent*> mDrawables;
-
-    // SDL stuff
+    
     SDL_Window* mWindow;
     class Renderer* mRenderer;
-
-    // Track elapsed time since game start
     Uint32 mTicksCount;
-
-    // Track if we're updating actors right now
     bool mIsRunning;
     bool mIsDebugging;
     bool mUpdatingActors;
-
-    // Game-specific
-    Ship* mShip;  // Mantido para compatibilidade
-    Ship* mShip1; // Nave 1 (canto superior direito)
-    Ship* mShip2; // Nave 2 (canto inferior esquerdo)
+    
+    Ship* mShip;
+    Ship* mShip1;
+    Ship* mShip2;
 };

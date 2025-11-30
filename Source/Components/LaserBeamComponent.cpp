@@ -1,14 +1,9 @@
-//
-// Created for laser beam system
-//
-
 #include "LaserBeamComponent.h"
 #include "../Game.h"
 #include "../Components/DrawComponent.h"
 #include "../Renderer/Renderer.h"
 #include "../Math.h"
 
-// Implementação do LaserDrawComponent
 LaserDrawComponent::LaserDrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color)
     : DrawComponent(owner, vertices, drawOrder, color, true)
     , mAlpha(1.0f)
@@ -26,22 +21,18 @@ void LaserDrawComponent::Draw(Renderer* renderer)
         return;
     }
     
-    // Efeito de glow: desenha múltiplas camadas com diferentes tamanhos e alphas
     Vector2 baseScale = mOwner->GetScale();
     
-    // Camada externa (glow mais amplo)
     Vector2 glowScale = baseScale;
-    glowScale.y *= 3.0f; // Mais largo para glow
+    glowScale.y *= 3.0f;
     
     Matrix4 glowTransform = Matrix4::CreateScale(glowScale.x, glowScale.y, 1.0f);
     glowTransform = glowTransform * Matrix4::CreateRotationZ(mOwner->GetRotation());
     glowTransform = glowTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     
-    // Glow externo com alpha reduzido
     float glowAlpha = mAlpha * 0.3f;
     renderer->DrawFilledWithAlpha(glowTransform, vertexArray, mColor, glowAlpha);
     
-    // Camada intermediária
     Vector2 midScale = baseScale;
     midScale.y *= 2.0f;
     Matrix4 midTransform = Matrix4::CreateScale(midScale.x, midScale.y, 1.0f);
@@ -51,13 +42,11 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     float midAlpha = mAlpha * 0.6f;
     renderer->DrawFilledWithAlpha(midTransform, vertexArray, mColor, midAlpha);
     
-    // Camada central (linha principal)
     renderer->DrawFilledWithAlpha(mOwner->GetModelMatrix(), vertexArray, mColor, mAlpha);
 }
 
-// Implementação do ColliderDrawComponent
 ColliderDrawComponent::ColliderDrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color)
-    : DrawComponent(owner, vertices, drawOrder, color, false) // Outline, não preenchido
+    : DrawComponent(owner, vertices, drawOrder, color, false)
 {
 }
 
@@ -72,10 +61,8 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
         return;
     }
     
-    // Efeito de glow: desenha múltiplas camadas com diferentes tamanhos e alphas
     Vector2 baseScale = mOwner->GetScale();
     
-    // Camada externa (glow mais amplo) - círculo maior
     Vector2 glowScale = baseScale;
     glowScale.x *= 1.3f;
     glowScale.y *= 1.3f;
@@ -84,11 +71,9 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
     glowTransform = glowTransform * Matrix4::CreateRotationZ(mOwner->GetRotation());
     glowTransform = glowTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     
-    // Glow externo com alpha reduzido
     float glowAlpha = 0.4f;
     renderer->DrawFilledWithAlpha(glowTransform, vertexArray, mColor, glowAlpha);
     
-    // Camada intermediária
     Vector2 midScale = baseScale;
     midScale.x *= 1.15f;
     midScale.y *= 1.15f;
@@ -99,11 +84,8 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
     float midAlpha = 0.7f;
     renderer->DrawFilledWithAlpha(midTransform, vertexArray, mColor, midAlpha);
     
-    // Camada central (círculo principal)
     float coreAlpha = 1.0f;
     renderer->DrawFilledWithAlpha(mOwner->GetModelMatrix(), vertexArray, mColor, coreAlpha);
-    
-    // Também desenha outline
     renderer->Draw(mOwner->GetModelMatrix(), vertexArray, mColor);
 }
 
@@ -118,16 +100,13 @@ LaserBeamComponent::LaserBeamComponent(class Actor* owner, Vector3 color, float 
     , mRotation(0.0f)
     , mDrawComponent(nullptr)
 {
-    // Cria vértices para a linha (retângulo fino)
-    std::vector<Vector2> vertices = CreateLineVertices(3.0f); // Largura da linha
-    // Cria LaserDrawComponent que desenha com glow
+    std::vector<Vector2> vertices = CreateLineVertices(3.0f);
     mDrawComponent = new LaserDrawComponent(mOwner, vertices, 98, mColor);
     mDrawComponent->SetVisible(false);
 }
 
 LaserBeamComponent::~LaserBeamComponent()
 {
-    // DrawComponent será deletado automaticamente pelo Actor
 }
 
 void LaserBeamComponent::Update(float deltaTime)
@@ -140,7 +119,6 @@ void LaserBeamComponent::Update(float deltaTime)
             mIsActive = false;
             mDrawComponent->SetVisible(false);
         } else {
-            // Atualiza a opacidade baseada no tempo restante (fade out)
             float alpha = GetAlpha();
             mDrawComponent->SetAlpha(alpha);
             mDrawComponent->SetVisible(true);
@@ -157,16 +135,12 @@ void LaserBeamComponent::Activate(const Vector2& startPos, float rotation, float
     
     CalculateEndPoint(screenWidth, screenHeight);
     
-    // Atualiza posição e rotação do actor
     mOwner->SetPosition(mStartPos);
     mOwner->SetRotation(mRotation);
     
-    // Calcula o comprimento da linha
     Vector2 direction = mEndPos - mStartPos;
     float length = direction.Length();
     
-    // Ajusta a escala do actor para esticar a linha na direção X
-    // A linha vai de (0,0) até (length, 0) antes da rotação
     mOwner->SetScale(Vector2(length, 1.0f));
     
     mDrawComponent->SetVisible(true);
@@ -174,24 +148,17 @@ void LaserBeamComponent::Activate(const Vector2& startPos, float rotation, float
 
 void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight)
 {
-    // Calcula o ponto final da linha que vai até as bordas da tela
-    // Usa ray casting para encontrar a interseção com as bordas
-    // Sistema de coordenadas: origem no canto superior esquerdo (0,0), X cresce para direita, Y cresce para baixo
-    
     float cosR = Math::Cos(mRotation);
     float sinR = Math::Sin(mRotation);
     
-    // Bordas da tela (origem no canto superior esquerdo)
     float rightEdge = screenWidth;
     float leftEdge = 0.0f;
     float topEdge = 0.0f;
     float bottomEdge = screenHeight;
     
-    // Calcula interseções com cada borda
-    float minDist = screenWidth + screenHeight; // Valor grande inicial
+    float minDist = screenWidth + screenHeight;
     float t;
     
-    // Borda direita (x = rightEdge)
     if (Math::Abs(cosR) > 0.0001f) {
         t = (rightEdge - mStartPos.x) / cosR;
         if (t > 0.0f) {
@@ -202,7 +169,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Borda esquerda (x = leftEdge)
     if (Math::Abs(cosR) > 0.0001f) {
         t = (leftEdge - mStartPos.x) / cosR;
         if (t > 0.0f) {
@@ -213,7 +179,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Borda superior (y = topEdge)
     if (Math::Abs(sinR) > 0.0001f) {
         t = (topEdge - mStartPos.y) / sinR;
         if (t > 0.0f) {
@@ -224,7 +189,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Borda inferior (y = bottomEdge)
     if (Math::Abs(sinR) > 0.0001f) {
         t = (bottomEdge - mStartPos.y) / sinR;
         if (t > 0.0f) {
@@ -235,12 +199,10 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Se nenhuma interseção foi encontrada, usa uma distância grande
     if (minDist >= screenWidth + screenHeight) {
         minDist = Math::Sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
     }
     
-    // Calcula o ponto final
     mEndPos.x = mStartPos.x + cosR * minDist;
     mEndPos.y = mStartPos.y + sinR * minDist;
 }
@@ -251,7 +213,6 @@ bool LaserBeamComponent::IntersectCircle(const Vector2& circleCenter, float radi
         return false;
     }
     
-    // Calcula a distância do centro do círculo até a linha
     Vector2 lineDir = mEndPos - mStartPos;
     float lineLength = lineDir.Length();
     
@@ -265,15 +226,12 @@ bool LaserBeamComponent::IntersectCircle(const Vector2& circleCenter, float radi
     Vector2 toCircle = circleCenter - mStartPos;
     float projection = toCircle.x * lineDir.x + toCircle.y * lineDir.y;
     
-    // Clamp a projeção ao segmento de linha
     projection = Math::Max(0.0f, Math::Min(lineLength, projection));
     
-    // Ponto mais próximo no segmento de linha
     Vector2 closestPoint;
     closestPoint.x = mStartPos.x + lineDir.x * projection;
     closestPoint.y = mStartPos.y + lineDir.y * projection;
     
-    // Distância do círculo até o ponto mais próximo
     Vector2 toClosest = circleCenter - closestPoint;
     float distSq = toClosest.x * toClosest.x + toClosest.y * toClosest.y;
     
@@ -283,14 +241,11 @@ bool LaserBeamComponent::IntersectCircle(const Vector2& circleCenter, float radi
 std::vector<Vector2> LaserBeamComponent::CreateLineVertices(float width)
 {
     std::vector<Vector2> vertices;
-    
-    // Cria um retângulo fino que será rotacionado e esticado
     float halfWidth = width / 2.0f;
-    vertices.emplace_back(Vector2(0.0f, -halfWidth));  // Canto inferior esquerdo
-    vertices.emplace_back(Vector2(1.0f, -halfWidth)); // Canto inferior direito (será esticado)
-    vertices.emplace_back(Vector2(1.0f, halfWidth));  // Canto superior direito
-    vertices.emplace_back(Vector2(0.0f, halfWidth));  // Canto superior esquerdo
-    
+    vertices.emplace_back(Vector2(0.0f, -halfWidth));
+    vertices.emplace_back(Vector2(1.0f, -halfWidth));
+    vertices.emplace_back(Vector2(1.0f, halfWidth));
+    vertices.emplace_back(Vector2(0.0f, halfWidth));
     return vertices;
 }
 
