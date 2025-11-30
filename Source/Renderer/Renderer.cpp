@@ -138,6 +138,23 @@ void Renderer::DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vec
     glDrawElements(GL_TRIANGLE_FAN, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
 }
 
+void Renderer::DrawFilledWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha)
+{
+	mBaseShader->SetActive();
+	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
+	mBaseShader->SetVectorUniform("uColor", color);
+	mBaseShader->SetFloatUniform("uAlpha", alpha);
+
+    // Habilita blending para transparência
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    vertices->SetActive();
+    glDrawElements(GL_TRIANGLE_FAN, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+    
+    glDisable(GL_BLEND);
+}
+
 void Renderer::DrawAdvancedGrid(float screenWidth, float screenHeight, float time)
 {
 	// Verifica se o shader e o quad foram carregados

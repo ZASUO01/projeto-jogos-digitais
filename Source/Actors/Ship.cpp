@@ -7,7 +7,8 @@
 #include "../Components/CircleColliderComponent.h"
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/DrawComponent.h"
-#include "../Components/ParticleSystemComponent.h"
+#include "../Components/LaserBeamComponent.h"
+#include "../Actors/LaserBeam.h"
 
 Ship::Ship(Game* game,
            const float height,
@@ -21,13 +22,14 @@ Ship::Ship(Game* game,
         , mLaserCooldown(0.f)
         , mHeight(height)
         , mRotationCooldown(0.f)
+        , mInvincibilityTimer(0.0f)
         , mLives(3)
         , mShipColor(color)
         , mIsRedShip(isRedShip)
         , mDrawComponent(nullptr)
+        , mColliderDrawComponent(nullptr)
         , mRigidBodyComponent(nullptr)
         , mCircleColliderComponent(nullptr)
-        , mWeapon(nullptr)
 {
     // Inicializa actors de vida
     for (int i = 0; i < 3; i++) {
@@ -43,18 +45,17 @@ Ship::Ship(Game* game,
     mDrawComponent = new DrawComponent(this, vertices, 100, Vector3(1.0f, 1.0f, 1.0f), false);
     
     mRigidBodyComponent = new RigidBodyComponent(this);
-    mCircleColliderComponent = new CircleColliderComponent(this, mHeight / 3);
-
-    // Cria partículas de tiro - nave vermelha usa partículas preenchidas e mais rápidas
-    std::vector<Vector2> particleVertices = CreateParticleVertices(1.0f);
-    if (mIsRedShip) {
-        // Para nave vermelha: partículas mais rápidas e preenchidas
-        mWeapon = new ParticleSystemComponent(this, particleVertices, 20, 10, SystemType::Shoot, Vector3(1.0f, 0.0f, 0.0f), true);
-    } else {
-        // Para nave ciano: partículas normais
-        mWeapon = new ParticleSystemComponent(this, particleVertices, 20);
-    }
+    // Aumenta muito a caixa de colisão (3x o tamanho original)
+    float colliderRadius = mHeight * 1.0f; // Muito maior
+    mCircleColliderComponent = new CircleColliderComponent(this, colliderRadius);
     
+    // Cria círculo de colisão visível com glow
+    std::vector<Vector2> circleVertices = CreateColliderCircleVertices(colliderRadius);
+    // Cor do glow baseada na cor da nave (mais brilhante)
+    Vector3 glowColor = mIsRedShip ? Vector3(1.0f, 0.3f, 0.3f) : Vector3(0.3f, 1.0f, 1.0f);
+    mColliderDrawComponent = new ColliderDrawComponent(this, circleVertices, 97, glowColor);
+    mColliderDrawComponent->SetVisible(true);
+
     // Cria quadrados de vida
     UpdateLivesDisplay();
 }
@@ -152,8 +153,10 @@ void Ship::OnProcessInput(const uint8_t* state)
     bool shoot = mIsRedShip ? (state[SDL_SCANCODE_RETURN] || state[SDL_SCANCODE_RCTRL]) : state[SDL_SCANCODE_SPACE];
     if (shoot) {
         if (mLaserCooldown <= 0.f) {
-            float speed = mIsRedShip ? 24000.0f : 16000.0f; // Nave vermelha dispara mais rápido
-            mWeapon->EmitParticle(1.0f, speed);
+            // Cria laser beam
+            Vector3 laserColor = mIsRedShip ? Vector3(1.0f, 0.0f, 0.0f) : Vector3(0.0f, 1.0f, 0.0f); // Vermelho ou Verde
+            Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f); // Começa na ponta da nave
+            new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this); // Passa this como dono
             mLaserCooldown = 0.2f;
         }
     }
@@ -169,6 +172,36 @@ void Ship::OnUpdate(float deltaTime)
     mRotationCooldown -= deltaTime;
     if (mRotationCooldown <= 0) {
         mRotationCooldown = 0.f;
+    }
+    
+    // Atualiza timer de invencibilidade
+    if (mInvincibilityTimer > 0.0f) {
+        mInvincibilityTimer -= deltaTime;
+        if (mInvincibilityTimer <= 0.0f) {
+            mInvincibilityTimer = 0.0f;
+        }
+        
+        // Efeito de piscar durante invencibilidade
+        // Pisca a cada 0.1 segundos
+        float blinkRate = 0.1f;
+        bool shouldBeVisible = (static_cast<int>(mInvincibilityTimer / blinkRate) % 2) == 0;
+        
+        // Esconde/mostra a nave e o círculo de colisão
+        if (mDrawComponent) {
+            mDrawComponent->SetVisible(shouldBeVisible);
+        }
+        // Mantém o círculo de colisão sempre visível (ou também pode piscar)
+        if (mColliderDrawComponent) {
+            mColliderDrawComponent->SetVisible(shouldBeVisible);
+        }
+    } else {
+        // Quando não está invencível, sempre visível
+        if (mDrawComponent) {
+            mDrawComponent->SetVisible(true);
+        }
+        if (mColliderDrawComponent) {
+            mColliderDrawComponent->SetVisible(true);
+        }
     }
     
     // Atualiza posição dos quadrados de vida para seguir a nave
@@ -307,6 +340,21 @@ std::vector<Vector2> Ship::CreateLifeSquareVertices() {
     vertices.emplace_back(Vector2(size, -size));
     vertices.emplace_back(Vector2(size, size));
     vertices.emplace_back(Vector2(-size, size));
+    return vertices;
+}
+
+std::vector<Vector2> Ship::CreateColliderCircleVertices(float radius) {
+    std::vector<Vector2> vertices;
+    
+    // Cria um círculo com muitos lados para parecer suave
+    constexpr int numSides = 32;
+    constexpr float step = Math::TwoPi / numSides;
+    
+    for (int i = 0; i < numSides; i++) {
+        float angle = i * step;
+        vertices.emplace_back(Vector2(radius * Math::Cos(angle), radius * Math::Sin(angle)));
+    }
+    
     return vertices;
 }
 

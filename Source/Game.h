@@ -54,6 +54,7 @@ private:
     void UpdateGame();
     void GenerateOutput();
     void RemoveActorFromVector(std::vector< Actor*> &actors,  Actor *actor);
+    void CheckLaserCollisions();
 
     // All the actors in the game
     std::vector<class Actor*> mActors;
