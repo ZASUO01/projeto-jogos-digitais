@@ -1,7 +1,3 @@
-//
-// Created by Lucas N. Ferreira on 03/08/23.
-//
-
 #include "Ship.h"
 #include "../Game.h"
 #include "../Components/CircleColliderComponent.h"
@@ -31,115 +27,89 @@ Ship::Ship(Game* game,
         , mRigidBodyComponent(nullptr)
         , mCircleColliderComponent(nullptr)
 {
-    // Inicializa actors de vida
     for (int i = 0; i < 3; i++) {
         mLivesActors[i] = nullptr;
     }
     
     std::vector<Vector2> vertices = CreateShipVertices();
     
-    // Create filled component (drawn first, behind)
     new DrawComponent(this, vertices, 99, mShipColor, true);
-    
-    // Create outline component (drawn on top) - branco para contraste
     mDrawComponent = new DrawComponent(this, vertices, 100, Vector3(1.0f, 1.0f, 1.0f), false);
     
     mRigidBodyComponent = new RigidBodyComponent(this);
-    // Aumenta muito a caixa de colisão (3x o tamanho original)
-    float colliderRadius = mHeight * 1.0f; // Muito maior
+    float colliderRadius = mHeight * 1.0f;
     mCircleColliderComponent = new CircleColliderComponent(this, colliderRadius);
     
-    // Cria círculo de colisão visível com glow
     std::vector<Vector2> circleVertices = CreateColliderCircleVertices(colliderRadius);
-    // Cor do glow baseada na cor da nave (mais brilhante)
     Vector3 glowColor = mIsRedShip ? Vector3(1.0f, 0.3f, 0.3f) : Vector3(0.3f, 1.0f, 1.0f);
     mColliderDrawComponent = new ColliderDrawComponent(this, circleVertices, 97, glowColor);
     mColliderDrawComponent->SetVisible(true);
 
-    // Cria quadrados de vida
     UpdateLivesDisplay();
 }
 
 void Ship::OnProcessInput(const uint8_t* state)
 {
-    // Movimento direcional: W=up, S=down, A=left, D=right (nave 1)
-    // Nave 2 usa setas: UP=up, DOWN=down, LEFT=left, RIGHT=right
-    // Combinações diagonais são permitidas
-    // Direções opostas cancelam o movimento
-    // A rotação é automática baseada na direção do movimento
-    
     bool up, down, left, right;
     
     if (mIsRedShip) {
-        // Nave vermelha (nave 2) usa setas para movimento
         up = state[SDL_SCANCODE_UP];
         down = state[SDL_SCANCODE_DOWN];
         left = state[SDL_SCANCODE_LEFT];
         right = state[SDL_SCANCODE_RIGHT];
     } else {
-        // Nave ciano (nave 1) usa WASD para movimento
         up = state[SDL_SCANCODE_W];
         down = state[SDL_SCANCODE_S];
         left = state[SDL_SCANCODE_A];
         right = state[SDL_SCANCODE_D];
     }
     
-    // Se direções opostas estão pressionadas, não move nem rotaciona
     if ((up && down) || (left && right)) {
         mRigidBodyComponent->SetVelocity(Vector2::Zero);
     } else {
         Vector2 velocity = Vector2::Zero;
-        Direction targetDirection = GetClosestDirection(GetRotation()); // Mantém direção atual se não houver movimento
+        Direction targetDirection = GetClosestDirection(GetRotation());
         
-        // Movimento vertical
         if (up && !down) {
-            velocity.y = -mForwardSpeed; // Y negativo = para cima
+            velocity.y = -mForwardSpeed;
         } else if (down && !up) {
-            velocity.y = mForwardSpeed; // Y positivo = para baixo
+            velocity.y = mForwardSpeed;
         }
         
-        // Movimento horizontal
         if (left && !right) {
-            velocity.x = -mForwardSpeed; // X negativo = para esquerda
+            velocity.x = -mForwardSpeed;
         } else if (right && !left) {
-            velocity.x = mForwardSpeed; // X positivo = para direita
+            velocity.x = mForwardSpeed;
         }
         
-        // Determina a direção baseada nas teclas pressionadas
-        // A rotação é automática: a nave aponta na direção do movimento
         if (velocity.x != 0.0f || velocity.y != 0.0f) {
             if (up && !down) {
-                // Movendo para cima (W)
                 if (left && !right) {
-                    targetDirection = Direction::UpLeft;      // 210° (cima-esquerda: W+A)
+                    targetDirection = Direction::UpLeft;
                 } else if (right && !left) {
-                    targetDirection = Direction::DownRight;   // 330° (cima-direita: W+D)
+                    targetDirection = Direction::DownRight;
                 } else {
-                    targetDirection = Direction::Up;          // 270° (cima: W)
+                    targetDirection = Direction::Up;
                 }
             } else if (down && !up) {
-                // Movendo para baixo (S)
                 if (left && !right) {
-                    targetDirection = Direction::DownLeft;    // 150° (baixo-esquerda: S+A)
+                    targetDirection = Direction::DownLeft;
                 } else if (right && !left) {
-                    targetDirection = Direction::UpRight;     // 30° (baixo-direita: S+D)
+                    targetDirection = Direction::UpRight;
                 } else {
-                    targetDirection = Direction::Down;        // 90° (baixo: S)
+                    targetDirection = Direction::Down;
                 }
             } else {
-                // Apenas movimento horizontal
                 if (left && !right) {
-                    targetDirection = Direction::Left;        // 180° (esquerda: A)
+                    targetDirection = Direction::Left;
                 } else if (right && !left) {
-                    targetDirection = Direction::Right;       // 0° (direita: D)
+                    targetDirection = Direction::Right;
                 }
             }
             
-            // Aplica rotação automaticamente baseada na direção do movimento
             SetRotation(DirectionToRadians(targetDirection));
         }
         
-        // Normaliza velocidade diagonal para manter velocidade constante
         if (velocity.x != 0.0f && velocity.y != 0.0f) {
             float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
             velocity.x = (velocity.x / length) * mForwardSpeed;
@@ -149,14 +119,12 @@ void Ship::OnProcessInput(const uint8_t* state)
         mRigidBodyComponent->SetVelocity(velocity);
     }
 
-    // Disparo: Nave 1: SPACE, Nave 2: ENTER ou RIGHT CTRL
     bool shoot = mIsRedShip ? (state[SDL_SCANCODE_RETURN] || state[SDL_SCANCODE_RCTRL]) : state[SDL_SCANCODE_SPACE];
     if (shoot) {
         if (mLaserCooldown <= 0.f) {
-            // Cria laser beam
-            Vector3 laserColor = mIsRedShip ? Vector3(1.0f, 0.0f, 0.0f) : Vector3(0.0f, 1.0f, 0.0f); // Vermelho ou Verde
-            Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f); // Começa na ponta da nave
-            new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this); // Passa this como dono
+            Vector3 laserColor = mIsRedShip ? Vector3(1.0f, 0.0f, 0.0f) : Vector3(0.0f, 1.0f, 0.0f);
+            Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f);
+            new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this);
             mLaserCooldown = 0.2f;
         }
     }
@@ -174,28 +142,22 @@ void Ship::OnUpdate(float deltaTime)
         mRotationCooldown = 0.f;
     }
     
-    // Atualiza timer de invencibilidade
     if (mInvincibilityTimer > 0.0f) {
         mInvincibilityTimer -= deltaTime;
         if (mInvincibilityTimer <= 0.0f) {
             mInvincibilityTimer = 0.0f;
         }
         
-        // Efeito de piscar durante invencibilidade
-        // Pisca a cada 0.1 segundos
         float blinkRate = 0.1f;
         bool shouldBeVisible = (static_cast<int>(mInvincibilityTimer / blinkRate) % 2) == 0;
         
-        // Esconde/mostra a nave e o círculo de colisão
         if (mDrawComponent) {
             mDrawComponent->SetVisible(shouldBeVisible);
         }
-        // Mantém o círculo de colisão sempre visível (ou também pode piscar)
         if (mColliderDrawComponent) {
             mColliderDrawComponent->SetVisible(shouldBeVisible);
         }
     } else {
-        // Quando não está invencível, sempre visível
         if (mDrawComponent) {
             mDrawComponent->SetVisible(true);
         }
@@ -203,8 +165,6 @@ void Ship::OnUpdate(float deltaTime)
             mColliderDrawComponent->SetVisible(true);
         }
     }
-    
-    // Atualiza posição dos quadrados de vida para seguir a nave
     float spacing = 20.0f;
     float startX = -(spacing * (mLives - 1)) / 2.0f;
     float offsetY = mHeight / 2 + 20.0f;
@@ -242,23 +202,17 @@ std::vector<Vector2> Ship::CreateParticleVertices(float size) {
 }
 
 Ship::Direction Ship::GetClosestDirection(float rotation) const {
-    // Normaliza o ângulo para o range [0, 2π)
     float normalizedRotation = Math::Fmod(rotation, Math::TwoPi);
     if (normalizedRotation < 0.0f) {
         normalizedRotation += Math::TwoPi;
     }
     
-    // Converte para graus
     float degrees = Math::ToDegrees(normalizedRotation);
-    
-    // Normaliza para [0, 360)
     degrees = Math::Fmod(degrees, 360.0f);
     if (degrees < 0.0f) {
         degrees += 360.0f;
     }
     
-    // Direções válidas em graus: 0, 30, 90, 150, 180, 210, 270, 330
-    // Encontra a direção mais próxima
     float minDist = 360.0f;
     Direction closest = Direction::Right;
     
@@ -268,7 +222,6 @@ Ship::Direction Ship::GetClosestDirection(float rotation) const {
     
     for (int i = 0; i < 8; ++i) {
         float dist = Math::Abs(degrees - directions[i]);
-        // Considera também a distância pelo outro lado do círculo
         if (dist > 180.0f) {
             dist = 360.0f - dist;
         }
@@ -286,7 +239,7 @@ float Ship::DirectionToRadians(Direction dir) const {
         case Direction::Right:      return Math::ToRadians(0.0f);
         case Direction::UpRight:    return Math::ToRadians(30.0f);
         case Direction::Down:       return Math::ToRadians(90.0f);
-        case Direction::DownRight:  return Math::ToRadians(330.0f);  // ou -30°
+        case Direction::DownRight:  return Math::ToRadians(330.0f);
         case Direction::DownLeft:  return Math::ToRadians(150.0f);
         case Direction::Left:       return Math::ToRadians(180.0f);
         case Direction::UpLeft:     return Math::ToRadians(210.0f);
@@ -296,20 +249,17 @@ float Ship::DirectionToRadians(Direction dir) const {
 }
 
 Ship::Direction Ship::GetNextDirection(Direction current, bool clockwise) const {
-    // Sequência das direções em ordem horária (começando de Right = 0°)
-    // Ordem dos ângulos: 0°, 30°, 90°, 150°, 180°, 210°, 270°, 330°
     Direction sequence[] = {
-        Direction::Right,      // 0°
-        Direction::UpRight,   // 30°
-        Direction::Down,       // 90°
-        Direction::DownLeft,   // 150°
-        Direction::Left,       // 180°
-        Direction::UpLeft,     // 210°
-        Direction::Up,         // 270°
-        Direction::DownRight   // 330° (-30°)
+        Direction::Right,
+        Direction::UpRight,
+        Direction::Down,
+        Direction::DownLeft,
+        Direction::Left,
+        Direction::UpLeft,
+        Direction::Up,
+        Direction::DownRight
     };
     
-    // Encontra o índice atual
     int currentIndex = -1;
     for (int i = 0; i < 8; ++i) {
         if (sequence[i] == current) {
@@ -319,10 +269,9 @@ Ship::Direction Ship::GetNextDirection(Direction current, bool clockwise) const 
     }
     
     if (currentIndex == -1) {
-        return current; // Se não encontrar, retorna a mesma direção
+        return current;
     }
     
-    // Calcula o próximo índice
     int nextIndex;
     if (clockwise) {
         nextIndex = (currentIndex + 1) % 8;
@@ -335,7 +284,7 @@ Ship::Direction Ship::GetNextDirection(Direction current, bool clockwise) const 
 
 std::vector<Vector2> Ship::CreateLifeSquareVertices() {
     std::vector<Vector2> vertices;
-    float size = 8.0f; // Tamanho do quadrado de vida
+    float size = 8.0f;
     vertices.emplace_back(Vector2(-size, -size));
     vertices.emplace_back(Vector2(size, -size));
     vertices.emplace_back(Vector2(size, size));
@@ -345,8 +294,6 @@ std::vector<Vector2> Ship::CreateLifeSquareVertices() {
 
 std::vector<Vector2> Ship::CreateColliderCircleVertices(float radius) {
     std::vector<Vector2> vertices;
-    
-    // Cria um círculo com muitos lados para parecer suave
     constexpr int numSides = 32;
     constexpr float step = Math::TwoPi / numSides;
     
@@ -359,7 +306,6 @@ std::vector<Vector2> Ship::CreateColliderCircleVertices(float radius) {
 }
 
 void Ship::UpdateLivesDisplay() {
-    // Remove actors antigos de vida
     for (int i = 0; i < 3; i++) {
         if (mLivesActors[i] != nullptr) {
             mLivesActors[i]->SetState(ActorState::Destroy);
@@ -367,24 +313,19 @@ void Ship::UpdateLivesDisplay() {
         }
     }
     
-    // Cria novos actors de vida baseados no número atual de vidas
     std::vector<Vector2> lifeSquare = CreateLifeSquareVertices();
-    float spacing = 20.0f; // Espaçamento entre quadrados
-    float startX = -(spacing * (mLives - 1)) / 2.0f; // Centraliza os quadrados
+    float spacing = 20.0f;
+    float startX = -(spacing * (mLives - 1)) / 2.0f;
     
     for (int i = 0; i < mLives; i++) {
-        // Cria um actor filho para cada vida
         Actor* lifeActor = new Actor(GetGame());
         lifeActor->SetState(ActorState::Active);
         
-        // Posiciona acima da nave (será atualizado no OnUpdate)
         float offsetX = startX + i * spacing;
         float offsetY = mHeight / 2 + 20.0f;
         lifeActor->SetPosition(GetPosition() + Vector2(offsetX, -offsetY));
         
-        // Cria componente de vida (preenchido, cor branca)
         new DrawComponent(lifeActor, lifeSquare, 101, Vector3(1.0f, 1.0f, 1.0f), true);
-        
         mLivesActors[i] = lifeActor;
     }
 }

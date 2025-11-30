@@ -1,7 +1,3 @@
-//
-// Created for laser beam actor
-//
-
 #pragma once
 #include "Actor.h"
 
@@ -17,6 +13,6 @@ public:
 
 private:
     class LaserBeamComponent* mLaserComponent;
-    class Ship* mOwnerShip; // Nave que disparou este laser
+    class Ship* mOwnerShip;
 };
 
