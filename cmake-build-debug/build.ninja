@@ -177,6 +177,14 @@ build CMakeFiles/line-casters.dir/Client/ClientOperations.cpp.o: CXX_COMPILER__l
   OBJECT_DIR = CMakeFiles/line-casters.dir
   OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Client
 
+build CMakeFiles/line-casters.dir/Client/SDLInputParser.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Client/SDLInputParser.cpp || cmake_object_order_depends_target_line-casters
+  CONFIG = Debug
+  DEP_FILE = CMakeFiles/line-casters.dir/Client/SDLInputParser.cpp.o.d
+  FLAGS = -g -fdiagnostics-color=always
+  INCLUDES = -isystem /opt/SDL2/include -isystem /opt/SDL2/include/SDL2
+  OBJECT_DIR = CMakeFiles/line-casters.dir
+  OBJECT_FILE_DIR = CMakeFiles/line-casters.dir/Client
+
 build CMakeFiles/line-casters.dir/Network/Packet.cpp.o: CXX_COMPILER__line-casters_unscanned_Debug /home/pedro-souza/Documentos/ufmg/jogos-digitais/line-casters/Network/Packet.cpp || cmake_object_order_depends_target_line-casters
   CONFIG = Debug
   DEP_FILE = CMakeFiles/line-casters.dir/Network/Packet.cpp.o.d
@@ -225,7 +233,7 @@ build CMakeFiles/line-casters.dir/Network/Addresses.cpp.o: CXX_COMPILER__line-ca
 #############################################
 # Link the executable line-casters
 
-build line-casters: CXX_EXECUTABLE_LINKER__line-casters_Debug CMakeFiles/line-casters.dir/Source/Renderer/Shader.cpp.o CMakeFiles/line-casters.dir/Source/Math.cpp.o CMakeFiles/line-casters.dir/Source/Random.cpp.o CMakeFiles/line-casters.dir/Source/Renderer/VertexArray.cpp.o CMakeFiles/line-casters.dir/Source/Renderer/Renderer.cpp.o CMakeFiles/line-casters.dir/Source/Actors/Actor.cpp.o CMakeFiles/line-casters.dir/Source/Game.cpp.o CMakeFiles/line-casters.dir/Source/Components/Component.cpp.o CMakeFiles/line-casters.dir/Source/Components/DrawComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/RigidBodyComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/ParticleSystemComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/CircleColliderComponent.cpp.o CMakeFiles/line-casters.dir/Source/Actors/Ship.cpp.o CMakeFiles/line-casters.dir/Source/Main.cpp.o CMakeFiles/line-casters.dir/Client/Client.cpp.o CMakeFiles/line-casters.dir/Client/ClientOperations.cpp.o CMakeFiles/line-casters.dir/Network/Packet.cpp.o CMakeFiles/line-casters.dir/Network/NetUtils.cpp.o CMakeFiles/line-casters.dir/Network/Socket.cpp.o CMakeFiles/line-casters.dir/Network/Logger.cpp.o CMakeFiles/line-casters.dir/Network/Addresses.cpp.o | /usr/lib/x86_64-linux-gnu/libGLEW.so /opt/SDL2/lib/libSDL2-2.0.so.0.3200.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so
+build line-casters: CXX_EXECUTABLE_LINKER__line-casters_Debug CMakeFiles/line-casters.dir/Source/Renderer/Shader.cpp.o CMakeFiles/line-casters.dir/Source/Math.cpp.o CMakeFiles/line-casters.dir/Source/Random.cpp.o CMakeFiles/line-casters.dir/Source/Renderer/VertexArray.cpp.o CMakeFiles/line-casters.dir/Source/Renderer/Renderer.cpp.o CMakeFiles/line-casters.dir/Source/Actors/Actor.cpp.o CMakeFiles/line-casters.dir/Source/Game.cpp.o CMakeFiles/line-casters.dir/Source/Components/Component.cpp.o CMakeFiles/line-casters.dir/Source/Components/DrawComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/RigidBodyComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/ParticleSystemComponent.cpp.o CMakeFiles/line-casters.dir/Source/Components/CircleColliderComponent.cpp.o CMakeFiles/line-casters.dir/Source/Actors/Ship.cpp.o CMakeFiles/line-casters.dir/Source/Main.cpp.o CMakeFiles/line-casters.dir/Client/Client.cpp.o CMakeFiles/line-casters.dir/Client/ClientOperations.cpp.o CMakeFiles/line-casters.dir/Client/SDLInputParser.cpp.o CMakeFiles/line-casters.dir/Network/Packet.cpp.o CMakeFiles/line-casters.dir/Network/NetUtils.cpp.o CMakeFiles/line-casters.dir/Network/Socket.cpp.o CMakeFiles/line-casters.dir/Network/Logger.cpp.o CMakeFiles/line-casters.dir/Network/Addresses.cpp.o | /usr/lib/x86_64-linux-gnu/libGLEW.so /opt/SDL2/lib/libSDL2-2.0.so.0.3200.2 /usr/lib/x86_64-linux-gnu/libGLX.so /usr/lib/x86_64-linux-gnu/libOpenGL.so
   CONFIG = Debug
   DEP_FILE = CMakeFiles/line-casters.dir/link.d
   FLAGS = -g

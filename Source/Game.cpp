@@ -52,14 +52,14 @@ bool Game::Initialize()
 
     mClient = new Client(this);
     mClient->Initialize();
-    mClient->AddServerAddr("192.168.1.13");
+    mClient->AddServerAddr("192.168.15.14");
     mClient->Connect();
 
     // Init all game actors
     InitializeActors();
 
     mTicksCount = SDL_GetTicks();
-    mNetTicksCount = SDL_GetTicks();
+    mNetTicksCount = mTicksCount;
 
     return true;
 }
@@ -94,34 +94,34 @@ void Game::ProcessInput()
     }
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
+    mClient->AddInput(state);
 
+    /*
     unsigned int size = mActors.size();
     for (unsigned int i = 0; i < size; ++i) {
         mActors[i]->ProcessInput(state);
     }
+    */
 }
 
-void Game::UpdateGame()
-{
+void Game::UpdateGame(){
+    // Receive packets
+    mClient->ReceiveStateFromServer();
+
+    // Wait 100ms to send the next inputs batch
+    if (SDL_TICKS_PASSED(SDL_GetTicks(), mNetTicksCount + 100)) {
+        mClient->SendCommandsToServer();
+        mNetTicksCount = SDL_GetTicks();
+    }
+
     while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
 
     float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-    if (deltaTime > 0.05f)
-    {
+    if (deltaTime > 0.05f){
         deltaTime = 0.05f;
     }
 
     mTicksCount = SDL_GetTicks();
-
-    if (SDL_TICKS_PASSED(SDL_GetTicks(), mNetTicksCount + 66)) {
-        mClient->SendCommandsToServer();
-        mNetTicksCount = SDL_GetTicks();
-    }
-    mClient->ReceiveDataFromServer();
-
-
-    // Update all actors and pending actors
-    //UpdateActors(deltaTime);
 }
 
 void Game::UpdateActors(float deltaTime)

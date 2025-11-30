@@ -51,19 +51,19 @@ void Ship::OnProcessInput(const uint8_t* state)
             mBurnCooldown = 0.2f;
         }
 
-        mGame->GetClient()->GetInputData()->SetKeyActive(KeyValue::MOVE_FORWARD);
+
     }
 
     else if (state[SDL_SCANCODE_A]) {
         mRigidBodyComponent->SetAngularSpeed(-mRotationForce);
 
-        mGame->GetClient()->GetInputData()->SetKeyActive(KeyValue::MOVE_LEFT);
+
     }
 
     else if (state[SDL_SCANCODE_D]) {
         mRigidBodyComponent->SetAngularSpeed(mRotationForce);
 
-        mGame->GetClient()->GetInputData()->SetKeyActive(KeyValue::MOVE_RIGHT);
+
     }
 
     else if (state[SDL_SCANCODE_SPACE]) {
@@ -76,7 +76,7 @@ void Ship::OnProcessInput(const uint8_t* state)
     else {
         mRigidBodyComponent->SetAngularSpeed(0);
 
-        mGame->GetClient()->GetInputData()->ResetKeys();
+
     }
 
 }

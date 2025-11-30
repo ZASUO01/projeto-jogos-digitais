@@ -43,6 +43,8 @@ add_executable(${PROJECT_NAME}
         Client/ClientOperations.cpp
         Client/ClientOperations.h
         Client/InputData.h
+        Client/SDLInputParser.cpp
+        Client/SDLInputParser.h
         Network/Platforms.h
         Network/Packet.cpp
         Network/Packet.h
@@ -54,7 +56,8 @@ add_executable(${PROJECT_NAME}
         Network/Logger.h
         Network/Addresses.cpp
         Network/Addresses.h
-        Network/Defs.h)
+        Network/Defs.h
+        Client/DataObjects.h)
 
 target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL)
 

@@ -100,7 +100,10 @@ void ClientOperations::sendDataToServer(const Client *client) {
         Packet::DATA_FLAG,
         client->GetClientNonce()
     );
-    packet.SetData(client->GetInputData(), sizeof(InputData));
+
+    const std::vector<Command>& commands = client->GetCommands();
+    const size_t commandsSize = commands.size() * sizeof(Command);
+    packet.SetData(commands.data(), commandsSize);
     packet.BuildPacket();
 
     const size_t packetSize = Packet::PACKET_HEADER_BYTES + packet.GetLength();
@@ -116,9 +119,9 @@ void ClientOperations::sendDataToServer(const Client *client) {
 
 bool ClientOperations::receiveDataPacketFromServer(Client *client) {
     if (!SocketUtils::socketReadyToReceive(
-        client->GetSocket(), Client::CONNECTION_RECEIVING_TIMEOUT_IN_MS)) {
+        client->GetSocket(), 0)) {
         return false;
-        }
+    }
 
     Packet packet;
     sockaddr_in addr = client->GetServerAddress();
@@ -139,8 +142,14 @@ bool ClientOperations::receiveDataPacketFromServer(Client *client) {
         return false;
     }
 
-    const auto state = static_cast<const RawState*>(packet.GetData());
-    client->SetRawState(*state);
+    // extract state
+    const auto state = static_cast<const FullState*>(packet.GetData());
+
+    if (const uint32_t lasConfirmed = state->lastConfirmedInputSequence; lasConfirmed > client->GetLasConfirmedInputSequence()) {
+        client->SetLasConfirmedInputSequence(lasConfirmed);
+    }
+
+    client->SetRawState(state->rawState);
 
     return true;
 }

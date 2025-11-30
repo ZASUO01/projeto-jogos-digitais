@@ -3,10 +3,10 @@
 //
 #pragma once
 #include "../Network/Platforms.h"
-#include <cstdint>
-
-#include "InputData.h"
+#include "DataObjects.h"
 #include "../Source/Game.h"
+#include <vector>
+#include <SDL.h>
 
 enum class ClientState {
     CLIENT_DOWN,
@@ -14,12 +14,6 @@ enum class ClientState {
     CLIENT_READY,
     CLIENT_CONNECTED,
     CLIENT_DISCONNECTED,
-};
-
-struct RawState {
-    float posX, posY;
-
-    RawState() : posX(0), posY(0) {}
 };
 
 class Client {
@@ -30,8 +24,8 @@ public:
     void Initialize();
     bool AddServerAddr(const char *serverIp);
     bool Connect();
-    void SendCommandsToServer() const;
-    void ReceiveDataFromServer();
+
+
     bool Disconnect();
     void Shutdown();
 
@@ -47,9 +41,16 @@ public:
     static constexpr int CONNECTION_RECEIVING_TIMEOUT_IN_MS = 2000;
 
     // Inputs Control
-    [[nodiscard]] InputData *GetInputData() const { return mInputData; }
+    void AddInput(const Uint8 *keyState);
+    [[nodiscard]] const std::vector<Command>& GetCommands() const { return mCommands; }
+    void SendCommandsToServer() const;
 
-    void SetRawState(const RawState& state) { mLastRawState = state; }
+    // State control
+    void ReceiveStateFromServer();
+    [[nodiscard]] uint32_t GetLasConfirmedInputSequence() const { return mLasConfirmedInputSequence; }
+    void SetLasConfirmedInputSequence(const uint32_t inputSequence) { mLasConfirmedInputSequence = inputSequence; }
+
+    void SetRawState(const RawState& state) { mRawState = state; }
 private:
     ClientState mState;
     SocketType mSocket;
@@ -62,9 +63,14 @@ private:
     bool mDisconnecting;
 
     // Inputs Control
-    InputData *mInputData;
+    std::vector<Command> mCommands;
+    static uint32_t mCurrentCommandSequence;
+    void CleanConfirmedCommands(uint32_t confirmedSequence);
 
     // State control
-    RawState mLastRawState;
+    RawState mRawState;
+    uint32_t mLasConfirmedInputSequence;
+
+    // Game owner
     Game *mGame;
 };

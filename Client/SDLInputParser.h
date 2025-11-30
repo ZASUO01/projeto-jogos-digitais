@@ -2,12 +2,10 @@
 // Created by pedro-souza on 29/11/2025.
 //
 
-#ifndef LINE_CASTERS_SDLINPUTPARSER_H
-#define LINE_CASTERS_SDLINPUTPARSER_H
+#pragma once
+#include <SDL.h>
+#include "InputData.h"
 
-
-class SDLInputParser {
+namespace SDLInputParser {
+    InputData parse(const Uint8 *keyState);
 };
-
-
-#endif //LINE_CASTERS_SDLINPUTPARSER_H

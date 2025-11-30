@@ -2,13 +2,16 @@
 // Created by pedro-souza on 24/11/2025.
 //
 #include "Client.h"
-
+#include <algorithm>
 #include "ClientOperations.h"
 #include "../Network/Socket.h"
 #include "../Network/Addresses.h"
 #include "../Network/Defs.h"
 #include "SDL.h"
+#include "SDLInputParser.h"
 #include "../Network/NetUtils.h"
+
+uint32_t Client::mCurrentCommandSequence = 0;
 
 Client::Client(Game *game)
 :mState(ClientState::CLIENT_DOWN)
@@ -18,7 +21,7 @@ Client::Client(Game *game)
 ,mClientNonce(0)
 ,mConnecting(false)
 ,mDisconnecting(false)
-,mInputData(nullptr)
+,mLasConfirmedInputSequence(0)
 ,mGame(game)
 {}
 
@@ -29,7 +32,6 @@ void Client::Initialize() {
 
     mSocket = SocketUtils::createSocketV4();
     mClientNonce = NetUtils::getNonce();
-    mInputData = new InputData();
     mState = ClientState::CLIENT_SET;
 
     SDL_Log("Client initialized");
@@ -79,27 +81,6 @@ bool Client::Connect() {
     return false;
 }
 
-void Client::SendCommandsToServer() const {
-    if (mState != ClientState::CLIENT_CONNECTED || mConnecting || mDisconnecting) {
-        return;
-    }
-
-    ClientOperations::sendDataToServer(this);
-}
-
-void Client::ReceiveDataFromServer()  {
-    if (mState != ClientState::CLIENT_CONNECTED) {
-        return;
-    }
-    if (!ClientOperations::receiveDataPacketFromServer(this)) {
-        return;
-    }
-
-    float newX = mLastRawState.posX;
-    float newY = mLastRawState.posY;
-    mGame->GetShip()->SetPosition(Vector2(newX, newY));
-}
-
 bool Client::Disconnect() {
     if (mState != ClientState::CLIENT_CONNECTED) {
         return false;
@@ -133,7 +114,55 @@ void Client::Shutdown() {
     if (mState != ClientState::CLIENT_CONNECTED && mState != ClientState::CLIENT_DISCONNECTED) {
         return;
     }
+}
 
-    delete mInputData;
-    mInputData = nullptr;
+void Client::AddInput(const Uint8 *keyState) {
+    InputData input = SDLInputParser::parse(keyState);
+    if (input.NoKeysActive()) {
+        return;
+    }
+
+    uint32_t sequence = mCurrentCommandSequence++;
+    mCommands.emplace_back(sequence, input);
+}
+
+void Client::SendCommandsToServer() const {
+    if (mState != ClientState::CLIENT_CONNECTED || mConnecting || mDisconnecting) {
+        return;
+    }
+
+    if (mCommands.empty()) {
+        return;
+    }
+
+    ClientOperations::sendDataToServer(this);
+}
+
+void Client::ReceiveStateFromServer()  {
+    if (mState != ClientState::CLIENT_CONNECTED) {
+        return;
+    }
+
+    if (!ClientOperations::receiveDataPacketFromServer(this)) {
+        return;
+    }
+    CleanConfirmedCommands(mLasConfirmedInputSequence);
+
+    const float newX = mRawState.posX;
+    const float newY = mRawState.posY;
+    mGame->GetShip()->SetPosition(Vector2(newX, newY));
+}
+
+void Client::CleanConfirmedCommands(uint32_t confirmedSequence) {
+    const auto it = std::find_if(
+        mCommands.begin(),
+        mCommands.end(),
+        [&confirmedSequence](const Command& cmd) {
+            return cmd.sequence > confirmedSequence;
+        }
+    );
+
+    if (it != mCommands.begin()) {
+        mCommands.erase(mCommands.begin(), it);
+    }
 }
