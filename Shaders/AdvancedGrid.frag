@@ -9,7 +9,7 @@ uniform vec2 uResolution;
 uniform float uTime;
 uniform vec3 uColor;
 
-const float GRID_SIZE = 0.05;
+const float GRID_SIZE = 0.15;
 const float LINE_WIDTH = 0.002;
 const float GLOW_INTENSITY = 2.5;
 const float GLOW_FALLOFF = 8.0;
