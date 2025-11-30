@@ -16,6 +16,7 @@
 #include "Actors/Ship.h"
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
+#include "Video/VideoPlayer.h"
 #include "Random.h"
 
 Game::Game()
@@ -25,6 +26,8 @@ Game::Game()
         ,mIsRunning(true)
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
+        ,mVideoPlayer(nullptr)
+        ,mShowingVideo(false)
         ,mShip(nullptr)
 {}
 
@@ -32,13 +35,13 @@ bool Game::Initialize()
 {
     Random::Init();
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    mWindow = SDL_CreateWindow("TP2: Asteroids", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
@@ -48,8 +51,16 @@ bool Game::Initialize()
     mRenderer = new Renderer(mWindow);
     mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    // Init all game actors
-    InitializeActors();
+    // Tentar carregar e tocar vídeo introdutório
+    mVideoPlayer = new VideoPlayer();
+    if (mVideoPlayer->PlayVideo("Opening/begin.mp4", mWindow, true)) {
+        mShowingVideo = true;
+    } else {
+        SDL_Log("Failed to load intro video, continuing without it");
+        delete mVideoPlayer;
+        mVideoPlayer = nullptr;
+        InitializeActors();
+    }
 
     mTicksCount = SDL_GetTicks();
 
@@ -82,7 +93,24 @@ void Game::ProcessInput()
             case SDL_QUIT:
                 Quit();
                 break;
+            case SDL_KEYDOWN:
+                // Se estiver mostrando vídeo e Enter for pressionado, parar vídeo e iniciar jogo
+                if (mShowingVideo && (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)) {
+                    if (mVideoPlayer) {
+                        mVideoPlayer->Stop();
+                        mShowingVideo = false;
+                        if (mActors.empty()) {
+                            InitializeActors();
+                        }
+                    }
+                }
+                break;
         }
+    }
+
+    // Se estiver mostrando vídeo, não processar input dos atores
+    if (mShowingVideo) {
+        return;
     }
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
@@ -104,6 +132,12 @@ void Game::UpdateGame()
     }
 
     mTicksCount = SDL_GetTicks();
+
+    // Se estiver mostrando vídeo, atualizar apenas o vídeo
+    if (mShowingVideo && mVideoPlayer) {
+        mVideoPlayer->Update();
+        return;
+    }
 
     // Update all actors and pending actors
     UpdateActors(deltaTime);
@@ -172,6 +206,12 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
 
 void Game::GenerateOutput()
 {
+    // Se estiver mostrando vídeo, renderizar apenas o vídeo
+    if (mShowingVideo && mVideoPlayer) {
+        mVideoPlayer->Render();
+        return;
+    }
+
     // Clear back buffer
     mRenderer->Clear();
 
@@ -208,6 +248,13 @@ void Game::Shutdown()
     }
 
     mDrawables.clear();
+
+    // Limpar VideoPlayer
+    if (mVideoPlayer) {
+        mVideoPlayer->Shutdown();
+        delete mVideoPlayer;
+        mVideoPlayer = nullptr;
+    }
 
     mRenderer->Shutdown();
     delete mRenderer;

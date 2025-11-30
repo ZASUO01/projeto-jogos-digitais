@@ -14,6 +14,9 @@
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
 
+// Forward declaration
+class VideoPlayer;
+
 class Game{
 public:
     Game();
@@ -66,6 +69,10 @@ private:
     bool mIsRunning;
     bool mIsDebugging;
     bool mUpdatingActors;
+
+    // Video intro
+    VideoPlayer* mVideoPlayer;
+    bool mShowingVideo;
 
     // Game-specific
     Ship* mShip;
