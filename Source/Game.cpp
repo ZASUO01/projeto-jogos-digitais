@@ -14,8 +14,15 @@
 #include <vector>
 #include "Game.h"
 #include "Actors/Ship.h"
+#include "Actors/Floor.h"
+#include "Actors/LaserBeam.h"
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
+#include "Components/LaserBeamComponent.h"
+#include "Components/CircleColliderComponent.h"
+#include "Video/VideoPlayer.h"
+#include "UI/MenuHUD.h"
+#include "Audio/OpeningAudio.h"
 #include "Random.h"
 
 Game::Game()
@@ -25,20 +32,31 @@ Game::Game()
         ,mIsRunning(true)
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
+        ,mVideoPlayer(nullptr)
+        ,mShowingVideo(false)
+        ,mVideoState(VideoState::Begin)
+        ,mAberturaStartTime(0.0)
+        ,mAberturaAudioStartTime(0.0)
+        ,mAberturaAudioPending(false)
+        ,mMenuHUD(nullptr)
+        ,mOpeningAudio(nullptr)
         ,mShip(nullptr)
+        ,mShip1(nullptr)
+        ,mShip2(nullptr)
 {}
 
 bool Game::Initialize()
 {
     Random::Init();
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
@@ -46,10 +64,48 @@ bool Game::Initialize()
     }
 
     mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    mRenderer->Initialize(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT));
 
-    // Init all game actors
-    InitializeActors();
+    // Inicializar áudio da tela inicial (depois do contexto OpenGL)
+    mOpeningAudio = new OpeningAudio();
+    if (!mOpeningAudio->Initialize()) {
+        SDL_Log("Failed to initialize opening audio");
+    }
+
+    mMenuHUD = new MenuHUD();
+
+    // Modo debug: pular direto para a terceira fase (EntranceLoop)
+    if (Game::DEBUG_MODE) {
+        mVideoPlayer = new VideoPlayer();
+        if (mVideoPlayer->PlayVideo("Opening/entrance_loop.mp4", mWindow, true)) {
+            mShowingVideo = true;
+            mVideoState = VideoState::EntranceLoop;
+            // Tocar áudio loop.mp3 junto com o vídeo
+            if (mOpeningAudio) {
+                mOpeningAudio->PlayLoop(true);
+            }
+            // Mostrar menu HUD imediatamente na terceira fase
+            mMenuHUD->Show();
+        } else {
+            SDL_Log("Failed to load entrance_loop.mp4 in debug mode, starting game");
+            delete mVideoPlayer;
+            mVideoPlayer = nullptr;
+            InitializeActors();
+        }
+    } else {
+        // Tentar carregar e tocar vídeo introdutório
+        mVideoPlayer = new VideoPlayer();
+        if (mVideoPlayer->PlayVideo("Opening/begin.mp4", mWindow, true)) {
+            mShowingVideo = true;
+            // Tocar áudio begin.mp3 junto com o vídeo
+            mOpeningAudio->PlayBegin(true);
+        } else {
+            SDL_Log("Failed to load intro video, continuing without it");
+            delete mVideoPlayer;
+            mVideoPlayer = nullptr;
+            InitializeActors();
+        }
+    }
 
     mTicksCount = SDL_GetTicks();
 
@@ -58,8 +114,15 @@ bool Game::Initialize()
 
 void Game::InitializeActors()
 {
-    mShip = new Ship(this, 40, 300, 3);
-    mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
+    new Floor(this);
+    
+    mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
+    mShip1->SetPosition(Vector2(Game::WINDOW_WIDTH - 100, 100));
+    
+    mShip2 = new Ship(this, 40, 300, 3, Vector3(1.0f, 0.0f, 0.0f), true);
+    mShip2->SetPosition(Vector2(100, Game::WINDOW_HEIGHT - 100));
+    
+    mShip = mShip1;
 }
 
 void Game::RunLoop()
@@ -82,10 +145,84 @@ void Game::ProcessInput()
             case SDL_QUIT:
                 Quit();
                 break;
+            case SDL_KEYDOWN:
+                if (mMenuHUD && mMenuHUD->IsVisible()) {
+                    mMenuHUD->HandleKeyPress(event.key.keysym.sym);
+                    
+                    if (mMenuHUD->WasStartSelected()) {
+                        mMenuHUD->ResetStartSelected();
+                        if (mVideoPlayer) {
+                            mVideoPlayer->Stop();
+                        }
+                        if (mOpeningAudio) {
+                            mOpeningAudio->Stop();
+                        }
+                        mShowingVideo = false;
+                        if (mActors.empty()) {
+                            InitializeActors();
+                        }
+                        break;
+                    }
+                }
+                
+                if (mShowingVideo && !(mMenuHUD && mMenuHUD->IsVisible()) && 
+                    (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)) {
+                    if (mVideoPlayer) {
+                        if (mVideoState == VideoState::Begin) {
+                            // Parar begin.mp4 e tocar abertura.mp4
+                            mVideoPlayer->Stop();
+                            if (mOpeningAudio) {
+                                mOpeningAudio->StopBegin();
+                            }
+                            if (mVideoPlayer->PlayVideo("Opening/abertura.mp4", mWindow, false)) {
+                                mVideoState = VideoState::Abertura;
+                                mAberturaStartTime = SDL_GetTicks() / 1000.0;
+                                // Atrasar o início do áudio em 0.2 segundos
+                                mAberturaAudioStartTime = mAberturaStartTime + 5;
+                                mAberturaAudioPending = true;
+                            } else {
+                                SDL_Log("Failed to load abertura.mp4, starting game");
+                                mShowingVideo = false;
+                                if (mOpeningAudio) {
+                                    mOpeningAudio->Stop();
+                                }
+                                if (mActors.empty()) {
+                                    InitializeActors();
+                                }
+                            }
+                        } else if (mVideoState == VideoState::Abertura || mVideoState == VideoState::EntranceLoop) {
+                            // Parar qualquer vídeo e iniciar jogo
+                            mVideoPlayer->Stop();
+                            if (mOpeningAudio) {
+                                mOpeningAudio->Stop();
+                            }
+                            mShowingVideo = false;
+                            if (mActors.empty()) {
+                                InitializeActors();
+                            }
+                        }
+                    }
+                }
+                break;
+            case SDL_TEXTINPUT:
+                if (mMenuHUD && mMenuHUD->IsVisible()) {
+                    mMenuHUD->HandleTextInput(event.text.text);
+                }
+                break;
         }
     }
 
+    // Se estiver mostrando vídeo, não processar input dos atores
+    if (mShowingVideo) {
+        return;
+    }
+
     const Uint8* state = SDL_GetKeyboardState(nullptr);
+    
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        Quit();
+    }
 
     unsigned int size = mActors.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -105,7 +242,128 @@ void Game::UpdateGame()
 
     mTicksCount = SDL_GetTicks();
 
-    // Update all actors and pending actors
+    // Se estiver mostrando vídeo, atualizar apenas o vídeo
+    if (mShowingVideo && mVideoPlayer) {
+        mVideoPlayer->Update();
+        
+        // Verificar se precisa iniciar o áudio da abertura com delay
+        if (mVideoState == VideoState::Abertura && mAberturaAudioPending) {
+            double currentTime = SDL_GetTicks() / 1000.0;
+            if (currentTime >= mAberturaAudioStartTime) {
+                // Tocar áudio abertura.wav com delay
+                if (mOpeningAudio) {
+                    mOpeningAudio->PlayAbertura(false);
+                }
+                mAberturaAudioPending = false;
+            }
+        }
+        
+        // Atualizar áudio (verificar loops) - apenas quando necessário
+        // Otimização: verificar áudio menos frequentemente para não impactar performance do vídeo
+        static Uint32 lastAudioCheck = 0;
+        Uint32 currentTicks = SDL_GetTicks();
+        if (currentTicks - lastAudioCheck > 50) { // Verificar a cada 50ms em vez de a cada frame (~16ms)
+            if (mOpeningAudio) {
+                mOpeningAudio->Update();
+            }
+            lastAudioCheck = currentTicks;
+        }
+        
+        if (mVideoState == VideoState::Abertura && mMenuHUD) {
+            double currentTime = (SDL_GetTicks() / 1000.0) - mAberturaStartTime;
+            if (currentTime >= 10.0 && !mMenuHUD->IsVisible()) {
+                mMenuHUD->Show();
+            }
+        }
+        
+        if (mMenuHUD && mMenuHUD->IsVisible()) {
+            mMenuHUD->Update(deltaTime);
+        }
+        
+        if (mVideoState == VideoState::Abertura && mVideoPlayer->HasFinished()) {
+            if (mVideoPlayer->PlayVideo("Opening/entrance_loop.mp4", mWindow, true)) {
+                mVideoState = VideoState::EntranceLoop;
+                // Tocar áudio loop.mp3 junto com o vídeo
+                if (mOpeningAudio) {
+                    mOpeningAudio->StopAbertura();
+                    mOpeningAudio->PlayLoop(true);
+                }
+            } else {
+                SDL_Log("Failed to load entrance_loop.mp4, starting game");
+                mShowingVideo = false;
+                if (mOpeningAudio) {
+                    mOpeningAudio->Stop();
+                }
+                if (mActors.empty()) {
+                    InitializeActors();
+                }
+            }
+        }
+        
+        return;
+    }
+
+    // Se estiver mostrando vídeo, atualizar apenas o vídeo
+    if (mShowingVideo && mVideoPlayer) {
+        mVideoPlayer->Update();
+        
+        // Verificar se precisa iniciar o áudio da abertura com delay
+        if (mVideoState == VideoState::Abertura && mAberturaAudioPending) {
+            double currentTime = SDL_GetTicks() / 1000.0;
+            if (currentTime >= mAberturaAudioStartTime) {
+                // Tocar áudio abertura.wav com delay
+                if (mOpeningAudio) {
+                    mOpeningAudio->PlayAbertura(false);
+                }
+                mAberturaAudioPending = false;
+            }
+        }
+        
+        // Atualizar áudio (verificar loops) - apenas quando necessário
+        // Otimização: verificar áudio menos frequentemente para não impactar performance do vídeo
+        static Uint32 lastAudioCheck = 0;
+        Uint32 currentTicks = SDL_GetTicks();
+        if (currentTicks - lastAudioCheck > 50) { // Verificar a cada 50ms em vez de a cada frame (~16ms)
+            if (mOpeningAudio) {
+                mOpeningAudio->Update();
+            }
+            lastAudioCheck = currentTicks;
+        }
+        
+        if (mVideoState == VideoState::Abertura && mMenuHUD) {
+            double currentTime = (SDL_GetTicks() / 1000.0) - mAberturaStartTime;
+            if (currentTime >= 10.0 && !mMenuHUD->IsVisible()) {
+                mMenuHUD->Show();
+            }
+        }
+        
+        if (mMenuHUD && mMenuHUD->IsVisible()) {
+            mMenuHUD->Update(deltaTime);
+        }
+        
+        if (mVideoState == VideoState::Abertura && mVideoPlayer->HasFinished()) {
+            if (mVideoPlayer->PlayVideo("Opening/entrance_loop.mp4", mWindow, true)) {
+                mVideoState = VideoState::EntranceLoop;
+                // Tocar áudio loop.mp3 junto com o vídeo
+                if (mOpeningAudio) {
+                    mOpeningAudio->StopAbertura();
+                    mOpeningAudio->PlayLoop(true);
+                }
+            } else {
+                SDL_Log("Failed to load entrance_loop.mp4, starting game");
+                mShowingVideo = false;
+                if (mOpeningAudio) {
+                    mOpeningAudio->Stop();
+                }
+                if (mActors.empty()) {
+                    InitializeActors();
+                }
+            }
+        }
+        
+        return;
+    }
+    
     UpdateActors(deltaTime);
 }
 
@@ -121,6 +379,8 @@ void Game::UpdateActors(float deltaTime)
         mActors.emplace_back(pending);
     }
     mPendingActors.clear();
+
+    CheckLaserCollisions();
 
     std::vector<Actor*> deadActors;
     for (auto &actor : mActors) {
@@ -172,8 +432,30 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
 
 void Game::GenerateOutput()
 {
+    if (mShowingVideo && mVideoPlayer) {
+        mVideoPlayer->RenderWithoutPresent();
+        
+        if (mMenuHUD && mMenuHUD->IsVisible()) {
+            SDL_Renderer* videoRenderer = mVideoPlayer->GetRenderer();
+            if (videoRenderer) {
+                mMenuHUD->Render(videoRenderer);
+            }
+        }
+        
+        SDL_Renderer* videoRenderer = mVideoPlayer->GetRenderer();
+        if (videoRenderer) {
+            SDL_RenderPresent(videoRenderer);
+        }
+        return;
+    }
+
     // Clear back buffer
     mRenderer->Clear();
+    
+    float currentTime = SDL_GetTicks() / 1000.0f;
+    mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
+                                mRenderer->GetScreenHeight(), 
+                                currentTime);
 
     unsigned int size = mDrawables.size();
     unsigned int size2;
@@ -188,7 +470,6 @@ void Game::GenerateOutput()
 
     }
 
-    // Swap front buffer and back buffer
     mRenderer->Present();
 }
 
@@ -209,6 +490,23 @@ void Game::Shutdown()
 
     mDrawables.clear();
 
+    if (mMenuHUD) {
+        delete mMenuHUD;
+        mMenuHUD = nullptr;
+    }
+
+    if (mOpeningAudio) {
+        mOpeningAudio->Shutdown();
+        delete mOpeningAudio;
+        mOpeningAudio = nullptr;
+    }
+
+    if (mVideoPlayer) {
+        mVideoPlayer->Shutdown();
+        delete mVideoPlayer;
+        mVideoPlayer = nullptr;
+    }
+
     mRenderer->Shutdown();
     delete mRenderer;
     mRenderer = nullptr;
@@ -222,5 +520,35 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
     if (it != actors.end()) {
         std::iter_swap(it, actors.end() - 1);
         actors.pop_back();
+    }
+}
+
+void Game::CheckLaserCollisions()
+{
+    for (auto actor : mActors) {
+        LaserBeam* laser = dynamic_cast<LaserBeam*>(actor);
+        if (laser && laser->GetState() == ActorState::Active) {
+            LaserBeamComponent* laserComp = laser->GetLaserComponent();
+            Ship* ownerShip = laser->GetOwnerShip();
+            if (laserComp && laserComp->IsActive()) {
+                if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1 != ownerShip && !mShip1->IsInvincible()) {
+                    CircleColliderComponent* collider = mShip1->GetComponent<CircleColliderComponent>();
+                    if (collider) {
+                        if (laserComp->IntersectCircle(mShip1->GetPosition(), collider->GetRadius())) {
+                            mShip1->TakeDamage();
+                        }
+                    }
+                }
+                
+                if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2 != ownerShip && !mShip2->IsInvincible()) {
+                    CircleColliderComponent* collider = mShip2->GetComponent<CircleColliderComponent>();
+                    if (collider) {
+                        if (laserComp->IntersectCircle(mShip2->GetPosition(), collider->GetRadius())) {
+                            mShip2->TakeDamage();
+                        }
+                    }
+                }
+            }
+        }
     }
 }

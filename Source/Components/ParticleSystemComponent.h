@@ -17,7 +17,8 @@ enum class SystemType {
 class Particle : public Actor
 {
 public:
-    Particle(class Game* game, std::vector<Vector2> &vertices, SystemType type = SystemType::Shoot);
+    Particle(class Game* game, std::vector<Vector2> &vertices, SystemType type = SystemType::Shoot,
+             Vector3 color = Vector3(1.0f, 1.0f, 1.0f), bool filled = false);
 
     void OnUpdate(float deltaTime) override;
 
@@ -39,10 +40,12 @@ class ParticleSystemComponent : public Component {
 
 public:
     ParticleSystemComponent(class Actor* owner, std::vector<Vector2> &vertices,  int poolSize = 100, int updateOrder = 10,
-        SystemType type = SystemType::Shoot);
+        SystemType type = SystemType::Shoot, Vector3 color = Vector3(1.0f, 1.0f, 1.0f), bool filled = false);
     void EmitParticle(float lifetime, float speed, const Vector2& offsetPosition = Vector2::Zero);
 
 private:
     std::vector<class Particle*> mParticles;
     SystemType mSystemType;
+    Vector3 mParticleColor;
+    bool mParticleFilled;
 };

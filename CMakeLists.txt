@@ -7,8 +7,30 @@ set(PROJECT_NAME "lion-casters")
 project(${PROJECT_NAME})
 
 find_package(SDL2 2.32.2 EXACT REQUIRED)
+find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
+
+# Procurar FFmpeg (apenas vídeo, sem áudio)
+find_path(AVCODEC_INCLUDE_DIR libavcodec/avcodec.h)
+find_path(AVFORMAT_INCLUDE_DIR libavformat/avformat.h)
+find_path(AVUTIL_INCLUDE_DIR libavutil/avutil.h)
+find_path(SWSCALE_INCLUDE_DIR libswscale/swscale.h)
+
+find_library(AVCODEC_LIBRARY avcodec)
+find_library(AVFORMAT_LIBRARY avformat)
+find_library(AVUTIL_LIBRARY avutil)
+find_library(SWSCALE_LIBRARY swscale)
+
+if (AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND AVUTIL_INCLUDE_DIR AND SWSCALE_INCLUDE_DIR
+    AND AVCODEC_LIBRARY AND AVFORMAT_LIBRARY AND AVUTIL_LIBRARY AND SWSCALE_LIBRARY)
+    set(FFMPEG_FOUND TRUE)
+    message(STATUS "FFmpeg found")
+else()
+    message(WARNING "FFmpeg not found - video playback will not work")
+    set(FFMPEG_FOUND FALSE)
+endif()
 
 add_executable(${PROJECT_NAME}
         Source/Renderer/Shader.cpp
@@ -35,8 +57,41 @@ add_executable(${PROJECT_NAME}
         Source/Components/ParticleSystemComponent.h
         Source/Components/CircleColliderComponent.cpp
         Source/Components/CircleColliderComponent.h
+        Source/Components/GridDrawComponent.cpp
+        Source/Components/GridDrawComponent.h
+        Source/Components/LaserBeamComponent.cpp
+        Source/Components/LaserBeamComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
+        Source/Actors/Floor.cpp
+        Source/Actors/Floor.h
+        Source/Actors/LaserBeam.cpp
+        Source/Actors/LaserBeam.h
+        Source/Video/VideoPlayer.cpp
+        Source/Video/VideoPlayer.h
+        Source/UI/MenuHUD.cpp
+        Source/UI/MenuHUD.h
+        Source/Audio/OpeningAudio.cpp
+        Source/Audio/OpeningAudio.h
         Source/Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL)
+target_include_directories(${PROJECT_NAME} PRIVATE
+        ${AVCODEC_INCLUDE_DIR}
+        ${AVFORMAT_INCLUDE_DIR}
+        ${AVUTIL_INCLUDE_DIR}
+        ${SWSCALE_INCLUDE_DIR})
+
+target_link_libraries(${PROJECT_NAME} PRIVATE 
+        GLEW::GLEW 
+        SDL2::SDL2 
+        SDL2_ttf::SDL2_ttf
+        SDL2_mixer::SDL2_mixer
+        OpenGL::GL)
+if(FFMPEG_FOUND)
+    target_link_libraries(${PROJECT_NAME} PRIVATE
+            ${AVCODEC_LIBRARY}
+            ${AVFORMAT_LIBRARY}
+            ${AVUTIL_LIBRARY}
+            ${SWSCALE_LIBRARY})
+endif()
+

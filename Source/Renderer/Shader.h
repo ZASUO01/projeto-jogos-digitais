@@ -23,6 +23,8 @@ public:
     // Sets a Vector / Matrix uniform
     void SetVectorUniform (const char* name, const Vector3& vector) const;
     void SetMatrixUniform(const char* name, const Matrix4& matrix) const;
+    void SetFloatUniform(const char* name, float value) const;
+    void SetVector2Uniform(const char* name, const Vector2& vector) const;
 
 private:
     // Tries to compile the specified shader
