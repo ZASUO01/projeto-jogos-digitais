@@ -50,6 +50,7 @@ public:
     void SetLastReceivedInputSequence(const uint32_t inputSequence) { mLastReceivedInputSequence = inputSequence; }
 
     void SetRawState(const RawState& state) { mRawState = state; }
+    void SetOtherState(const OtherState& state) { mOtherState = state; }
 private:
     ClientState mState;
     SocketType mSocket;
@@ -68,6 +69,7 @@ private:
 
     // State control
     RawState mRawState;
+    OtherState mOtherState;
     uint32_t mLastReceivedInputSequence;
     uint32_t mLasRemovedInputSequence;
     void ReprocessLocalState() const;

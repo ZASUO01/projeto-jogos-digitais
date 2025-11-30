@@ -77,4 +77,5 @@ private:
     // Network specific
     class Client *mClient;
     Uint32 mNetTicksCount;
+    Ship* mEnemy;
 };

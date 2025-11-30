@@ -21,8 +21,8 @@ Client::Client(Game *game)
       , mClientNonce(0)
       , mConnecting(false)
       , mDisconnecting(false)
-      , mLasRemovedInputSequence(0)
       , mLastReceivedInputSequence(0)
+      , mLasRemovedInputSequence(0)
       , mGame(game) {
 }
 
@@ -149,15 +149,14 @@ void Client::ReceiveStateFromServer()  {
         return;
     }
 
-    if (mLastReceivedInputSequence <= mLasRemovedInputSequence) {
-        return;
+    if (mLastReceivedInputSequence > mLasRemovedInputSequence) {
+        // remove commands already confirmed by the server
+        CleanConfirmedCommands(mLastReceivedInputSequence);
     }
 
-    // remove commands already confirmed by the server
-    CleanConfirmedCommands(mLastReceivedInputSequence);
-
     // force the game state to the server decision
-    const GameState gameState(mRawState);
+    const GameState gameState(mRawState, mOtherState);
+
     mGame->SetAuthoritativeState(&gameState);
 
     // apply again the rest of the commands

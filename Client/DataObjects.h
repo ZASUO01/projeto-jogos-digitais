@@ -21,16 +21,25 @@ struct RawState {
     RawState() : posX(0), posY(0) {}
 };
 
+struct OtherState {
+    float posX, posY;
+
+    OtherState() : posX(0), posY(0) {}
+};
+
 struct FullState {
     RawState rawState;
+    OtherState otherState;
     uint32_t lastConfirmedInputSequence;
 
-    FullState(const RawState &raw, const uint32_t sequence)
-    :rawState(raw), lastConfirmedInputSequence(sequence) {}
+    FullState(const RawState &raw, const OtherState &other, const uint32_t sequence)
+    :rawState(raw), otherState(other), lastConfirmedInputSequence(sequence) {}
 };
 
 struct GameState {
     RawState rawState;
+    OtherState otherState;
 
-    explicit GameState(const RawState &raw) : rawState(raw) {}
+    explicit GameState(const RawState &raw, const OtherState &other)
+    :rawState(raw), otherState(other) {}
 };

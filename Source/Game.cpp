@@ -28,6 +28,7 @@ Game::Game()
         ,mShip(nullptr)
         ,mClient(nullptr)
         ,mNetTicksCount(0)
+        ,mEnemy(nullptr)
 {}
 
 bool Game::Initialize()
@@ -68,6 +69,9 @@ void Game::InitializeActors()
 {
     mShip = new Ship(this, 40, 300, 3);
     mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
+
+    mEnemy = new Ship(this, 40, 300, 3);
+    mEnemy->SetPosition(Vector2(0, 0));
 }
 
 void Game::RunLoop()
@@ -249,4 +253,10 @@ void Game::SetAuthoritativeState(const GameState *gameState) const {
 
     const auto newShipPos = Vector2(raw.posX, raw.posY);
     mShip->SetPosition(newShipPos);
+
+    const auto other = gameState->otherState;
+
+    const auto newOtherPos = Vector2(other.posX, other.posY);
+    mEnemy->SetPosition(newOtherPos);
+
 }
