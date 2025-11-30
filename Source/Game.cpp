@@ -17,6 +17,7 @@
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
 #include "Video/VideoPlayer.h"
+#include "UI/MenuHUD.h"
 #include "Random.h"
 
 Game::Game()
@@ -28,6 +29,9 @@ Game::Game()
         ,mUpdatingActors(false)
         ,mVideoPlayer(nullptr)
         ,mShowingVideo(false)
+        ,mVideoState(VideoState::Begin)
+        ,mAberturaStartTime(0.0)
+        ,mMenuHUD(nullptr)
         ,mShip(nullptr)
 {}
 
@@ -62,6 +66,8 @@ bool Game::Initialize()
         InitializeActors();
     }
 
+    mMenuHUD = new MenuHUD();
+
     mTicksCount = SDL_GetTicks();
 
     return true;
@@ -94,15 +100,52 @@ void Game::ProcessInput()
                 Quit();
                 break;
             case SDL_KEYDOWN:
-                // Se estiver mostrando vídeo e Enter for pressionado, parar vídeo e iniciar jogo
-                if (mShowingVideo && (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)) {
-                    if (mVideoPlayer) {
-                        mVideoPlayer->Stop();
+                if (mMenuHUD && mMenuHUD->IsVisible()) {
+                    mMenuHUD->HandleKeyPress(event.key.keysym.sym);
+                    
+                    if (mMenuHUD->WasStartSelected()) {
+                        mMenuHUD->ResetStartSelected();
+                        if (mVideoPlayer) {
+                            mVideoPlayer->Stop();
+                        }
                         mShowingVideo = false;
                         if (mActors.empty()) {
                             InitializeActors();
                         }
+                        break;
                     }
+                }
+                
+                if (mShowingVideo && !(mMenuHUD && mMenuHUD->IsVisible()) && 
+                    (event.key.keysym.sym == SDLK_RETURN || event.key.keysym.sym == SDLK_KP_ENTER)) {
+                    if (mVideoPlayer) {
+                        if (mVideoState == VideoState::Begin) {
+                            // Parar begin.mp4 e tocar abertura.mp4
+                            mVideoPlayer->Stop();
+                            if (mVideoPlayer->PlayVideo("Opening/abertura.mp4", mWindow, false)) {
+                                mVideoState = VideoState::Abertura;
+                                mAberturaStartTime = SDL_GetTicks() / 1000.0;
+                            } else {
+                                SDL_Log("Failed to load abertura.mp4, starting game");
+                                mShowingVideo = false;
+                                if (mActors.empty()) {
+                                    InitializeActors();
+                                }
+                            }
+                        } else if (mVideoState == VideoState::Abertura || mVideoState == VideoState::EntranceLoop) {
+                            // Parar qualquer vídeo e iniciar jogo
+                            mVideoPlayer->Stop();
+                            mShowingVideo = false;
+                            if (mActors.empty()) {
+                                InitializeActors();
+                            }
+                        }
+                    }
+                }
+                break;
+            case SDL_TEXTINPUT:
+                if (mMenuHUD && mMenuHUD->IsVisible()) {
+                    mMenuHUD->HandleTextInput(event.text.text);
                 }
                 break;
         }
@@ -136,6 +179,31 @@ void Game::UpdateGame()
     // Se estiver mostrando vídeo, atualizar apenas o vídeo
     if (mShowingVideo && mVideoPlayer) {
         mVideoPlayer->Update();
+        
+        if (mVideoState == VideoState::Abertura && mMenuHUD) {
+            double currentTime = (SDL_GetTicks() / 1000.0) - mAberturaStartTime;
+            if (currentTime >= 10.0 && !mMenuHUD->IsVisible()) {
+                mMenuHUD->Show();
+            }
+        }
+        
+        if (mMenuHUD && mMenuHUD->IsVisible()) {
+            mMenuHUD->Update(deltaTime);
+        }
+        
+        if (mVideoState == VideoState::Abertura && mVideoPlayer->HasFinished()) {
+        if (mVideoState == VideoState::Abertura && mVideoPlayer->HasFinished()) {
+            if (mVideoPlayer->PlayVideo("Opening/entrance_loop.mp4", mWindow, true)) {
+                mVideoState = VideoState::EntranceLoop;
+            } else {
+                SDL_Log("Failed to load entrance_loop.mp4, starting game");
+                mShowingVideo = false;
+                if (mActors.empty()) {
+                    InitializeActors();
+                }
+            }
+        }
+        
         return;
     }
 
@@ -206,9 +274,20 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
 
 void Game::GenerateOutput()
 {
-    // Se estiver mostrando vídeo, renderizar apenas o vídeo
     if (mShowingVideo && mVideoPlayer) {
-        mVideoPlayer->Render();
+        mVideoPlayer->RenderWithoutPresent();
+        
+        if (mMenuHUD && mMenuHUD->IsVisible()) {
+            SDL_Renderer* videoRenderer = mVideoPlayer->GetRenderer();
+            if (videoRenderer) {
+                mMenuHUD->Render(videoRenderer);
+            }
+        }
+        
+        SDL_Renderer* videoRenderer = mVideoPlayer->GetRenderer();
+        if (videoRenderer) {
+            SDL_RenderPresent(videoRenderer);
+        }
         return;
     }
 
@@ -249,7 +328,11 @@ void Game::Shutdown()
 
     mDrawables.clear();
 
-    // Limpar VideoPlayer
+    if (mMenuHUD) {
+        delete mMenuHUD;
+        mMenuHUD = nullptr;
+    }
+
     if (mVideoPlayer) {
         mVideoPlayer->Shutdown();
         delete mVideoPlayer;

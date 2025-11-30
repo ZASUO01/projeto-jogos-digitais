@@ -7,24 +7,23 @@ set(PROJECT_NAME "lion-casters")
 project(${PROJECT_NAME})
 
 find_package(SDL2 2.32.2 EXACT REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
-# Procurar FFmpeg
+# Procurar FFmpeg (apenas vídeo, sem áudio)
 find_path(AVCODEC_INCLUDE_DIR libavcodec/avcodec.h)
 find_path(AVFORMAT_INCLUDE_DIR libavformat/avformat.h)
 find_path(AVUTIL_INCLUDE_DIR libavutil/avutil.h)
 find_path(SWSCALE_INCLUDE_DIR libswscale/swscale.h)
-find_path(SWRESAMPLE_INCLUDE_DIR libswresample/swresample.h)
 
 find_library(AVCODEC_LIBRARY avcodec)
 find_library(AVFORMAT_LIBRARY avformat)
 find_library(AVUTIL_LIBRARY avutil)
 find_library(SWSCALE_LIBRARY swscale)
-find_library(SWRESAMPLE_LIBRARY swresample)
 
-if (AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND AVUTIL_INCLUDE_DIR AND SWSCALE_INCLUDE_DIR AND SWRESAMPLE_INCLUDE_DIR
-    AND AVCODEC_LIBRARY AND AVFORMAT_LIBRARY AND AVUTIL_LIBRARY AND SWSCALE_LIBRARY AND SWRESAMPLE_LIBRARY)
+if (AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND AVUTIL_INCLUDE_DIR AND SWSCALE_INCLUDE_DIR
+    AND AVCODEC_LIBRARY AND AVFORMAT_LIBRARY AND AVUTIL_LIBRARY AND SWSCALE_LIBRARY)
     set(FFMPEG_FOUND TRUE)
     message(STATUS "FFmpeg found")
 else()
@@ -61,18 +60,20 @@ add_executable(${PROJECT_NAME}
         Source/Actors/Ship.h
         Source/Video/VideoPlayer.cpp
         Source/Video/VideoPlayer.h
+        Source/UI/MenuHUD.cpp
+        Source/UI/MenuHUD.h
         Source/Main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
         ${AVCODEC_INCLUDE_DIR}
         ${AVFORMAT_INCLUDE_DIR}
         ${AVUTIL_INCLUDE_DIR}
-        ${SWSCALE_INCLUDE_DIR}
-        ${SWRESAMPLE_INCLUDE_DIR})
+        ${SWSCALE_INCLUDE_DIR})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE 
         GLEW::GLEW 
         SDL2::SDL2 
+        SDL2_ttf::SDL2_ttf
         OpenGL::GL)
 
 if(FFMPEG_FOUND)
@@ -80,6 +81,5 @@ if(FFMPEG_FOUND)
             ${AVCODEC_LIBRARY}
             ${AVFORMAT_LIBRARY}
             ${AVUTIL_LIBRARY}
-            ${SWSCALE_LIBRARY}
-            ${SWRESAMPLE_LIBRARY})
+            ${SWSCALE_LIBRARY})
 endif()

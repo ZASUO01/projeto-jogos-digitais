@@ -16,6 +16,7 @@
 
 // Forward declaration
 class VideoPlayer;
+class MenuHUD;
 
 class Game{
 public:
@@ -73,6 +74,16 @@ private:
     // Video intro
     VideoPlayer* mVideoPlayer;
     bool mShowingVideo;
+    enum class VideoState {
+        Begin,           // begin.mp4 em loop
+        Abertura,        // abertura.mp4 (sem loop)
+        EntranceLoop     // entrance_loop.mp4 em loop
+    };
+    VideoState mVideoState;
+    double mAberturaStartTime;  // Tempo quando abertura.mp4 começou
+
+    // Menu HUD
+    MenuHUD* mMenuHUD;
 
     // Game-specific
     Ship* mShip;
