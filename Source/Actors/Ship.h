@@ -10,10 +10,26 @@ class Ship : public Actor
 public:
     explicit Ship(Game* game, float height,
                   float forwardForce = 500.0f,
-                  float rotationForce = 5.0);
+                  float rotationForce = 5.0,
+                  Vector3 color = Vector3(0.0f, 1.0f, 1.0f),
+                  bool isRedShip = false);
 
     void OnProcessInput(const Uint8* keyState) override;
     void OnUpdate(float deltaTime) override;
+    
+    int GetLives() const { return mLives; }
+    void SetLives(int lives) { 
+        if (mLives != lives) {
+            mLives = lives; 
+            UpdateLivesDisplay();
+        }
+    }
+    void TakeDamage() { 
+        if (mLives > 0) {
+            mLives--; 
+            UpdateLivesDisplay();
+        }
+    }
 
 private:
     enum class Direction {
@@ -32,19 +48,23 @@ private:
     float mLaserCooldown;
     float mHeight;
     float mSpawnPointTimer;
-    float mBurnCooldown;
     float mRotationCooldown;
+    int mLives;
+    Vector3 mShipColor;
+    bool mIsRedShip;
 
     Vector2 mTarget;
 
     class DrawComponent* mDrawComponent;
+    class Actor* mLivesActors[3]; // Actors filhos para os quadrados de vida
     class RigidBodyComponent* mRigidBodyComponent;
     class CircleColliderComponent* mCircleColliderComponent;
     class ParticleSystemComponent* mWeapon;
-    class ParticleSystemComponent* mTurbine;
 
     std::vector<Vector2> CreateShipVertices();
     std::vector<Vector2> CreateParticleVertices(float size);
+    std::vector<Vector2> CreateLifeSquareVertices();
+    void UpdateLivesDisplay();
     
     // Converte ângulo para a direção mais próxima
     Direction GetClosestDirection(float rotation) const;

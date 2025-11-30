@@ -27,6 +27,8 @@ Game::Game()
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
+        ,mShip1(nullptr)
+        ,mShip2(nullptr)
 {}
 
 bool Game::Initialize()
@@ -68,8 +70,16 @@ void Game::InitializeActors()
     // Create floor with grid background
     new Floor(this);
     
-    mShip = new Ship(this, 40, 300, 3);
-    mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
+    // Nave 1: canto superior direito (ciano mais escuro)
+    mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
+    mShip1->SetPosition(Vector2(Game::WINDOW_WIDTH - 100, 100));
+    
+    // Nave 2: canto inferior esquerdo (vermelha)
+    mShip2 = new Ship(this, 40, 300, 3, Vector3(1.0f, 0.0f, 0.0f), true);
+    mShip2->SetPosition(Vector2(100, Game::WINDOW_HEIGHT - 100));
+    
+    // Mantém mShip para compatibilidade (aponta para ship1)
+    mShip = mShip1;
 }
 
 void Game::RunLoop()
