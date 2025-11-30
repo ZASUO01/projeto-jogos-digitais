@@ -25,11 +25,14 @@ public:
         }
     }
     void TakeDamage() { 
-        if (mLives > 0) {
+        if (mLives > 0 && mInvincibilityTimer <= 0.0f) {
             mLives--; 
+            mInvincibilityTimer = 2.0f; // 2 segundos de invencibilidade
             UpdateLivesDisplay();
         }
     }
+    
+    bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
 
 private:
     enum class Direction {
@@ -49,6 +52,7 @@ private:
     float mHeight;
     float mSpawnPointTimer;
     float mRotationCooldown;
+    float mInvincibilityTimer;
     int mLives;
     Vector3 mShipColor;
     bool mIsRedShip;
@@ -56,14 +60,15 @@ private:
     Vector2 mTarget;
 
     class DrawComponent* mDrawComponent;
+    class DrawComponent* mColliderDrawComponent; // Círculo de colisão visível com glow
     class Actor* mLivesActors[3]; // Actors filhos para os quadrados de vida
     class RigidBodyComponent* mRigidBodyComponent;
     class CircleColliderComponent* mCircleColliderComponent;
-    class ParticleSystemComponent* mWeapon;
 
     std::vector<Vector2> CreateShipVertices();
     std::vector<Vector2> CreateParticleVertices(float size);
     std::vector<Vector2> CreateLifeSquareVertices();
+    std::vector<Vector2> CreateColliderCircleVertices(float radius);
     void UpdateLivesDisplay();
     
     // Converte ângulo para a direção mais próxima

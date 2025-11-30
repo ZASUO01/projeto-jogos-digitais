@@ -15,8 +15,11 @@
 #include "Game.h"
 #include "Actors/Ship.h"
 #include "Actors/Floor.h"
+#include "Actors/LaserBeam.h"
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
+#include "Components/LaserBeamComponent.h"
+#include "Components/CircleColliderComponent.h"
 #include "Random.h"
 #include "UI/Screens/MainMenu.h"
 #include "UI/Screens/GameOver.h"
@@ -224,6 +227,9 @@ void Game::UpdateActors(float deltaTime)
     }
     mPendingActors.clear();
 
+    // Detecção de colisão entre lasers e naves
+    CheckLaserCollisions();
+
     std::vector<Actor*> deadActors;
     for (auto &actor : mActors) {
         if (actor->GetState() == ActorState::Destroy) {
@@ -379,5 +385,38 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
     if (it != actors.end()) {
         std::iter_swap(it, actors.end() - 1);
         actors.pop_back();
+    }
+}
+
+void Game::CheckLaserCollisions()
+{
+    // Verifica colisões entre lasers e naves
+    for (auto actor : mActors) {
+        LaserBeam* laser = dynamic_cast<LaserBeam*>(actor);
+        if (laser && laser->GetState() == ActorState::Active) {
+            LaserBeamComponent* laserComp = laser->GetLaserComponent();
+            Ship* ownerShip = laser->GetOwnerShip();
+            if (laserComp && laserComp->IsActive()) {
+                // Verifica colisão com nave 1 (apenas se não for a dona do laser e não estiver invencível)
+                if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1 != ownerShip && !mShip1->IsInvincible()) {
+                    CircleColliderComponent* collider = mShip1->GetComponent<CircleColliderComponent>();
+                    if (collider) {
+                        if (laserComp->IntersectCircle(mShip1->GetPosition(), collider->GetRadius())) {
+                            mShip1->TakeDamage(); // Remove apenas 1 vida e ativa invencibilidade
+                        }
+                    }
+                }
+                
+                // Verifica colisão com nave 2 (apenas se não for a dona do laser e não estiver invencível)
+                if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2 != ownerShip && !mShip2->IsInvincible()) {
+                    CircleColliderComponent* collider = mShip2->GetComponent<CircleColliderComponent>();
+                    if (collider) {
+                        if (laserComp->IntersectCircle(mShip2->GetPosition(), collider->GetRadius())) {
+                            mShip2->TakeDamage(); // Remove apenas 1 vida e ativa invencibilidade
+                        }
+                    }
+                }
+            }
+        }
     }
 }

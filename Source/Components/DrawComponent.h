@@ -21,6 +21,7 @@ public:
     int GetDrawOrder() const { return mDrawOrder; }
 
     void SetVisible(bool visible) { mIsVisible = visible; }
+    class VertexArray* GetVertexArray() const { return mDrawArray; }
 
 protected:
     int mDrawOrder;

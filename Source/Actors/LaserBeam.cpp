@@ -1,0 +1,31 @@
+//
+// Created for laser beam actor
+//
+
+#include "LaserBeam.h"
+#include "../Game.h"
+#include "../Components/LaserBeamComponent.h"
+#include "Ship.h"
+
+LaserBeam::LaserBeam(class Game* game, const Vector2& startPos, float rotation, Vector3 color, class Ship* ownerShip)
+    : Actor(game)
+    , mLaserComponent(nullptr)
+    , mOwnerShip(ownerShip)
+{
+    SetPosition(startPos);
+    SetRotation(rotation);
+    
+    float screenWidth = static_cast<float>(Game::WINDOW_WIDTH);
+    float screenHeight = static_cast<float>(Game::WINDOW_HEIGHT);
+    
+    mLaserComponent = new LaserBeamComponent(this, color, 0.5f); // 0.5 segundos de duração
+    mLaserComponent->Activate(startPos, rotation, screenWidth, screenHeight);
+}
+
+void LaserBeam::OnUpdate(float deltaTime)
+{
+    if (mLaserComponent && !mLaserComponent->IsActive()) {
+        SetState(ActorState::Destroy);
+    }
+}
+
