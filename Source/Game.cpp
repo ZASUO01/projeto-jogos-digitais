@@ -31,6 +31,8 @@ Game::Game()
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
+        ,mShip1(nullptr)
+        ,mShip2(nullptr)
 {}
 
 bool Game::Initialize()
@@ -75,12 +77,19 @@ void Game::InitializeActors()
 {
     // Create floor with grid background
     new Floor(this);
-    
-    mShip = new Ship(this, 40, 300, 3);
-    // Posicionar a nave no centro da janela atual
+        // Posicionar a nave no centro da janela atual
     int windowWidth = GetWindowWidth();
     int windowHeight = GetWindowHeight();
-    mShip->SetPosition(Vector2(static_cast<float>(windowWidth) / 2.0f, static_cast<float>(windowHeight) / 2.0f));
+    // Nave 1: canto superior direito (ciano mais escuro)
+    mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
+    mShip1->SetPosition(Vector2(windowWidth - 100, 100));
+    
+    // Nave 2: canto inferior esquerdo (vermelha)
+    mShip2 = new Ship(this, 40, 300, 3, Vector3(1.0f, 0.0f, 0.0f), true);
+    mShip2->SetPosition(Vector2(100, windowHeight - 100));
+    
+    // Mantém mShip para compatibilidade (aponta para ship1)
+    mShip = mShip1;
 }
 
 int Game::GetWindowWidth() const

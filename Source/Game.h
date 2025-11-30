@@ -62,6 +62,8 @@ public:
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
     Ship *GetShip() const {return mShip; }
+    Ship *GetShip1() const {return mShip1; }
+    Ship *GetShip2() const {return mShip2; }
 
     // Scene Handling
     void SetScene(GameScene scene);
@@ -96,5 +98,7 @@ private:
     bool mUpdatingActors;
 
     // Game-specific
-    Ship* mShip;
+    Ship* mShip;  // Mantido para compatibilidade
+    Ship* mShip1; // Nave 1 (canto superior direito)
+    Ship* mShip2; // Nave 2 (canto inferior esquerdo)
 };
