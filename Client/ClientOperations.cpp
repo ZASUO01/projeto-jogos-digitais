@@ -145,11 +145,9 @@ bool ClientOperations::receiveDataPacketFromServer(Client *client) {
     // extract state
     const auto state = static_cast<const FullState*>(packet.GetData());
 
-    if (const uint32_t lasConfirmed = state->lastConfirmedInputSequence; lasConfirmed > client->GetLasConfirmedInputSequence()) {
-        client->SetLasConfirmedInputSequence(lasConfirmed);
-    }
+    const uint32_t received = state->lastConfirmedInputSequence;
+    client->SetLastReceivedInputSequence(received);
 
     client->SetRawState(state->rawState);
-
     return true;
 }

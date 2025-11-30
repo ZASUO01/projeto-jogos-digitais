@@ -40,6 +40,7 @@ Ship::Ship(Game* game,
 void Ship::OnProcessInput(const uint8_t* state)
 {
     if (state[SDL_SCANCODE_W]) {
+        /*
         Vector2 force;
         force.x = mForwardSpeed * Math::Cos(mRotation);
         force.y = mForwardSpeed * Math::Sin(mRotation);
@@ -50,22 +51,26 @@ void Ship::OnProcessInput(const uint8_t* state)
             mTurbine->EmitParticle(0.1f, 25000);
             mBurnCooldown = 0.2f;
         }
-
-
+        */
+        mPosition.y -= 10.0f;
     }
 
-    else if (state[SDL_SCANCODE_A]) {
-        mRigidBodyComponent->SetAngularSpeed(-mRotationForce);
-
-
+    if (state[SDL_SCANCODE_A]) {
+        //mRigidBodyComponent->SetAngularSpeed(-mRotationForce);
+        mPosition.x -= 10.0f;
     }
 
-    else if (state[SDL_SCANCODE_D]) {
-        mRigidBodyComponent->SetAngularSpeed(mRotationForce);
+    if (state[SDL_SCANCODE_D]) {
+        //mRigidBodyComponent->SetAngularSpeed(mRotationForce);
 
-
+        mPosition.x += 10.0f;
     }
 
+    if (state[SDL_SCANCODE_S]) {
+        mPosition.y += 10.0f;
+    }
+
+    /*
     else if (state[SDL_SCANCODE_SPACE]) {
         if (mLaserCooldown <= 0.f) {
             mWeapon->EmitParticle(1  , 16000);
@@ -75,10 +80,8 @@ void Ship::OnProcessInput(const uint8_t* state)
 
     else {
         mRigidBodyComponent->SetAngularSpeed(0);
-
-
     }
-
+    */
 }
 
 void Ship::OnUpdate(float deltaTime)

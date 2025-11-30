@@ -14,16 +14,17 @@
 uint32_t Client::mCurrentCommandSequence = 0;
 
 Client::Client(Game *game)
-:mState(ClientState::CLIENT_DOWN)
-,mSocket(-1)
-,mServerAddrV4{}
-,mCurrentPacketSequence(0)
-,mClientNonce(0)
-,mConnecting(false)
-,mDisconnecting(false)
-,mLasConfirmedInputSequence(0)
-,mGame(game)
-{}
+    : mState(ClientState::CLIENT_DOWN)
+      , mSocket(-1)
+      , mServerAddrV4{}
+      , mCurrentPacketSequence(0)
+      , mClientNonce(0)
+      , mConnecting(false)
+      , mDisconnecting(false)
+      , mLasRemovedInputSequence(0)
+      , mLastReceivedInputSequence(0)
+      , mGame(game) {
+}
 
 void Client::Initialize() {
     if (mState != ClientState::CLIENT_DOWN) {
@@ -143,14 +144,24 @@ void Client::ReceiveStateFromServer()  {
         return;
     }
 
+    // receive server response
     if (!ClientOperations::receiveDataPacketFromServer(this)) {
         return;
     }
-    CleanConfirmedCommands(mLasConfirmedInputSequence);
 
-    const float newX = mRawState.posX;
-    const float newY = mRawState.posY;
-    mGame->GetShip()->SetPosition(Vector2(newX, newY));
+    if (mLastReceivedInputSequence <= mLasRemovedInputSequence) {
+        return;
+    }
+
+    // remove commands already confirmed by the server
+    CleanConfirmedCommands(mLastReceivedInputSequence);
+
+    // force the game state to the server decision
+    const GameState gameState(mRawState);
+    mGame->SetAuthoritativeState(&gameState);
+
+    // apply again the rest of the commands
+    ReprocessLocalState();
 }
 
 void Client::CleanConfirmedCommands(uint32_t confirmedSequence) {
@@ -164,5 +175,18 @@ void Client::CleanConfirmedCommands(uint32_t confirmedSequence) {
 
     if (it != mCommands.begin()) {
         mCommands.erase(mCommands.begin(), it);
+        mLasRemovedInputSequence = confirmedSequence;
+    }
+}
+
+void Client::ReprocessLocalState() const {
+    if (mCommands.empty()) {
+        return;
+    }
+
+    for (const auto &cmd : mCommands) {
+        const auto state = SDLInputParser::revert(cmd.inputData);
+
+        mGame->GetShip()->ProcessInput(state);
     }
 }

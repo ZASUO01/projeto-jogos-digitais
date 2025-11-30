@@ -28,3 +28,9 @@ struct FullState {
     FullState(const RawState &raw, const uint32_t sequence)
     :rawState(raw), lastConfirmedInputSequence(sequence) {}
 };
+
+struct GameState {
+    RawState rawState;
+
+    explicit GameState(const RawState &raw) : rawState(raw) {}
+};

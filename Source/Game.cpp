@@ -95,6 +95,7 @@ void Game::ProcessInput()
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
     mClient->AddInput(state);
+    mShip->ProcessInput(state);
 
     /*
     unsigned int size = mActors.size();
@@ -241,4 +242,11 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
         std::iter_swap(it, actors.end() - 1);
         actors.pop_back();
     }
+}
+
+void Game::SetAuthoritativeState(const GameState *gameState) const {
+    const auto raw = gameState->rawState;
+
+    const auto newShipPos = Vector2(raw.posX, raw.posY);
+    mShip->SetPosition(newShipPos);
 }

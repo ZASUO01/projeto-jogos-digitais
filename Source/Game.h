@@ -45,7 +45,7 @@ public:
     Ship *GetShip() const {return mShip; }
 
     // Network specific
-    [[nodiscard]] class Client *GetClient() const { return mClient; }
+    void SetAuthoritativeState(const GameState* gameState) const;
 private:
     void ProcessInput();
     void UpdateGame();
@@ -75,6 +75,6 @@ private:
     Ship* mShip;
 
     // Network specific
-    Client *mClient;
+    class Client *mClient;
     Uint32 mNetTicksCount;
 };

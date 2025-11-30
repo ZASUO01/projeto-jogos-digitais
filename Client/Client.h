@@ -47,8 +47,7 @@ public:
 
     // State control
     void ReceiveStateFromServer();
-    [[nodiscard]] uint32_t GetLasConfirmedInputSequence() const { return mLasConfirmedInputSequence; }
-    void SetLasConfirmedInputSequence(const uint32_t inputSequence) { mLasConfirmedInputSequence = inputSequence; }
+    void SetLastReceivedInputSequence(const uint32_t inputSequence) { mLastReceivedInputSequence = inputSequence; }
 
     void SetRawState(const RawState& state) { mRawState = state; }
 private:
@@ -69,7 +68,9 @@ private:
 
     // State control
     RawState mRawState;
-    uint32_t mLasConfirmedInputSequence;
+    uint32_t mLastReceivedInputSequence;
+    uint32_t mLasRemovedInputSequence;
+    void ReprocessLocalState() const;
 
     // Game owner
     Game *mGame;

@@ -8,4 +8,5 @@
 
 namespace SDLInputParser {
     InputData parse(const Uint8 *keyState);
+    const Uint8 *revert(const InputData &input);
 };
