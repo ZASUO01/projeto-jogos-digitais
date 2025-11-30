@@ -44,21 +44,17 @@ bool Game::Initialize()
         return false;
     }
 
-    // Cria janela em tela cheia
-    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 
-                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL | SDL_WINDOW_FULLSCREEN);
+    // Cria janela em modo janela com resolução fixa
+    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                               WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
-    
-    // Obtém a resolução real da tela em modo fullscreen
-    int actualWidth, actualHeight;
-    SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
 
     mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(static_cast<float>(actualWidth), static_cast<float>(actualHeight));
+    mRenderer->Initialize(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT));
 
     // Init all game actors
     InitializeActors();
