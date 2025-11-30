@@ -8,6 +8,7 @@ project(${PROJECT_NAME})
 
 find_package(SDL2 2.32.2 EXACT REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
@@ -62,6 +63,8 @@ add_executable(${PROJECT_NAME}
         Source/Video/VideoPlayer.h
         Source/UI/MenuHUD.cpp
         Source/UI/MenuHUD.h
+        Source/Audio/OpeningAudio.cpp
+        Source/Audio/OpeningAudio.h
         Source/Main.cpp)
 
 target_include_directories(${PROJECT_NAME} PRIVATE
@@ -74,6 +77,7 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         GLEW::GLEW 
         SDL2::SDL2 
         SDL2_ttf::SDL2_ttf
+        SDL2_mixer::SDL2_mixer
         OpenGL::GL)
 
 if(FFMPEG_FOUND)

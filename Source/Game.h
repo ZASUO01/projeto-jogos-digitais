@@ -17,6 +17,7 @@
 // Forward declaration
 class VideoPlayer;
 class MenuHUD;
+class OpeningAudio;
 
 class Game{
 public:
@@ -81,9 +82,14 @@ private:
     };
     VideoState mVideoState;
     double mAberturaStartTime;  // Tempo quando abertura.mp4 começou
+    double mAberturaAudioStartTime;  // Tempo quando o áudio da abertura deve começar
+    bool mAberturaAudioPending;  // Se o áudio da abertura está aguardando para começar
 
     // Menu HUD
     MenuHUD* mMenuHUD;
+
+    // Opening Audio
+    OpeningAudio* mOpeningAudio;
 
     // Game-specific
     Ship* mShip;
