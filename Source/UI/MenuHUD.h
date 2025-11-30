@@ -39,9 +39,10 @@ private:
     bool mTextInputActive;
     bool mStartSelected;
 
-    static const int START_Y = 400;
-    static const int CONNECT_Y = 500;
-    static const int ARROW_X_OFFSET = 200;
-    static const int ARROW_SIZE = 30;
+    // Valores proporcionais à resolução base (1920x1080)
+    static const float START_Y_RATIO;      // 400/1080 ≈ 0.370
+    static const float CONNECT_Y_RATIO;     // 500/1080 ≈ 0.463
+    static const float ARROW_X_OFFSET_RATIO; // 200/1920 ≈ 0.104
+    static const float ARROW_SIZE_RATIO;    // 30/1080 ≈ 0.028
 };
 

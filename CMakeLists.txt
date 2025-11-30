@@ -87,7 +87,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
         SDL2_ttf::SDL2_ttf
         SDL2_mixer::SDL2_mixer
         OpenGL::GL)
-
 if(FFMPEG_FOUND)
     target_link_libraries(${PROJECT_NAME} PRIVATE
             ${AVCODEC_LIBRARY}
@@ -95,3 +94,4 @@ if(FFMPEG_FOUND)
             ${AVUTIL_LIBRARY}
             ${SWSCALE_LIBRARY})
 endif()
+

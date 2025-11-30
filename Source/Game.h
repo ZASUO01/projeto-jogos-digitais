@@ -36,10 +36,10 @@ public:
 
     class Renderer* GetRenderer() { return mRenderer; }
 
-    static const int WINDOW_WIDTH = 1920;
-    static const int WINDOW_HEIGHT = 1080;
-    static const int RENDER_WIDTH = 1920;
-    static const int RENDER_HEIGHT = 1080;
+    static const int WINDOW_WIDTH = 1280;
+    static const int WINDOW_HEIGHT = 720;
+    static const int RENDER_WIDTH = 1280;
+    static const int RENDER_HEIGHT = 720;
     void AddDrawable(class DrawComponent* drawable);
     void RemoveDrawable(class DrawComponent* drawable);
 
@@ -48,6 +48,10 @@ public:
     Ship *GetShip() const {return mShip; }
     Ship *GetShip1() const {return mShip1; }
     Ship *GetShip2() const {return mShip2; }
+    
+    // Modo debug: quando ativo, pula direto para a terceira fase (EntranceLoop)
+    static const bool DEBUG_MODE = true; // Altere para false para desativar
+    
 private:
     void ProcessInput();
     void UpdateGame();

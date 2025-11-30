@@ -72,20 +72,40 @@ bool Game::Initialize()
         SDL_Log("Failed to initialize opening audio");
     }
 
-    // Tentar carregar e tocar vídeo introdutório
-    mVideoPlayer = new VideoPlayer();
-    if (mVideoPlayer->PlayVideo("Opening/begin.mp4", mWindow, true)) {
-        mShowingVideo = true;
-        // Tocar áudio begin.mp3 junto com o vídeo
-        mOpeningAudio->PlayBegin(true);
-    } else {
-        SDL_Log("Failed to load intro video, continuing without it");
-        delete mVideoPlayer;
-        mVideoPlayer = nullptr;
-        InitializeActors();
-    }
-
     mMenuHUD = new MenuHUD();
+
+    // Modo debug: pular direto para a terceira fase (EntranceLoop)
+    if (Game::DEBUG_MODE) {
+        mVideoPlayer = new VideoPlayer();
+        if (mVideoPlayer->PlayVideo("Opening/entrance_loop.mp4", mWindow, true)) {
+            mShowingVideo = true;
+            mVideoState = VideoState::EntranceLoop;
+            // Tocar áudio loop.mp3 junto com o vídeo
+            if (mOpeningAudio) {
+                mOpeningAudio->PlayLoop(true);
+            }
+            // Mostrar menu HUD imediatamente na terceira fase
+            mMenuHUD->Show();
+        } else {
+            SDL_Log("Failed to load entrance_loop.mp4 in debug mode, starting game");
+            delete mVideoPlayer;
+            mVideoPlayer = nullptr;
+            InitializeActors();
+        }
+    } else {
+        // Tentar carregar e tocar vídeo introdutório
+        mVideoPlayer = new VideoPlayer();
+        if (mVideoPlayer->PlayVideo("Opening/begin.mp4", mWindow, true)) {
+            mShowingVideo = true;
+            // Tocar áudio begin.mp3 junto com o vídeo
+            mOpeningAudio->PlayBegin(true);
+        } else {
+            SDL_Log("Failed to load intro video, continuing without it");
+            delete mVideoPlayer;
+            mVideoPlayer = nullptr;
+            InitializeActors();
+        }
+    }
 
     mTicksCount = SDL_GetTicks();
 

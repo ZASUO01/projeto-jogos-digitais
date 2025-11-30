@@ -1,5 +1,11 @@
 #include "MenuHUD.h"
 
+// Valores proporcionais à resolução base (1920x1080)
+const float MenuHUD::START_Y_RATIO = 400.0f / 720.0f;      // ≈ 0.463
+const float MenuHUD::CONNECT_Y_RATIO = 530.0f / 720.0f;    // ≈ 0.556 (100 pixels abaixo de START em 1080p)
+const float MenuHUD::ARROW_X_OFFSET_RATIO = 150.0f / 1280.0f; // ≈ 0.156
+const float MenuHUD::ARROW_SIZE_RATIO = 30.0f / 720.0f;    // ≈ 0.028
+
 MenuHUD::MenuHUD()
     : mState(MenuState::Hidden)
     , mSelectedOption(0)
@@ -43,9 +49,18 @@ void MenuHUD::RenderMenu(SDL_Renderer* renderer)
     int windowWidth, windowHeight;
     SDL_GetRendererOutputSize(renderer, &windowWidth, &windowHeight);
 
-    int arrowY = mSelectedOption == 0 ? START_Y + 20 : CONNECT_Y + 20;
-    int arrowX = windowWidth / 2 - ARROW_X_OFFSET;
-    RenderArrow(renderer, arrowX, arrowY, ARROW_SIZE);
+    // Calcular posições e tamanhos proporcionais à resolução atual
+    int startY = static_cast<int>(windowHeight * START_Y_RATIO);
+    int connectY = static_cast<int>(windowHeight * CONNECT_Y_RATIO);
+    int arrowXOffset = static_cast<int>(windowWidth * ARROW_X_OFFSET_RATIO);
+    int arrowSize = static_cast<int>(windowHeight * ARROW_SIZE_RATIO);
+    
+    // Offset vertical adicional proporcional (20 pixels em 1080p)
+    int verticalOffset = static_cast<int>(windowHeight * (20.0f / 1080.0f));
+    
+    int arrowY = mSelectedOption == 0 ? startY + verticalOffset : connectY + verticalOffset;
+    int arrowX = windowWidth / 2 - arrowXOffset;
+    RenderArrow(renderer, arrowX, arrowY, arrowSize);
 }
 
 void MenuHUD::RenderConnectScreen(SDL_Renderer* renderer)
