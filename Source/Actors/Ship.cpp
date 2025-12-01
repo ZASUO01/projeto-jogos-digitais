@@ -5,6 +5,7 @@
 #include "../Components/DrawComponent.h"
 #include "../Components/LaserBeamComponent.h"
 #include "../Actors/LaserBeam.h"
+#include "../Audio/OpeningAudio.h"
 
 Ship::Ship(Game* game,
            const float height,
@@ -126,6 +127,11 @@ void Ship::OnProcessInput(const uint8_t* state)
             Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f);
             new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this);
             mLaserCooldown = 0.2f;
+            
+            // Tocar som de tiro
+            if (GetGame()->GetOpeningAudio()) {
+                GetGame()->GetOpeningAudio()->PlayShoot();
+            }
         }
     }
 }

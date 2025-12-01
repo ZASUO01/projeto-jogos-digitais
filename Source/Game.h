@@ -48,6 +48,7 @@ public:
     Ship *GetShip() const {return mShip; }
     Ship *GetShip1() const {return mShip1; }
     Ship *GetShip2() const {return mShip2; }
+    OpeningAudio* GetOpeningAudio() { return mOpeningAudio; }
     
     // Modo debug: quando ativo, pula direto para a terceira fase (EntranceLoop)
     static const bool DEBUG_MODE = true; // Altere para false para desativar

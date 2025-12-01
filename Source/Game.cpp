@@ -156,6 +156,8 @@ void Game::ProcessInput()
                         }
                         if (mOpeningAudio) {
                             mOpeningAudio->Stop();
+                            // Tocar áudio do loop como som de fundo durante o jogo (volume baixo mas perceptível)
+                            mOpeningAudio->PlayLoopBackground(true, 30); // Volume 30 de 128 (~23%)
                         }
                         mShowingVideo = false;
                         if (mActors.empty()) {
@@ -238,6 +240,11 @@ void Game::UpdateGame()
     if (deltaTime > 0.05f)
     {
         deltaTime = 0.05f;
+    }
+    
+    // Atualizar áudio (verificar loops) durante o jogo
+    if (mOpeningAudio && !mShowingVideo) {
+        mOpeningAudio->Update();
     }
 
     mTicksCount = SDL_GetTicks();

@@ -8,6 +8,7 @@ OpeningAudio::OpeningAudio()
     : mBeginChunk(nullptr)
     , mAberturaChunk(nullptr)
     , mLoopChunk(nullptr)
+    , mShootChunk(nullptr)
     , mBeginChannel(-1)
     , mAberturaChannel(-1)
     , mLoopChannel(-1)
@@ -51,8 +52,8 @@ bool OpeningAudio::Initialize()
 
     // Tentar carregar os arquivos de áudio WAV (usando o mesmo padrão dos vídeos)
     std::vector<std::string> pathsToTry;
-    std::string beginPath, aberturaPath, loopPath;
-    bool foundBegin = false, foundAbertura = false, foundLoop = false;
+    std::string beginPath, aberturaPath, loopPath, shootPath;
+    bool foundBegin = false, foundAbertura = false, foundLoop = false, foundShoot = false;
 
     // Tentar begin.wav
     pathsToTry.push_back("Opening/begin.wav");
@@ -168,6 +169,44 @@ bool OpeningAudio::Initialize()
         SDL_Log("Could not find loop.wav in any of the searched paths");
     }
 
+    // Tentar Shoot.wav (som de tiro)
+    pathsToTry.clear();
+    pathsToTry.push_back("Opening/Shoot.wav");
+    pathsToTry.push_back("../Opening/Shoot.wav");
+    pathsToTry.push_back("../../Opening/Shoot.wav");
+    
+    #if SDL_VERSION_ATLEAST(2, 0, 1)
+    basePath = SDL_GetBasePath();
+    if (basePath) {
+        std::string basePathStr(basePath);
+        SDL_free(basePath);
+        pathsToTry.push_back(basePathStr + "Opening/Shoot.wav");
+        pathsToTry.push_back(basePathStr + "../Opening/Shoot.wav");
+    }
+    #endif
+
+    for (const auto& path : pathsToTry) {
+        std::ifstream file(path, std::ios::binary);
+        if (file.good()) {
+            file.close();
+            shootPath = path;
+            foundShoot = true;
+            break;
+        }
+    }
+
+    if (foundShoot) {
+        SDL_Log("Attempting to load Shoot.wav from: %s", shootPath.c_str());
+        mShootChunk = Mix_LoadWAV(shootPath.c_str());
+        if (!mShootChunk) {
+            SDL_Log("Failed to load Shoot.wav: %s", Mix_GetError());
+        } else {
+            SDL_Log("Successfully loaded Shoot.wav");
+        }
+    } else {
+        SDL_Log("Could not find Shoot.wav in any of the searched paths");
+    }
+
     mInitialized = true;
     return true;
 }
@@ -189,6 +228,11 @@ void OpeningAudio::Shutdown()
     if (mLoopChunk) {
         Mix_FreeChunk(mLoopChunk);
         mLoopChunk = nullptr;
+    }
+
+    if (mShootChunk) {
+        Mix_FreeChunk(mShootChunk);
+        mShootChunk = nullptr;
     }
 
     if (mInitialized) {
@@ -265,6 +309,35 @@ bool OpeningAudio::PlayLoop(bool loop)
     mBeginPlaying = false;
     mAberturaPlaying = false;
     mLoopPlaying = true;
+
+    return true;
+}
+
+bool OpeningAudio::PlayLoopBackground(bool loop, int volume)
+{
+    if (!mInitialized || !mLoopChunk) {
+        return false;
+    }
+
+    // Não parar outros áudios se já estiver tocando o loop
+    if (!mLoopPlaying) {
+        mLoopLoop = loop;
+        int loops = loop ? -1 : 0;
+        
+        mLoopChannel = Mix_PlayChannel(-1, mLoopChunk, loops);
+        if (mLoopChannel == -1) {
+            SDL_Log("Failed to play loop.wav as background: %s", Mix_GetError());
+            return false;
+        }
+
+        // Ajustar volume para ser baixo mas perceptível (volume de 0-128, usar ~30 para ~23% do volume)
+        Mix_Volume(mLoopChannel, volume);
+        
+        mLoopPlaying = true;
+    } else {
+        // Se já está tocando, apenas ajustar o volume
+        Mix_Volume(mLoopChannel, volume);
+    }
 
     return true;
 }
@@ -387,5 +460,22 @@ void OpeningAudio::Update()
             }
         }
     }
+}
+
+bool OpeningAudio::PlayShoot()
+{
+    if (!mInitialized || !mShootChunk) {
+        return false;
+    }
+
+    // Tocar o som de tiro em um canal separado (não interfere com outros sons)
+    // Volume padrão (128) para ser audível
+    int channel = Mix_PlayChannel(-1, mShootChunk, 0);
+    if (channel == -1) {
+        SDL_Log("Failed to play Shoot.wav: %s", Mix_GetError());
+        return false;
+    }
+
+    return true;
 }
 

@@ -15,6 +15,10 @@ public:
     bool PlayBegin(bool loop = true);      // begin.wav com begin.mp4
     bool PlayAbertura(bool loop = false);   // abertura.wav com abertura.mp4
     bool PlayLoop(bool loop = true);        // loop.wav com entrance_loop.mp4
+    bool PlayLoopBackground(bool loop = true, int volume = 30); // Toca loop como som de fundo com volume reduzido
+    
+    // Som de tiro
+    bool PlayShoot(); // Toca Shoot.wav quando a nave atira
 
     void Stop();
     void StopBegin();
@@ -32,6 +36,7 @@ private:
     Mix_Chunk* mBeginChunk;
     Mix_Chunk* mAberturaChunk;
     Mix_Chunk* mLoopChunk;
+    Mix_Chunk* mShootChunk;
     
     int mBeginChannel;
     int mAberturaChannel;
