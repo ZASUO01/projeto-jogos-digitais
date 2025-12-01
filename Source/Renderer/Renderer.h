@@ -36,6 +36,7 @@ public:
 
 private:
     bool LoadShaders();
+    std::string FindShaderPath(const std::string& shaderName);
 
     // Game
     class Game* mGame;

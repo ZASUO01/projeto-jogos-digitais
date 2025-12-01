@@ -53,7 +53,10 @@ bool Game::Initialize()
     }
 
     mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT));
+    if (!mRenderer->Initialize(static_cast<float>(WINDOW_WIDTH), static_cast<float>(WINDOW_HEIGHT))) {
+        SDL_Log("Failed to initialize renderer.");
+        return false;
+    }
 
     InitializeActors();
 
