@@ -2,11 +2,9 @@
 
 ## Screenshots
 
-_Adicione aqui capturas de tela mostrando diferentes momentos do jogo, como:_
-- Tela de abertura com vídeo introdutório
-- Menu principal
-- Gameplay com as duas naves em combate
-- Sistema de vidas e interface do jogo
+<img width="1249" height="700" alt="image" src="https://github.com/user-attachments/assets/1df6d819-3b9d-4b64-80cb-a15fd48e7cce" />
+
+<img width="1256" height="703" alt="image" src="https://github.com/user-attachments/assets/5ff85deb-c2f9-40f3-a903-2a00ca738806" />
 
 ## Controles
 
@@ -80,18 +78,4 @@ Durante o playtesting, preste atenção especial às seguintes funcionalidades:
 - **Pedro Souza** - [Atribuições específicas]
 - **Fabio Marra** - [Atribuições específicas]
 
-### Atribuições de Tarefas
-
-_Descreva aqui a divisão de trabalho entre os membros do grupo, por exemplo:_
-
-- **Sistema de Cenas e Gerenciamento de Estado**: [Nome do integrante]
-- **Sistema de Combate e Colisões**: [Nome do integrante]
-- **Sistema de Vídeo e Áudio**: [Nome do integrante]
-- **Interface e UI**: [Nome do integrante]
-- **Sistema de Renderização**: [Nome do integrante]
-- **Game Design e Balanceamento**: [Nome do integrante]
-
----
-
-**Desenvolvido como projeto acadêmico - 2025**
 
