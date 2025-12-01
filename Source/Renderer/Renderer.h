@@ -47,6 +47,7 @@ public:
 private:
     bool LoadShaders();
     void CreateSpriteVerts();
+    std::string FindShaderPath(const std::string& shaderName);
 
     // Game
     class Game* mGame;

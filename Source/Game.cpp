@@ -67,7 +67,10 @@ bool Game::Initialize()
     SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
 
     mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(actualWidth, actualHeight);
+    if (!mRenderer->Initialize(actualWidth, actualHeight)) {
+        SDL_Log("Failed to initialize renderer.");
+        return false;
+    }
 
     // Iniciar com a tela de abertura (vídeo)
     new OpeningScreen(this);
