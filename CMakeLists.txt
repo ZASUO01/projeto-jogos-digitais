@@ -35,8 +35,16 @@ add_executable(${PROJECT_NAME}
         Source/Components/ParticleSystemComponent.h
         Source/Components/CircleColliderComponent.cpp
         Source/Components/CircleColliderComponent.h
+        Source/Components/GridDrawComponent.cpp
+        Source/Components/GridDrawComponent.h
+        Source/Components/LaserBeamComponent.cpp
+        Source/Components/LaserBeamComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
+        Source/Actors/Floor.cpp
+        Source/Actors/Floor.h
+        Source/Actors/LaserBeam.cpp
+        Source/Actors/LaserBeam.h
         Source/Main.cpp
         Client/Client.cpp
         Client/Client.h

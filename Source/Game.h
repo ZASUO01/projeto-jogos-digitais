@@ -30,13 +30,12 @@ public:
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
 
-    // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
 
     static const int WINDOW_WIDTH = 1024;
     static const int WINDOW_HEIGHT = 768;
-
-    // Draw functions
+    static const int RENDER_WIDTH = 1024;
+    static const int RENDER_HEIGHT = 768;
     void AddDrawable(class DrawComponent* drawable);
     void RemoveDrawable(class DrawComponent* drawable);
 
@@ -46,33 +45,29 @@ public:
 
     // Network specific
     void SetAuthoritativeState(const GameState* gameState) const;
+    Ship *GetShip1() const {return mShip1; }
+    Ship *GetShip2() const {return mShip2; }
 private:
     void ProcessInput();
     void UpdateGame();
     void GenerateOutput();
     void RemoveActorFromVector(std::vector< Actor*> &actors,  Actor *actor);
+    void CheckLaserCollisions();
 
-    // All the actors in the game
     std::vector<class Actor*> mActors;
     std::vector<class Actor*> mPendingActors;
-
-    // All the draw components
     std::vector<class DrawComponent*> mDrawables;
 
-    // SDL stuff
     SDL_Window* mWindow;
     class Renderer* mRenderer;
-
-    // Track elapsed time since game start
     Uint32 mTicksCount;
-
-    // Track if we're updating actors right now
     bool mIsRunning;
     bool mIsDebugging;
     bool mUpdatingActors;
 
-    // Game-specific
     Ship* mShip;
+    Ship* mShip1;
+    Ship* mShip2;
 
     // Network specific
     class Client *mClient;

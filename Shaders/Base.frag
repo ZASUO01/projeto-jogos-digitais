@@ -9,12 +9,32 @@
 // Request GLSL 3.3
 #version 330
 
-// This corresponds to the output color to the color buffer
+// Fragment shader base para renderização de objetos com suporte a alpha e efeitos de glow
+
 out vec4 outColor;
 uniform vec3 uColor;
+uniform float uAlpha;
 
 void main()
 {
-	// Sample color from texture
-    outColor = vec4(uColor, 1.0);
+	float alpha = uAlpha;
+	if (alpha <= 0.0) {
+		alpha = 1.0;
+	}
+	
+	bool isGlow = uColor.g > 0.5 && uColor.b > 0.5 && uColor.r < 0.3 && alpha < 0.8;
+	bool isBlackLine = uColor.r < 0.1 && uColor.g < 0.1 && uColor.b < 0.1 && alpha >= 0.9;
+	
+	vec3 finalColor;
+	if (isGlow) {
+		finalColor = uColor * 2.0;
+		finalColor = clamp(finalColor, 0.0, 1.0);
+	} else if (isBlackLine) {
+		finalColor = vec3(0.0, 0.0, 0.0);
+	} else {
+		finalColor = uColor * 1.2;
+		finalColor = clamp(finalColor, 0.0, 1.0);
+	}
+	
+	outColor = vec4(finalColor, alpha);
 }

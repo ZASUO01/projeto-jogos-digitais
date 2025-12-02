@@ -9,7 +9,7 @@
 #include "../Components/DrawComponent.h"
 #include "../Random.h"
 
-Particle::Particle(class Game* game, std::vector<Vector2> &vertices, SystemType type)
+Particle::Particle(class Game* game, std::vector<Vector2> &vertices, SystemType type, Vector3 color, bool filled)
     : Actor(game)
     , mDrawComponent(nullptr)
     , mRigidBodyComponent(nullptr)
@@ -18,7 +18,7 @@ Particle::Particle(class Game* game, std::vector<Vector2> &vertices, SystemType 
     , mLifeTime(1.0f)
     , mSystemType(type)
 {
-    mDrawComponent = new DrawComponent(this, vertices);
+    mDrawComponent = new DrawComponent(this, vertices, 100, color, filled);
     mRigidBodyComponent = new RigidBodyComponent(this);
     mCircleColliderComponent = new CircleColliderComponent(this, 2);
 
@@ -55,12 +55,14 @@ void Particle::OnUpdate(float deltaTime)
 }
 
 ParticleSystemComponent::ParticleSystemComponent(class Actor* owner, std::vector<Vector2> &vertices, int poolSize, int updateOrder,
-    SystemType type)
+    SystemType type, Vector3 color, bool filled)
     : Component(owner, updateOrder)
     ,mSystemType(type)
+    ,mParticleColor(color)
+    ,mParticleFilled(filled)
 {
     for (int i = 0; i < poolSize; i++) {
-        auto particle = new Particle(mOwner->GetGame(), vertices, type);
+        auto particle = new Particle(mOwner->GetGame(), vertices, type, color, filled);
         mParticles.emplace_back(particle);
     }
 }
@@ -98,9 +100,11 @@ void ParticleSystemComponent::EmitParticle(float lifetime, float speed, const Ve
             Vector2 newPosition = offsetPosition + mOwner->GetPosition();
             particle->Awake(newPosition, mOwner->GetRotation(), lifetime);
 
+            // Para nave vermelha, velocidade maior (1.5x)
+            float actualSpeed = mParticleFilled ? speed * 1.5f : speed;
             Vector2 shootForce;
-            shootForce.x = speed * Math::Cos(mOwner->GetRotation());
-            shootForce.y = speed * Math::Sin(mOwner->GetRotation());
+            shootForce.x = actualSpeed * Math::Cos(mOwner->GetRotation());
+            shootForce.y = actualSpeed * Math::Sin(mOwner->GetRotation());
             particle->GetComponent<RigidBodyComponent>()->ApplyForce(shootForce);
             return;
         }
