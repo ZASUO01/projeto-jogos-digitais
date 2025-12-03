@@ -133,6 +133,7 @@ void Client::SendCommandsToServer() const {
     }
 
     if (mCommands.empty()) {
+        ClientOperations::sendPingToServer(this);
         return;
     }
 
@@ -186,6 +187,6 @@ void Client::ReprocessLocalState() const {
     for (const auto &cmd : mCommands) {
         const auto state = SDLInputParser::revert(cmd.inputData);
 
-        mGame->GetShip()->ProcessInput(state);
+        //mGame->GetShip()->ProcessInput(state);
     }
 }

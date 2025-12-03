@@ -153,3 +153,22 @@ bool ClientOperations::receiveDataPacketFromServer(Client *client) {
     client->SetRawState(state->rawState);
     return true;
 }
+
+void ClientOperations::sendPingToServer(const Client *client) {
+    Packet packet(
+        client->GetCurrentPacketSequence(),
+        Packet::PING_FLAG,
+        client->GetClientNonce()
+    );
+    packet.BuildPacket();
+
+    constexpr size_t packetSize = Packet::PACKET_HEADER_BYTES;
+    sockaddr_in addr = client->GetServerAddress();
+
+    SocketUtils::sendPacketToV4(
+        client->GetSocket(),
+        &packet,
+        packetSize,
+        &addr
+    );
+}

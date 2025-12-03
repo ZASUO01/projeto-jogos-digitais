@@ -29,28 +29,22 @@ Game::Game()
         ,mIsRunning(true)
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
-        ,mShip(nullptr)
         ,mClient(nullptr)
         ,mNetTicksCount(0)
-        ,mEnemy(nullptr)
-        ,mShip1(nullptr)
-        ,mShip2(nullptr)
+        ,mPlayer(nullptr)
 {}
 
-bool Game::Initialize()
-{
+bool Game::Initialize(){
     Random::Init();
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
-    {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0){
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    mWindow = SDL_CreateWindow("Line Casters", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
-    if (!mWindow)
-    {
+    if (!mWindow){
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
@@ -70,26 +64,13 @@ bool Game::Initialize()
     InitializeActors();
 
     mTicksCount = SDL_GetTicks();
+    mIsRunning = mTicksCount;
 
     return true;
 }
 
-void Game::InitializeActors()
-{
+void Game::InitializeActors(){
     new Floor(this);
-
-    mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
-    mShip1->SetPosition(Vector2(Game::WINDOW_WIDTH - 100, 100));
-
-    mShip2 = new Ship(this, 40, 300, 3, Vector3(1.0f, 0.0f, 0.0f), true);
-    mShip2->SetPosition(Vector2(100, Game::WINDOW_HEIGHT - 100));
-
-    mShip = mShip1;
-    mShip = new Ship(this, 40, 300, 3);
-    mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
-
-    mEnemy = new Ship(this, 40, 300, 3);
-    mEnemy->SetPosition(Vector2(0, 0));
 }
 
 void Game::RunLoop()
@@ -122,7 +103,7 @@ void Game::ProcessInput()
         Quit();
     }
     mClient->AddInput(state);
-    mShip->ProcessInput(state);
+    //mShip->ProcessInput(state);
 
     /*
     unsigned int size = mActors.size();
@@ -280,6 +261,7 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
 }
 
 void Game::SetAuthoritativeState(const GameState *gameState) const {
+    /*
     const auto raw = gameState->rawState;
 
     const auto newShipPos = Vector2(raw.posX, raw.posY);
@@ -289,12 +271,13 @@ void Game::SetAuthoritativeState(const GameState *gameState) const {
 
     const auto newOtherPos = Vector2(other.posX, other.posY);
     mEnemy->SetPosition(newOtherPos);
-
+    */
 }
 
 
 void Game::CheckLaserCollisions()
 {
+    /*
     for (auto actor : mActors) {
         LaserBeam* laser = dynamic_cast<LaserBeam*>(actor);
         if (laser && laser->GetState() == ActorState::Active) {
@@ -321,4 +304,5 @@ void Game::CheckLaserCollisions()
             }
         }
     }
+    */
 }

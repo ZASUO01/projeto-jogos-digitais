@@ -41,12 +41,9 @@ public:
 
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
-    Ship *GetShip() const {return mShip; }
-
     // Network specific
     void SetAuthoritativeState(const GameState* gameState) const;
-    Ship *GetShip1() const {return mShip1; }
-    Ship *GetShip2() const {return mShip2; }
+
 private:
     void ProcessInput();
     void UpdateGame();
@@ -65,12 +62,12 @@ private:
     bool mIsDebugging;
     bool mUpdatingActors;
 
-    Ship* mShip;
-    Ship* mShip1;
-    Ship* mShip2;
 
     // Network specific
     class Client *mClient;
     Uint32 mNetTicksCount;
-    Ship* mEnemy;
+
+    // Game specific
+    Ship* mPlayer;
+    std::vector<Ship *> mEnemies;
 };
