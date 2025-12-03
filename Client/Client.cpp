@@ -23,7 +23,9 @@ Client::Client(Game *game)
       , mDisconnecting(false)
       , mLastReceivedInputSequence(0)
       , mLasRemovedInputSequence(0)
-      , mGame(game) {
+      , mGame(game)
+      ,mIsPlayerSet(false)
+{
 }
 
 void Client::Initialize() {
@@ -150,13 +152,20 @@ void Client::ReceiveStateFromServer()  {
         return;
     }
 
+    if (!mIsPlayerSet) {
+        const auto pos = Vector2(mRawState.posX, mRawState.posY);
+        mGame->SetPlayer(pos);
+        mIsPlayerSet = true;
+        return;
+    }
+
     if (mLastReceivedInputSequence > mLasRemovedInputSequence) {
         // remove commands already confirmed by the server
         CleanConfirmedCommands(mLastReceivedInputSequence);
     }
 
     // force the game state to the server decision
-    const GameState gameState(mRawState, mOtherState);
+    const GameState gameState(mRawState);
 
     mGame->SetAuthoritativeState(&gameState);
 
@@ -187,6 +196,7 @@ void Client::ReprocessLocalState() const {
     for (const auto &cmd : mCommands) {
         const auto state = SDLInputParser::revert(cmd.inputData);
 
-        //mGame->GetShip()->ProcessInput(state);
+        mGame->ActorsInput(state);
+        mGame->UpdateActors(Game::SIM_DELTA_TIME);
     }
 }

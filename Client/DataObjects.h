@@ -16,9 +16,9 @@ struct Command {
 };
 
 struct RawState {
-    float posX, posY;
+    float posX, posY, rotation;
 
-    RawState() : posX(0), posY(0) {}
+    RawState() : posX(0), posY(0), rotation(0) {}
 };
 
 struct OtherState {
@@ -29,17 +29,15 @@ struct OtherState {
 
 struct FullState {
     RawState rawState;
-    OtherState otherState;
     uint32_t lastConfirmedInputSequence;
 
-    FullState(const RawState &raw, const OtherState &other, const uint32_t sequence)
-    :rawState(raw), otherState(other), lastConfirmedInputSequence(sequence) {}
+    FullState(const RawState &raw, const uint32_t sequence)
+    :rawState(raw), lastConfirmedInputSequence(sequence) {}
 };
 
 struct GameState {
     RawState rawState;
-    OtherState otherState;
 
-    explicit GameState(const RawState &raw, const OtherState &other)
-    :rawState(raw), otherState(other) {}
+    explicit GameState(const RawState &raw)
+    :rawState(raw) {}
 };

@@ -52,78 +52,48 @@ Ship::Ship(Game* game,
     UpdateLivesDisplay();
 }
 
-void Ship::OnProcessInput(const uint8_t* state)
-{
+void Ship::OnProcessInput(const Uint8* keyState){
     bool up, down, left, right;
 
     if (mIsRedShip) {
-        up = state[SDL_SCANCODE_UP];
-        down = state[SDL_SCANCODE_DOWN];
-        left = state[SDL_SCANCODE_LEFT];
-        right = state[SDL_SCANCODE_RIGHT];
+        up = keyState[SDL_SCANCODE_UP];
+        down = keyState[SDL_SCANCODE_DOWN];
+        left = keyState[SDL_SCANCODE_LEFT];
+        right = keyState[SDL_SCANCODE_RIGHT];
     } else {
-        up = state[SDL_SCANCODE_W];
-        down = state[SDL_SCANCODE_S];
-        left = state[SDL_SCANCODE_A];
-        right = state[SDL_SCANCODE_D];
+        up = keyState[SDL_SCANCODE_W];
+        down = keyState[SDL_SCANCODE_S];
+        left = keyState[SDL_SCANCODE_A];
+        right = keyState[SDL_SCANCODE_D];
     }
 
-    if ((up && down) || (left && right)) {
-        mRigidBodyComponent->SetVelocity(Vector2::Zero);
-    } else {
-        Vector2 velocity = Vector2::Zero;
-        Direction targetDirection = GetClosestDirection(GetRotation());
+    Vector2 velocity = Vector2::Zero;
 
-        if (up && !down) {
-            velocity.y = -mForwardSpeed;
-        } else if (down && !up) {
-            velocity.y = mForwardSpeed;
-        }
+    if (up && !down) {
+        velocity.y = -mForwardSpeed;
+    } else if (down && !up) {
+        velocity.y = mForwardSpeed;
+    }
 
-        if (left && !right) {
-            velocity.x = -mForwardSpeed;
-        } else if (right && !left) {
-            velocity.x = mForwardSpeed;
-        }
+    if (left && !right) {
+        velocity.x = -mForwardSpeed;
+    } else if (right && !left) {
+        velocity.x = mForwardSpeed;
+    }
 
-        if (velocity.x != 0.0f || velocity.y != 0.0f) {
-            if (up && !down) {
-                if (left && !right) {
-                    targetDirection = Direction::UpLeft;
-                } else if (right && !left) {
-                    targetDirection = Direction::DownRight;
-                } else {
-                    targetDirection = Direction::Up;
-                }
-            } else if (down && !up) {
-                if (left && !right) {
-                    targetDirection = Direction::DownLeft;
-                } else if (right && !left) {
-                    targetDirection = Direction::UpRight;
-                } else {
-                    targetDirection = Direction::Down;
-                }
-            } else {
-                if (left && !right) {
-                    targetDirection = Direction::Left;
-                } else if (right && !left) {
-                    targetDirection = Direction::Right;
-                }
-            }
-
-            SetRotation(DirectionToRadians(targetDirection));
-        }
-
+    if (velocity.x != 0.0f || velocity.y != 0.0f) {
+        SetRotation(Math::Atan2(velocity.y, velocity.x));
         if (velocity.x != 0.0f && velocity.y != 0.0f) {
-            float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+            const float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+
             velocity.x = (velocity.x / length) * mForwardSpeed;
             velocity.y = (velocity.y / length) * mForwardSpeed;
         }
-
-        mRigidBodyComponent->SetVelocity(velocity);
     }
+    mRigidBodyComponent->SetVelocity(velocity);
 
-    bool shoot = mIsRedShip ? (state[SDL_SCANCODE_RETURN] || state[SDL_SCANCODE_RCTRL]) : state[SDL_SCANCODE_SPACE];
+    /*
+    bool shoot = mIsRedShip ? (keyState[SDL_SCANCODE_RETURN] || keyState[SDL_SCANCODE_RCTRL]) : keyState[SDL_SCANCODE_SPACE];
     if (shoot) {
         if (mLaserCooldown <= 0.f) {
             Vector3 laserColor = mIsRedShip ? Vector3(1.0f, 0.0f, 0.0f) : Vector3(0.0f, 1.0f, 0.0f);
@@ -132,10 +102,11 @@ void Ship::OnProcessInput(const uint8_t* state)
             mLaserCooldown = 0.2f;
         }
     }
+    */
 }
 
-void Ship::OnUpdate(float deltaTime)
-{
+void Ship::OnUpdate(const float deltaTime){
+    /*
     mLaserCooldown -= deltaTime;
     if (mLaserCooldown <= 0) {
         mLaserCooldown = 0.f;
@@ -179,6 +150,7 @@ void Ship::OnUpdate(float deltaTime)
             mLivesActors[i]->SetPosition(GetPosition() + Vector2(offsetX, -offsetY));
         }
     }
+    */
 }
 
 std::vector<Vector2> Ship::CreateShipVertices() {

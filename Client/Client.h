@@ -76,4 +76,5 @@ private:
 
     // Game owner
     Game *mGame;
+    bool mIsPlayerSet;
 };

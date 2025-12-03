@@ -61,7 +61,7 @@ bool Game::Initialize(){
     mClient->Connect();
 
     // Init all game actors
-    InitializeActors();
+    InitFloor();
 
     mTicksCount = SDL_GetTicks();
     mIsRunning = mTicksCount;
@@ -69,7 +69,7 @@ bool Game::Initialize(){
     return true;
 }
 
-void Game::InitializeActors(){
+void Game::InitFloor(){
     new Floor(this);
 }
 
@@ -83,37 +83,43 @@ void Game::RunLoop()
     }
 }
 
-void Game::ProcessInput()
-{
+void Game::ProcessInput(){
     SDL_Event event;
-    while (SDL_PollEvent(&event))
-    {
-        switch (event.type)
-        {
+    while (SDL_PollEvent(&event)){
+        switch (event.type){
             case SDL_QUIT:
                 Quit();
                 break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.scancode == SDL_SCANCODE_ESCAPE) {
+                    Quit();
+                }
+                break;
+            default:
+                break;
         }
     }
-
     const Uint8* state = SDL_GetKeyboardState(nullptr);
 
-    if (state[SDL_SCANCODE_ESCAPE])
-    {
-        Quit();
-    }
+    // Store commands
     mClient->AddInput(state);
-    //mShip->ProcessInput(state);
 
-    /*
-    unsigned int size = mActors.size();
+    // Execute prediction
+    ActorsInput(state);
+
+}
+
+void Game::ActorsInput(const Uint8 *state) const {
+    const unsigned int size = mActors.size();
     for (unsigned int i = 0; i < size; ++i) {
         mActors[i]->ProcessInput(state);
     }
-    */
 }
 
 void Game::UpdateGame(){
+    // Execute prediciton
+    UpdateActors(SIM_DELTA_TIME);
+
     // Receive packets
     mClient->ReceiveStateFromServer();
 
@@ -123,16 +129,8 @@ void Game::UpdateGame(){
         mNetTicksCount = SDL_GetTicks();
     }
 
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
-
-    float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-    if (deltaTime > 0.05f){
-        deltaTime = 0.05f;
-    }
-
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16)) {}
     mTicksCount = SDL_GetTicks();
-
-    UpdateActors(deltaTime);
 }
 
 void Game::UpdateActors(float deltaTime)
@@ -261,17 +259,13 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
 }
 
 void Game::SetAuthoritativeState(const GameState *gameState) const {
-    /*
     const auto raw = gameState->rawState;
 
-    const auto newShipPos = Vector2(raw.posX, raw.posY);
-    mShip->SetPosition(newShipPos);
+    const auto newPlayerPos = Vector2(raw.posX, raw.posY);
+    const auto rotation = raw.rotation;
 
-    const auto other = gameState->otherState;
-
-    const auto newOtherPos = Vector2(other.posX, other.posY);
-    mEnemy->SetPosition(newOtherPos);
-    */
+    mPlayer->SetPosition(newPlayerPos);
+    mPlayer->SetRotation(rotation);
 }
 
 
@@ -305,4 +299,13 @@ void Game::CheckLaserCollisions()
         }
     }
     */
+}
+
+void Game::SetPlayer(const Vector2 &position) {
+    if (mPlayer != nullptr) {
+        return;
+    }
+
+    mPlayer = new Ship(this, 50);
+    mPlayer->SetPosition(position);
 }

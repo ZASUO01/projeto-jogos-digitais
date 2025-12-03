@@ -25,7 +25,8 @@ public:
     void Quit() { mIsRunning = false; }
 
     // Actor functions
-    void InitializeActors();
+    void InitFloor();
+    void ActorsInput(const Uint8 *state) const;
     void UpdateActors(float deltaTime);
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
@@ -36,6 +37,8 @@ public:
     static const int WINDOW_HEIGHT = 768;
     static const int RENDER_WIDTH = 1024;
     static const int RENDER_HEIGHT = 768;
+    static constexpr float SIM_DELTA_TIME = 1.0f / 60.0f;
+
     void AddDrawable(class DrawComponent* drawable);
     void RemoveDrawable(class DrawComponent* drawable);
 
@@ -44,6 +47,8 @@ public:
     // Network specific
     void SetAuthoritativeState(const GameState* gameState) const;
 
+    // Game specific
+    void SetPlayer(const Vector2 &position);
 private:
     void ProcessInput();
     void UpdateGame();
