@@ -9,7 +9,7 @@
 #pragma once
 #include <SDL.h>
 #include <vector>
-
+#include <unordered_map>
 #include "Actors/Ship.h"
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
@@ -49,6 +49,7 @@ public:
 
     // Game specific
     void SetPlayer(const Vector2 &position);
+    void SetEnemy(int id, const Vector2 &position);
 private:
     void ProcessInput();
     void UpdateGame();
@@ -74,5 +75,5 @@ private:
 
     // Game specific
     Ship* mPlayer;
-    std::vector<Ship *> mEnemies;
+    std::unordered_map<int, Ship*> mEnemies;
 };

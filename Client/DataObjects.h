@@ -22,17 +22,21 @@ struct RawState {
 };
 
 struct OtherState {
-    float posX, posY;
+    int id;
+    float posX, posY, rotation;
 
-    OtherState() : posX(0), posY(0) {}
+    OtherState(const int id, const float x, const float y, const float rot) :id(id), posX(x), posY(y), rotation(rot) {}
+    OtherState() :id(-1), posX(0), posY(0), rotation(0) {}
 };
 
 struct FullState {
     RawState rawState;
+    OtherState *otherState;
+    size_t otherStateSize;
     uint32_t lastConfirmedInputSequence;
 
-    FullState(const RawState &raw, const uint32_t sequence)
-    :rawState(raw), lastConfirmedInputSequence(sequence) {}
+    FullState(const RawState &raw,const uint32_t sequence)
+    :rawState(raw), otherState(nullptr), otherStateSize(0), lastConfirmedInputSequence(sequence) {}
 };
 
 struct GameState {

@@ -159,6 +159,10 @@ void Client::ReceiveStateFromServer()  {
         return;
     }
 
+    for (const auto other: mOtherStates) {
+        mGame->SetEnemy(other.id, Vector2(other.posX, other.posY));
+    }
+
     if (mLastReceivedInputSequence > mLasRemovedInputSequence) {
         // remove commands already confirmed by the server
         CleanConfirmedCommands(mLastReceivedInputSequence);

@@ -105,8 +105,9 @@ void Game::ProcessInput(){
     mClient->AddInput(state);
 
     // Execute prediction
-    ActorsInput(state);
-
+    if (mPlayer != nullptr) {
+        mPlayer->ProcessInput(state);
+    }
 }
 
 void Game::ActorsInput(const Uint8 *state) const {
@@ -118,7 +119,9 @@ void Game::ActorsInput(const Uint8 *state) const {
 
 void Game::UpdateGame(){
     // Execute prediciton
-    UpdateActors(SIM_DELTA_TIME);
+    if (mPlayer != nullptr) {
+        mPlayer->Update(SIM_DELTA_TIME);
+    }
 
     // Receive packets
     mClient->ReceiveStateFromServer();
@@ -308,4 +311,12 @@ void Game::SetPlayer(const Vector2 &position) {
 
     mPlayer = new Ship(this, 50);
     mPlayer->SetPosition(position);
+}
+
+void Game::SetEnemy(const int id,const Vector2 &position) {
+    if (mEnemies.find(id) == mEnemies.end()) {
+        auto enemy = new Ship(this, 50);
+        enemy->SetPosition(position);
+        mEnemies.emplace(id, enemy);
+    }
 }
