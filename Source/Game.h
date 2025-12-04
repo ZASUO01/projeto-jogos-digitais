@@ -49,6 +49,7 @@ public:
 
     // Game specific
     void SetPlayer(const Vector2 &position);
+    Ship* GetPlayer() const { return mPlayer; }
     void SetEnemy(int id, const Vector2 &position);
 private:
     void ProcessInput();

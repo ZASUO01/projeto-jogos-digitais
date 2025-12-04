@@ -35,7 +35,7 @@ Actor::~Actor()
     mComponents.clear();
 }
 
-void Actor::Update(float deltaTime)
+void Actor::Update(const float deltaTime)
 {
     if (mState == ActorState::Active)
     {

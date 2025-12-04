@@ -27,6 +27,7 @@ public:
 
     // Update function called from Game (not overridable)
     void Update(float deltaTime);
+
     // ProcessInput function called from Game (not overridable)
     void ProcessInput(const Uint8* keyState);
 

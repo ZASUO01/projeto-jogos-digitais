@@ -200,7 +200,7 @@ void Client::ReprocessLocalState() const {
     for (const auto &cmd : mCommands) {
         const auto state = SDLInputParser::revert(cmd.inputData);
 
-        mGame->ActorsInput(state);
-        mGame->UpdateActors(Game::SIM_DELTA_TIME);
+        mGame->GetPlayer()->ProcessInput(state);
+        mGame->GetPlayer()->Update(Game::SIM_DELTA_TIME);
     }
 }
