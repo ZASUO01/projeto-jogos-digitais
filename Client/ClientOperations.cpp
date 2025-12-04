@@ -148,7 +148,7 @@ bool ClientOperations::receiveDataPacketFromServer(Client *client) {
     const uint32_t received = state->lastConfirmedInputSequence;
     client->SetLastReceivedInputSequence(received);
 
-    client->SetOtherState(state->otherState, state->otherStateSize);
+    client->SetOtherState(state->otherStates, state->otherStateSize);
 
     client->SetRawState(state->rawState);
     return true;

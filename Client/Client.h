@@ -50,8 +50,9 @@ public:
     void SetLastReceivedInputSequence(const uint32_t inputSequence) { mLastReceivedInputSequence = inputSequence; }
 
     void SetRawState(const RawState& state) { mRawState = state; }
-    void SetOtherState(OtherState *states, const size_t statesSize) {
-        mOtherStates = std::vector(states, states + statesSize);
+    void SetOtherState(const OtherState states[MAX_OTHER_STATES], const size_t statesSize) {
+        const size_t sizeToUse = std::min(statesSize, static_cast<size_t>(MAX_OTHER_STATES));
+        mOtherStates.assign(states, states + sizeToUse);
     }
 
 private:

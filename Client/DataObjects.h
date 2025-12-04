@@ -29,14 +29,16 @@ struct OtherState {
     OtherState() :id(-1), posX(0), posY(0), rotation(0) {}
 };
 
+#define MAX_OTHER_STATES 3
+
 struct FullState {
     RawState rawState;
-    OtherState *otherState;
+    OtherState otherStates[MAX_OTHER_STATES];
     size_t otherStateSize;
     uint32_t lastConfirmedInputSequence;
 
     FullState(const RawState &raw,const uint32_t sequence)
-    :rawState(raw), otherState(nullptr), otherStateSize(0), lastConfirmedInputSequence(sequence) {}
+    :rawState(raw), otherStateSize(0), lastConfirmedInputSequence(sequence) {}
 };
 
 struct GameState {
