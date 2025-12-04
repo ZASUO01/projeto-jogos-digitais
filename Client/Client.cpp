@@ -167,11 +167,8 @@ void Client::ReceiveStateFromServer()  {
         // remove commands already confirmed by the server
         CleanConfirmedCommands(mLastReceivedInputSequence);
     }
-
-    // force the game state to the server decision
-    const GameState gameState(mRawState);
-
-    mGame->SetAuthoritativeState(&gameState);
+    
+    mGame->SetAuthoritativeState(mRawState, mOtherStates);
 
     // apply again the rest of the commands
     ReprocessLocalState();

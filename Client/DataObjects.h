@@ -4,6 +4,8 @@
 
 #pragma once
 #include <cstdint>
+#include <vector>
+
 #include "InputData.h"
 
 // Commands to be sent to the server
@@ -43,7 +45,11 @@ struct FullState {
 
 struct GameState {
     RawState rawState;
+    std::vector<OtherState> otherStates;
 
-    explicit GameState(const RawState &raw)
-    :rawState(raw) {}
+    explicit GameState(const RawState &raw, const OtherState others[MAX_OTHER_STATES], size_t otherStateSize)
+    :rawState(raw) {
+        const size_t minSize = std::min(otherStateSize, static_cast<size_t>(MAX_OTHER_STATES));
+        otherStates.assign(others, others + minSize);
+    }
 };

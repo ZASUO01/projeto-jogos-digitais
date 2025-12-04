@@ -261,14 +261,22 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
     }
 }
 
-void Game::SetAuthoritativeState(const GameState *gameState) const {
-    const auto raw = gameState->rawState;
-
+void Game::SetAuthoritativeState(const RawState& raw, const std::vector<OtherState> &others) const {
     const auto newPlayerPos = Vector2(raw.posX, raw.posY);
     const auto rotation = raw.rotation;
 
     mPlayer->SetPosition(newPlayerPos);
     mPlayer->SetRotation(rotation);
+
+    for (const auto& other : others) {
+        if (const auto it = mEnemies.find(other.id); it != mEnemies.end()) {
+            const auto newEnemyPos = Vector2(other.posX, other.posY);
+            const auto newRotation = other.rotation;
+
+            it->second->SetPosition(newEnemyPos);
+            it->second->SetRotation(newRotation);
+        }
+    }
 }
 
 
@@ -316,6 +324,7 @@ void Game::SetPlayer(const Vector2 &position) {
 void Game::SetEnemy(const int id,const Vector2 &position) {
     if (mEnemies.find(id) == mEnemies.end()) {
         auto enemy = new Ship(this, 50);
+
         enemy->SetPosition(position);
         mEnemies.emplace(id, enemy);
     }

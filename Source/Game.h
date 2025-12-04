@@ -45,7 +45,7 @@ public:
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
     // Network specific
-    void SetAuthoritativeState(const GameState* gameState) const;
+    void SetAuthoritativeState(const RawState& raw, const std::vector<OtherState> &others) const;
 
     // Game specific
     void SetPlayer(const Vector2 &position);
