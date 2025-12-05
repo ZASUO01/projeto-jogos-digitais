@@ -24,7 +24,6 @@ Client::Client(Game *game)
       , mLastReceivedInputSequence(0)
       , mLasRemovedInputSequence(0)
       , mGame(game)
-      ,mIsPlayerSet(false)
 {
 }
 
@@ -152,26 +151,31 @@ void Client::ReceiveStateFromServer()  {
         return;
     }
 
-    if (!mIsPlayerSet) {
-        const auto pos = Vector2(mRawState.posX, mRawState.posY);
-        mGame->SetPlayer(pos);
-        mIsPlayerSet = true;
+    // set the player if not set yet
+    if (!mGame->IsPlayerSet()) {
+        mGame->SetPlayer(Vector2(mRawState.posX, mRawState.posY), mRawState.rotation);
         return;
     }
 
-    for (const auto other: mOtherStates) {
-        mGame->SetEnemy(other.id, Vector2(other.posX, other.posY));
-    }
-
+    // remove commands already confirmed by the server
     if (mLastReceivedInputSequence > mLasRemovedInputSequence) {
-        // remove commands already confirmed by the server
         CleanConfirmedCommands(mLastReceivedInputSequence);
     }
-    
-    mGame->SetAuthoritativeState(mRawState, mOtherStates);
+
+    // set the state sent by the server
+    mGame->SetPlayerState(mRawState);
 
     // apply again the rest of the commands
     ReprocessLocalState();
+
+    // control enemies state
+    for (const auto other: mOtherStates) {
+        if (!mGame->IsEnemySet(other.id)) {
+            mGame->SetEnemy(other.id, Vector2(other.posX, other.posY), other.rotation);
+        }else {
+            mGame->SetEnemiesState(mOtherStates);
+        }
+    }
 }
 
 void Client::CleanConfirmedCommands(uint32_t confirmedSequence) {

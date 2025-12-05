@@ -7,6 +7,7 @@
 // ----------------------------------------------------------------
 
 #pragma once
+#include <chrono>
 #include <SDL.h>
 #include <vector>
 #include <unordered_map>
@@ -44,13 +45,18 @@ public:
 
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
-    // Network specific
-    void SetAuthoritativeState(const RawState& raw, const std::vector<OtherState> &others) const;
-
     // Game specific
-    void SetPlayer(const Vector2 &position);
+    bool IsPlayerSet() const { return mIsPlayerSet; }
+    void SetPlayer(const Vector2 &position, float rotation);
     Ship* GetPlayer() const { return mPlayer; }
-    void SetEnemy(int id, const Vector2 &position);
+    bool IsEnemySet(int id);
+    void SetEnemy(int id, const Vector2 &position, float rotation);
+
+    // Game State
+    void SetPlayerState(const RawState& raw) const;
+    void SetEnemiesState(const std::vector<OtherState> &others);
+    void RemoveInactiveEnemies();
+
 private:
     void ProcessInput();
     void UpdateGame();
@@ -76,5 +82,8 @@ private:
 
     // Game specific
     Ship* mPlayer;
+    bool mIsPlayerSet;
     std::unordered_map<int, Ship*> mEnemies;
+    std::unordered_map<int, std::chrono::steady_clock::time_point> mEnemiesLastUpdate;
+    static constexpr int ENEMY_RESPONSE_TIMEOUT_SECONDS = 2;
 };

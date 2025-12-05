@@ -32,6 +32,7 @@ Game::Game()
         ,mClient(nullptr)
         ,mNetTicksCount(0)
         ,mPlayer(nullptr)
+        ,mIsPlayerSet(false)
 {}
 
 bool Game::Initialize(){
@@ -105,26 +106,22 @@ void Game::ProcessInput(){
     mClient->AddInput(state);
 
     // Execute prediction
-    if (mPlayer != nullptr) {
+    if (mIsPlayerSet) {
         mPlayer->ProcessInput(state);
     }
 }
 
-void Game::ActorsInput(const Uint8 *state) const {
-    const unsigned int size = mActors.size();
-    for (unsigned int i = 0; i < size; ++i) {
-        mActors[i]->ProcessInput(state);
-    }
-}
-
 void Game::UpdateGame(){
-    // Execute prediciton
-    if (mPlayer != nullptr) {
+    // Execute prediction
+    if (mIsPlayerSet) {
         mPlayer->Update(SIM_DELTA_TIME);
     }
 
     // Receive packets
     mClient->ReceiveStateFromServer();
+
+    // control enemies list
+    RemoveInactiveEnemies();
 
     // Wait 100ms to send the next inputs batch
     if (SDL_TICKS_PASSED(SDL_GetTicks(), mNetTicksCount + 100)) {
@@ -134,34 +131,6 @@ void Game::UpdateGame(){
 
     while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16)) {}
     mTicksCount = SDL_GetTicks();
-}
-
-void Game::UpdateActors(float deltaTime)
-{
-    mUpdatingActors = true;
-    for (auto &actor : mActors) {
-        actor->Update(deltaTime);
-    }
-    mUpdatingActors = false;
-
-    for (auto &pending: mPendingActors) {
-        mActors.emplace_back(pending);
-    }
-    mPendingActors.clear();
-
-    CheckLaserCollisions();
-
-    std::vector<Actor*> deadActors;
-    for (auto &actor : mActors) {
-        if (actor->GetState() == ActorState::Destroy) {
-            deadActors.emplace_back(actor);
-        }
-    }
-
-    for (auto actor : deadActors) {
-        delete actor;
-    }
-
 }
 
 void Game::AddActor(Actor* actor)
@@ -261,25 +230,6 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
     }
 }
 
-void Game::SetAuthoritativeState(const RawState& raw, const std::vector<OtherState> &others) const {
-    const auto newPlayerPos = Vector2(raw.posX, raw.posY);
-    const auto rotation = raw.rotation;
-
-    mPlayer->SetPosition(newPlayerPos);
-    mPlayer->SetRotation(rotation);
-
-    for (const auto& other : others) {
-        if (const auto it = mEnemies.find(other.id); it != mEnemies.end()) {
-            const auto newEnemyPos = Vector2(other.posX, other.posY);
-            const auto newRotation = other.rotation;
-
-            it->second->SetPosition(newEnemyPos);
-            it->second->SetRotation(newRotation);
-        }
-    }
-}
-
-
 void Game::CheckLaserCollisions()
 {
     /*
@@ -312,20 +262,67 @@ void Game::CheckLaserCollisions()
     */
 }
 
-void Game::SetPlayer(const Vector2 &position) {
-    if (mPlayer != nullptr) {
+void Game::SetPlayer(const Vector2 &position, const float rotation) {
+    if (mIsPlayerSet) {
         return;
     }
 
     mPlayer = new Ship(this, 50);
     mPlayer->SetPosition(position);
+    mPlayer->SetRotation(rotation);
+    mIsPlayerSet = true;
 }
 
-void Game::SetEnemy(const int id,const Vector2 &position) {
+bool Game::IsEnemySet(const int id) {
     if (mEnemies.find(id) == mEnemies.end()) {
-        auto enemy = new Ship(this, 50);
+        return false;
+    }
+    return true;
+}
 
+void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) {
+        auto enemy = new Ship(this, 50);
         enemy->SetPosition(position);
+        enemy->SetRotation(rotation);
         mEnemies.emplace(id, enemy);
+        mEnemiesLastUpdate.emplace(id, std::chrono::steady_clock::now());
+}
+
+void Game::SetPlayerState(const RawState& raw) const {
+    const auto newPlayerPos = Vector2(raw.posX, raw.posY);
+    const auto rotation = raw.rotation;
+
+    mPlayer->SetPosition(newPlayerPos);
+    mPlayer->SetRotation(rotation);
+}
+
+void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
+    for (const auto& other : others) {
+        if (const auto it = mEnemies.find(other.id); it != mEnemies.end()) {
+            const auto enemy = it->second;
+            enemy->SetPosition(Vector2(other.posX, other.posY));
+            enemy->SetRotation(other.rotation);
+
+            if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {
+                it1->second = std::chrono::steady_clock::now();
+            }
+        }
+    }
+}
+
+void Game::RemoveInactiveEnemies() {
+    const auto now = std::chrono::steady_clock::now();
+    const auto timeout = std::chrono::seconds(ENEMY_RESPONSE_TIMEOUT_SECONDS);
+
+    for (auto it = mEnemiesLastUpdate.begin(); it != mEnemiesLastUpdate.end();) {
+        if (const auto secondsPassed= std::chrono::duration_cast<std::chrono::seconds>(now - it->second); secondsPassed > timeout) {
+            if (const auto enemyIt = mEnemies.find(it->first); enemyIt!= mEnemies.end()) {
+                mEnemies.erase(enemyIt);
+            }
+
+            it = mEnemiesLastUpdate.erase(it);
+        } else {
+            ++it;
+        }
     }
 }
