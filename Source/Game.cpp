@@ -312,11 +312,12 @@ void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
 
 void Game::RemoveInactiveEnemies() {
     const auto now = std::chrono::steady_clock::now();
-    const auto timeout = std::chrono::seconds(ENEMY_RESPONSE_TIMEOUT_SECONDS);
+    const auto timeout = std::chrono::milliseconds(ENEMY_RESPONSE_TIMEOUT_MS);
 
     for (auto it = mEnemiesLastUpdate.begin(); it != mEnemiesLastUpdate.end();) {
-        if (const auto secondsPassed= std::chrono::duration_cast<std::chrono::seconds>(now - it->second); secondsPassed > timeout) {
+        if (const auto secondsPassed= std::chrono::duration_cast<std::chrono::milliseconds>(now - it->second); secondsPassed > timeout) {
             if (const auto enemyIt = mEnemies.find(it->first); enemyIt!= mEnemies.end()) {
+                delete enemyIt->second;
                 mEnemies.erase(enemyIt);
             }
 

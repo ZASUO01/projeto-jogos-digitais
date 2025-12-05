@@ -85,5 +85,5 @@ private:
     bool mIsPlayerSet;
     std::unordered_map<int, Ship*> mEnemies;
     std::unordered_map<int, std::chrono::steady_clock::time_point> mEnemiesLastUpdate;
-    static constexpr int ENEMY_RESPONSE_TIMEOUT_SECONDS = 2;
+    static constexpr int ENEMY_RESPONSE_TIMEOUT_MS = 500;
 };
