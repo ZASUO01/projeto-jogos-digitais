@@ -10,7 +10,7 @@
 #include <chrono>
 #include <SDL.h>
 #include <vector>
-#include <unordered_map>
+#include <map>
 #include "Actors/Ship.h"
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
@@ -55,7 +55,6 @@ public:
     // Game State
     void SetPlayerState(const RawState& raw) const;
     void SetEnemiesState(const std::vector<OtherState> &others);
-    void RemoveInactiveEnemies();
 
 private:
     void ProcessInput();
@@ -83,7 +82,11 @@ private:
     // Game specific
     Ship* mPlayer;
     bool mIsPlayerSet;
-    std::unordered_map<int, Ship*> mEnemies;
-    std::unordered_map<int, std::chrono::steady_clock::time_point> mEnemiesLastUpdate;
+    std::map<int, Ship*> mEnemies;
+    std::map<int, std::chrono::steady_clock::time_point> mEnemiesLastUpdate;
+    std::map<int, InterpolationState> mEnemiesTargets;
     static constexpr int ENEMY_RESPONSE_TIMEOUT_MS = 500;
+    static constexpr float INTERPOLATION_FACTOR = 0.2f;
+    void InterpolateEnemies();
+    void RemoveInactiveEnemies();
 };

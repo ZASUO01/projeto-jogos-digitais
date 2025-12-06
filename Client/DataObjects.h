@@ -43,13 +43,6 @@ struct FullState {
     :rawState(raw), otherStateSize(0), lastConfirmedInputSequence(sequence) {}
 };
 
-struct GameState {
-    RawState rawState;
-    std::vector<OtherState> otherStates;
-
-    explicit GameState(const RawState &raw, const OtherState others[MAX_OTHER_STATES], size_t otherStateSize)
-    :rawState(raw) {
-        const size_t minSize = std::min(otherStateSize, static_cast<size_t>(MAX_OTHER_STATES));
-        otherStates.assign(others, others + minSize);
-    }
+struct InterpolationState {
+    float targetPosX, targetPosY, targetRotation;
 };

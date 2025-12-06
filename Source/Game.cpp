@@ -120,6 +120,9 @@ void Game::UpdateGame(){
     // Receive packets
     mClient->ReceiveStateFromServer();
 
+    // execute enemies state interpolation
+    InterpolateEnemies();
+
     // control enemies list
     RemoveInactiveEnemies();
 
@@ -286,6 +289,8 @@ void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) 
         enemy->SetRotation(rotation);
         mEnemies.emplace(id, enemy);
         mEnemiesLastUpdate.emplace(id, std::chrono::steady_clock::now());
+
+        mEnemiesTargets[id] = {position.x, position.y, rotation};
 }
 
 void Game::SetPlayerState(const RawState& raw) const {
@@ -298,15 +303,45 @@ void Game::SetPlayerState(const RawState& raw) const {
 
 void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
     for (const auto& other : others) {
-        if (const auto it = mEnemies.find(other.id); it != mEnemies.end()) {
-            const auto enemy = it->second;
-            enemy->SetPosition(Vector2(other.posX, other.posY));
-            enemy->SetRotation(other.rotation);
-
-            if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {
-                it1->second = std::chrono::steady_clock::now();
-            }
+        if (mEnemiesTargets.find(other.id) == mEnemiesTargets.end()) {
+            mEnemiesTargets[other.id] = {other.posX, other.posY, other.rotation};
+        } else {
+            mEnemiesTargets[other.id].targetPosX = other.posX;
+            mEnemiesTargets[other.id].targetPosY = other.posY;
+            mEnemiesTargets[other.id].targetRotation = other.rotation;
         }
+
+        if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {
+            it1->second = std::chrono::steady_clock::now();
+        }
+    }
+}
+
+void Game::InterpolateEnemies() {
+    for (auto& [id, enemy] : mEnemies) {
+        if (mEnemiesTargets.find(id) == mEnemiesTargets.end()) {
+            continue;
+        }
+
+        const auto&[targetPosX, targetPosY, targetRotation] = mEnemiesTargets[id];
+        const Vector2 currentPos = enemy->GetPosition();
+        const float currentRot = enemy->GetRotation();
+
+        // Position interpolation (Lerp)
+        // curent + (target - current) * fator
+        const float diffX = targetPosX - currentPos.x;
+        const float diffY = targetPosY - currentPos.y;
+
+        const float newPosX = currentPos.x + (diffX * INTERPOLATION_FACTOR);
+        const float newPosY = currentPos.y + (diffY * INTERPOLATION_FACTOR);
+
+        const auto newPos = Vector2(newPosX, newPosY);
+        enemy->SetPosition(newPos);
+
+        // Rotation interpolation
+        const float rotDiff = targetRotation - currentRot;
+        const float newRot = currentRot + (rotDiff * INTERPOLATION_FACTOR);
+        enemy->SetRotation(newRot);
     }
 }
 
