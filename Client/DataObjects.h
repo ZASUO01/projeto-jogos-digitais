@@ -4,8 +4,7 @@
 
 #pragma once
 #include <cstdint>
-#include <vector>
-
+#include <chrono>
 #include "InputData.h"
 
 // Commands to be sent to the server
@@ -43,13 +42,10 @@ struct FullState {
     :rawState(raw), otherStateSize(0), lastConfirmedInputSequence(sequence) {}
 };
 
-struct GameState {
-    RawState rawState;
-    std::vector<OtherState> otherStates;
+struct InterpolatedState {
+    float posX, posY, rotation;
+    std::chrono::steady_clock::time_point receptionTime;
 
-    explicit GameState(const RawState &raw, const OtherState others[MAX_OTHER_STATES], size_t otherStateSize)
-    :rawState(raw) {
-        const size_t minSize = std::min(otherStateSize, static_cast<size_t>(MAX_OTHER_STATES));
-        otherStates.assign(others, others + minSize);
-    }
+    InterpolatedState(const float posX, const float posY, const float rot, const std::chrono::steady_clock::time_point& time)
+        : posX(posX), posY(posY), rotation(rot), receptionTime(time) {}
 };

@@ -120,6 +120,9 @@ void Game::UpdateGame(){
     // Receive packets
     mClient->ReceiveStateFromServer();
 
+    // execute enemies state interpolation
+    InterpolateEnemies();
+
     // control enemies list
     RemoveInactiveEnemies();
 
@@ -297,15 +300,97 @@ void Game::SetPlayerState(const RawState& raw) const {
 }
 
 void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
+    const auto now = std::chrono::steady_clock::now();
+
     for (const auto& other : others) {
         if (const auto it = mEnemies.find(other.id); it != mEnemies.end()) {
             const auto enemy = it->second;
-            enemy->SetPosition(Vector2(other.posX, other.posY));
-            enemy->SetRotation(other.rotation);
+
+            mEnemyStateBuffers[other.id].emplace_back(
+                other.posX,
+                other.posY,
+                other.rotation,
+                now
+            );
+
+            auto& buffer = mEnemyStateBuffers[other.id];
+            if (buffer.size() > 5) {
+                buffer.erase(buffer.begin(), buffer.begin() + buffer.size() - 5);
+            }
 
             if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {
                 it1->second = std::chrono::steady_clock::now();
             }
+        }
+    }
+}
+
+void Game::InterpolateEnemies() {
+    const auto now = std::chrono::steady_clock::now();
+    const auto interpolationDelay = std::chrono::milliseconds(static_cast<int>(INTERPOLATION_DELAY_MS));
+    const auto targetTime = now - interpolationDelay;
+
+    for (auto const& [id, enemy] : mEnemies) {
+        auto& buffer = mEnemyStateBuffers[id];
+
+        if (buffer.size() < 2) {
+            continue;
+        }
+
+        auto itA = std::find_if(
+            buffer.rbegin(),
+            buffer.rend(),
+            [&targetTime](const InterpolatedState& state) {
+                return state.receptionTime <= targetTime;
+            }
+        );
+
+        if (itA == buffer.rend()) {
+            auto pos = Vector2(buffer.front().posX, buffer.front().posY);
+
+            enemy->SetPosition(pos);
+            enemy->SetRotation(buffer.front().rotation);
+            continue;
+        }
+
+
+        auto itB = itA.base();
+        if (itB == buffer.end()) {
+            auto pos = Vector2(buffer.back().posX, buffer.back().posY);
+
+            enemy->SetPosition(pos);
+            enemy->SetRotation(buffer.back().rotation);
+            continue;
+        }
+
+        // calculate the interpolation factor
+        const InterpolatedState& stateA = *itA;
+        const InterpolatedState& stateB = *itB;
+
+
+        const auto totalDuration = std::chrono::duration_cast<std::chrono::microseconds>(stateB.receptionTime - stateA.receptionTime).count();
+        const auto elapsedDuration = std::chrono::duration_cast<std::chrono::microseconds>(targetTime - stateA.receptionTime).count();
+
+        float k = 0.0f;
+        if (totalDuration > 0) {
+            k = static_cast<float>(elapsedDuration) / totalDuration;
+        }
+
+
+        const float interpolatedPosX =
+            stateA.posX + (stateB.posX - stateA.posX) * k;
+
+        const float interpolatedPosY =
+            stateA.posY + (stateB.posY - stateA.posY) * k;
+
+        const float interpolatedRotation =
+            stateA.rotation + (stateB.rotation - stateA.rotation) * k;
+
+        enemy->SetPosition(Vector2{interpolatedPosX, interpolatedPosY});
+        enemy->SetRotation(interpolatedRotation);
+
+        if (buffer.front().receptionTime < targetTime - std::chrono::milliseconds(200)) {
+            buffer.erase(buffer.begin());
         }
     }
 }
