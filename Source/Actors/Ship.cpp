@@ -4,6 +4,7 @@
 #include "../Components/RigidBodyComponent.h"
 #include "../Components/DrawComponent.h"
 #include "../Components/LaserBeamComponent.h"
+#include "../Components/TrailComponent.h"
 #include "../Actors/LaserBeam.h"
 
 Ship::Ship(Game* game,
@@ -19,15 +20,16 @@ Ship::Ship(Game* game,
         , mHeight(height)
         , mRotationCooldown(0.f)
         , mInvincibilityTimer(0.0f)
-        , mLives(3)
+        , mLives(4)
         , mShipColor(color)
         , mIsRedShip(isRedShip)
         , mDrawComponent(nullptr)
         , mColliderDrawComponent(nullptr)
         , mRigidBodyComponent(nullptr)
         , mCircleColliderComponent(nullptr)
+        , mTrailComponent(nullptr)
 {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         mLivesActors[i] = nullptr;
     }
     
@@ -44,6 +46,10 @@ Ship::Ship(Game* game,
     Vector3 glowColor = mIsRedShip ? Vector3(1.0f, 0.3f, 0.3f) : Vector3(0.3f, 1.0f, 1.0f);
     mColliderDrawComponent = new ColliderDrawComponent(this, circleVertices, 97, glowColor);
     mColliderDrawComponent->SetVisible(true);
+
+    // Criar rastro da nave (cor do motor baseada na cor da nave)
+    Vector3 trailColor = mIsRedShip ? Vector3(1.0f, 0.5f, 0.3f) : Vector3(0.3f, 0.8f, 1.0f);
+    mTrailComponent = new TrailComponent(this, trailColor, 0.6f, 0.015f);
 
     UpdateLivesDisplay();
 }
@@ -68,7 +74,6 @@ void Ship::OnProcessInput(const uint8_t* state)
         mRigidBodyComponent->SetVelocity(Vector2::Zero);
     } else {
         Vector2 velocity = Vector2::Zero;
-        Direction targetDirection = GetClosestDirection(GetRotation());
         
         if (up && !down) {
             velocity.y = -mForwardSpeed;
@@ -83,37 +88,17 @@ void Ship::OnProcessInput(const uint8_t* state)
         }
         
         if (velocity.x != 0.0f || velocity.y != 0.0f) {
-            if (up && !down) {
-                if (left && !right) {
-                    targetDirection = Direction::UpLeft;
-                } else if (right && !left) {
-                    targetDirection = Direction::DownRight;
-                } else {
-                    targetDirection = Direction::Up;
-                }
-            } else if (down && !up) {
-                if (left && !right) {
-                    targetDirection = Direction::DownLeft;
-                } else if (right && !left) {
-                    targetDirection = Direction::UpRight;
-                } else {
-                    targetDirection = Direction::Down;
-                }
-            } else {
-                if (left && !right) {
-                    targetDirection = Direction::Left;
-                } else if (right && !left) {
-                    targetDirection = Direction::Right;
-                }
+            // Normalizar velocidade para manter velocidade constante nas diagonais
+            if (velocity.x != 0.0f && velocity.y != 0.0f) {
+                float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+                velocity.x = (velocity.x / length) * mForwardSpeed;
+                velocity.y = (velocity.y / length) * mForwardSpeed;
             }
             
-            SetRotation(DirectionToRadians(targetDirection));
-        }
-        
-        if (velocity.x != 0.0f && velocity.y != 0.0f) {
-            float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
-            velocity.x = (velocity.x / length) * mForwardSpeed;
-            velocity.y = (velocity.y / length) * mForwardSpeed;
+            // Calcular rotação diretamente do vetor de velocidade usando atan2
+            // Isso garante que a nave aponte exatamente na direção do movimento
+            float rotation = Math::Atan2(velocity.y, velocity.x);
+            SetRotation(rotation);
         }
         
         mRigidBodyComponent->SetVelocity(velocity);
@@ -306,7 +291,7 @@ std::vector<Vector2> Ship::CreateColliderCircleVertices(float radius) {
 }
 
 void Ship::UpdateLivesDisplay() {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < 4; i++) {
         if (mLivesActors[i] != nullptr) {
             mLivesActors[i]->SetState(ActorState::Destroy);
             mLivesActors[i] = nullptr;

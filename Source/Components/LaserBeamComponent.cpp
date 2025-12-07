@@ -61,6 +61,13 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
         return;
     }
     
+    // Calcular pulso animado (mais rápido e sutil que o do chão)
+    // Chão usa: sin(time * 2.0) com variação 0.7-1.0
+    // Aqui usamos: sin(time * 3.5) com variação mais rápida e sutil
+    float currentTime = SDL_GetTicks() / 1000.0f;
+    float pulseSin = Math::Sin(currentTime * 3.5f); // Varia de -1 a 1
+    float pulse = 0.8f + (pulseSin + 1.0f) * 0.15f; // Varia entre 0.8 e 0.95
+    
     Vector2 baseScale = mOwner->GetScale();
     
     Vector2 glowScale = baseScale;
@@ -71,7 +78,8 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
     glowTransform = glowTransform * Matrix4::CreateRotationZ(mOwner->GetRotation());
     glowTransform = glowTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     
-    float glowAlpha = 0.4f;
+    // Aplicar pulso ao alpha do glow (varia de 0.28 a 0.38 - mais visível)
+    float glowAlpha = 0.28f + (pulse - 0.8f) * 0.67f; // Mapeia 0.8-0.95 para 0.28-0.38
     renderer->DrawFilledWithAlpha(glowTransform, vertexArray, mColor, glowAlpha);
     
     Vector2 midScale = baseScale;
@@ -81,9 +89,11 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
     midTransform = midTransform * Matrix4::CreateRotationZ(mOwner->GetRotation());
     midTransform = midTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     
-    float midAlpha = 0.7f;
+    // Aplicar pulso ao alpha do meio (varia de 0.56 a 0.665 - mais visível)
+    float midAlpha = 0.56f + (pulse - 0.8f) * 0.7f; // Mapeia 0.8-0.95 para 0.56-0.665
     renderer->DrawFilledWithAlpha(midTransform, vertexArray, mColor, midAlpha);
     
+    // Core mantém alpha fixo para contraste
     float coreAlpha = 1.0f;
     renderer->DrawFilledWithAlpha(mOwner->GetModelMatrix(), vertexArray, mColor, coreAlpha);
     renderer->Draw(mOwner->GetModelMatrix(), vertexArray, mColor);

@@ -57,9 +57,10 @@ private:
 
     class DrawComponent* mDrawComponent;
     class DrawComponent* mColliderDrawComponent;
-    class Actor* mLivesActors[3];
+    class Actor* mLivesActors[4];
     class RigidBodyComponent* mRigidBodyComponent;
     class CircleColliderComponent* mCircleColliderComponent;
+    class TrailComponent* mTrailComponent;
 
     std::vector<Vector2> CreateShipVertices();
     std::vector<Vector2> CreateParticleVertices(float size);

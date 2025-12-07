@@ -47,6 +47,8 @@ add_executable(${PROJECT_NAME}
         Source/Components/GridDrawComponent.h
         Source/Components/LaserBeamComponent.cpp
         Source/Components/LaserBeamComponent.h
+        Source/Components/TrailComponent.cpp
+        Source/Components/TrailComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
         Source/Actors/Floor.cpp

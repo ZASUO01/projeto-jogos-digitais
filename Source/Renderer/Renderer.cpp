@@ -282,6 +282,22 @@ void Renderer::DrawFilledWithAlpha(const Matrix4 &modelMatrix, VertexArray* vert
     glDisable(GL_BLEND);
 }
 
+void Renderer::DrawWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha)
+{
+	mBaseShader->SetActive();
+	mBaseShader->SetMatrixUniform("uWorldTransform", modelMatrix);
+	mBaseShader->SetVectorUniform("uColor", color);
+	mBaseShader->SetFloatUniform("uAlpha", alpha);
+
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+    vertices->SetActive();
+    glDrawElements(GL_LINES, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+    
+    glDisable(GL_BLEND);
+}
+
 void Renderer::DrawAdvancedGrid(float screenWidth, float screenHeight, float time)
 {
 	if (!mAdvancedGridShader || !mFullScreenQuad) {
