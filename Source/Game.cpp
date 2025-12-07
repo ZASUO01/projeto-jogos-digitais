@@ -17,6 +17,9 @@
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
 #include "Random.h"
+#include "UI/Screens/MainMenu.h"
+#include "UI/Screens/GameOver.h"
+#include "UI/Screens/UIScreen.h"
 
 Game::Game()
         :mWindow(nullptr)
@@ -38,7 +41,7 @@ bool Game::Initialize()
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    mWindow = SDL_CreateWindow("TP2: Asteroids", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
@@ -48,8 +51,7 @@ bool Game::Initialize()
     mRenderer = new Renderer(mWindow);
     mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
 
-    // Init all game actors
-    InitializeActors();
+    SetScene(GameScene::MainMenu);
 
     mTicksCount = SDL_GetTicks();
 
@@ -66,9 +68,25 @@ void Game::RunLoop()
 {
     while (mIsRunning)
     {
+        // Calculate delta time in seconds
+        float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+        if (deltaTime > 0.05f)
+        {
+            deltaTime = 0.05f;
+        }
+
+        mTicksCount = SDL_GetTicks();
+
         ProcessInput();
-        UpdateGame();
+        UpdateGame(deltaTime);
         GenerateOutput();
+
+        // Sleep to maintain frame rate
+        int sleepTime = (1000 / 60) - (SDL_GetTicks() - mTicksCount);
+        if (sleepTime > 0)
+        {
+            SDL_Delay(sleepTime);
+        }
     }
 }
 
@@ -82,6 +100,19 @@ void Game::ProcessInput()
             case SDL_QUIT:
                 Quit();
                 break;
+            case SDL_KEYDOWN:
+                // Check if 'P' key is pressed to show Game Over screen (only in Level1)
+                if (event.key.keysym.sym == SDLK_p && mUIStack.empty()) {
+                    // Check if we're in Level1 by checking if ship exists
+                    if (mShip) {
+                        new GameOver(this, "../Assets/Fonts/Arial.ttf");
+                    }
+                }
+                // Handle key press for UI screens
+                if (!mUIStack.empty()) {
+                    mUIStack.back()->HandleKeyPress(event.key.keysym.sym);
+                }
+                break;
         }
     }
 
@@ -93,20 +124,34 @@ void Game::ProcessInput()
     }
 }
 
-void Game::UpdateGame()
+void Game::UpdateGame(float deltaTime)
 {
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
-
-    float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+    // Calculate delta time in seconds
     if (deltaTime > 0.05f)
     {
         deltaTime = 0.05f;
     }
 
-    mTicksCount = SDL_GetTicks();
-
     // Update all actors and pending actors
     UpdateActors(deltaTime);
+
+    // Update UI screens
+    for (auto ui : mUIStack) {
+        if (ui->GetState() == UIScreen::UIState::Active) {
+            ui->Update(deltaTime);
+        }
+    }
+
+    // Delete any UI that are closed
+    auto iter = mUIStack.begin();
+    while (iter != mUIStack.end()) {
+        if ((*iter)->GetState() == UIScreen::UIState::Closing) {
+            delete *iter;
+            iter = mUIStack.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
 }
 
 void Game::UpdateActors(float deltaTime)
@@ -185,27 +230,61 @@ void Game::GenerateOutput()
                 mDrawables[i]->GetOwner()->GetComponents()[j]->DebugDraw(mRenderer);
             }
         }
-
     }
+
+    // Draw UI screens
+    mRenderer->Draw();
 
     // Swap front buffer and back buffer
     mRenderer->Present();
 }
 
+void Game::UnloadScene()
+{
+    // Use state so we can call this from within an actor update
+    for(auto *actor : mActors) {
+        actor->SetState(ActorState::Destroy);
+    }
+
+    // Delete UI screens
+    for (auto ui : mUIStack) {
+        delete ui;
+    }
+    mUIStack.clear();
+}
+
+void Game::SetScene(GameScene nextScene)
+{
+    UnloadScene();
+
+    switch (nextScene)
+    {
+        case GameScene::MainMenu:
+        {
+            new MainMenu(this, "../Assets/Fonts/Arial.ttf");
+            break;
+        }
+        case GameScene::Level1:
+        {
+            // Init all game actors
+            InitializeActors();
+            break;
+        }
+    }
+}
+
 void Game::Shutdown()
 {
-    std::vector<Actor*> actorsToDelete = mActors;
-    mActors.clear();
-
-    for (auto actor : actorsToDelete) {
-        delete actor;
+    // Because ~Actor calls RemoveActor, have to use a different style loop
+    while (!mActors.empty()) {
+        delete mActors.back();
     }
 
-    std::vector<Actor*> pendingToDelete = mPendingActors;
-    mPendingActors.clear();
-    for (auto actor : pendingToDelete) {
-        delete actor;
+    // Delete UI screens
+    for (auto ui : mUIStack) {
+        delete ui;
     }
+    mUIStack.clear();
 
     mDrawables.clear();
 

@@ -14,6 +14,12 @@
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
 
+enum class GameScene
+{
+    MainMenu,
+    Level1
+};
+
 class Game{
 public:
     Game();
@@ -29,6 +35,10 @@ public:
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
 
+    // UI functions
+    void PushUI(class UIScreen* screen) { mUIStack.emplace_back(screen); }
+    const std::vector<class UIScreen*>& GetUIStack() { return mUIStack; }
+
     // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
 
@@ -42,9 +52,14 @@ public:
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
     Ship *GetShip() const {return mShip; }
+
+    // Scene Handling
+    void SetScene(GameScene scene);
+    void UnloadScene();
+
 private:
     void ProcessInput();
-    void UpdateGame();
+    void UpdateGame(float deltaTime);
     void GenerateOutput();
     void RemoveActorFromVector(std::vector< Actor*> &actors,  Actor *actor);
 
@@ -54,6 +69,9 @@ private:
 
     // All the draw components
     std::vector<class DrawComponent*> mDrawables;
+
+    // All UI screens in the game
+    std::vector<class UIScreen*> mUIStack;
 
     // SDL stuff
     SDL_Window* mWindow;

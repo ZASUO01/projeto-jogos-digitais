@@ -9,6 +9,8 @@
 #include <SDL.h>
 #include "../Math.h"
 #include "VertexArray.h"
+#include "Texture.h"
+#include "Font.h"
 
 class Renderer
 {
@@ -18,23 +20,36 @@ public:
 
     bool Initialize(float width, float height);
     void Shutdown();
+    void UnloadData();
 
     void Clear();
     void Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
+    void Draw();
 
     void Present();
 
+    void AddUIElement(class UIElement *comp);
+    void RemoveUIElement(class UIElement *comp);
+
     // Getters
     class Shader* GetBaseShader() const { return mBaseShader; }
+    class Texture* GetTexture(const std::string& fileName);
+    class Font* GetFont(const std::string& fileName);
 
 private:
     bool LoadShaders();
+    void CreateSpriteVerts();
 
     // Game
     class Game* mGame;
 
-    // Sprite shader
+    // Sprite shader for UI
+    class Shader* mSpriteShader;
+    // Base shader for game
     class Shader* mBaseShader;
+
+    // Sprite vertex array
+    class VertexArray *mSpriteVerts;
 
     // Window
     SDL_Window* mWindow;
@@ -44,4 +59,16 @@ private:
 
     // Ortho projection for 2D shaders
     Matrix4 mOrthoProjection;
+
+    // Map of textures loaded
+    std::unordered_map<std::string, class Texture*> mTextures;
+    // Map of fonts loaded
+    std::unordered_map<std::string, class Font*> mFonts;
+
+    // UI screens to draw
+    std::vector<class UIElement*> mUIComps;
+
+    // Width/height of screen
+    float mScreenWidth;
+    float mScreenHeight;
 };

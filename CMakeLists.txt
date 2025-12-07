@@ -7,6 +7,8 @@ set(PROJECT_NAME "lion-casters")
 project(${PROJECT_NAME})
 
 find_package(SDL2 2.32.2 EXACT REQUIRED)
+find_package(SDL2_image REQUIRED)
+find_package(SDL2_ttf REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
@@ -21,6 +23,10 @@ add_executable(${PROJECT_NAME}
         Source/Renderer/VertexArray.h
         Source/Renderer/Renderer.cpp
         Source/Renderer/Renderer.h
+        Source/Renderer/Texture.cpp
+        Source/Renderer/Texture.h
+        Source/Renderer/Font.cpp
+        Source/Renderer/Font.h
         Source/Actors/Actor.cpp
         Source/Actors/Actor.h
         Source/Game.cpp
@@ -37,6 +43,24 @@ add_executable(${PROJECT_NAME}
         Source/Components/CircleColliderComponent.h
         Source/Actors/Ship.cpp
         Source/Actors/Ship.h
+        Source/UI/UIElement.cpp
+        Source/UI/UIElement.h
+        Source/UI/UIImage.cpp
+        Source/UI/UIImage.h
+        Source/UI/UIText.cpp
+        Source/UI/UIText.h
+        Source/UI/UIButton.cpp
+        Source/UI/UIButton.h
+        Source/UI/UIRect.cpp
+        Source/UI/UIRect.h
+        Source/UI/Screens/UIScreen.cpp
+        Source/UI/Screens/UIScreen.h
+        Source/UI/Screens/MainMenu.cpp
+        Source/UI/Screens/MainMenu.h
+        Source/UI/Screens/GameOver.cpp
+        Source/UI/Screens/GameOver.h
+        Source/UI/Screens/HUD.cpp
+        Source/UI/Screens/HUD.h
         Source/Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 OpenGL::GL)
+target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf OpenGL::GL)

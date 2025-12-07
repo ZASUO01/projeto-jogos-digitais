@@ -250,6 +250,9 @@ public:
 		return (a - b).Length();
 	}
 
+	// Cast to a const float pointer
+	const float* GetAsFloatPtr() const { return reinterpret_cast<const float*>(&x); }
+
 	// NOLINTBEGIN
 	static const Vector2 Zero;
     static const Vector2 One;
