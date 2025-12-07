@@ -27,7 +27,7 @@ public:
     void SetMatrixUniform(const char* name, const Matrix4& matrix) const;
     void SetFloatUniform(const char* name, float value) const;
     void SetVector2Uniform(const char* name, const Vector2& vector) const;
-    void SetTextureUniform(const char *name, int value) const;
+    void SetTextureUniform(const char* name, GLuint texture, int textureUnit) const;
 
 private:
     // Tries to compile the specified shader

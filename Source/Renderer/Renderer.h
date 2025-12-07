@@ -3,6 +3,7 @@
 //
 
 #pragma once
+#include <GL/glew.h>
 #include <string>
 #include <vector>
 #include <unordered_map>
@@ -32,6 +33,11 @@ public:
     // Desenha o grid isométrico neon como fundo
     void DrawAdvancedGrid(float screenWidth, float screenHeight, float time);
 
+    // Inicia renderização para textura (para efeito CRT)
+    void BeginRenderToTexture();
+    // Finaliza renderização para textura e aplica efeito CRT
+    void EndRenderToTexture();
+    
     void Present();
 
     void AddUIElement(class UIElement *comp);
@@ -61,6 +67,15 @@ private:
     // Advanced Grid shader e recursos
     class Shader* mAdvancedGridShader;
     class VertexArray* mFullScreenQuad;
+    
+    // CRT shader e recursos para efeito de TV antiga
+    class Shader* mCRTShader;
+    
+    // Frame Buffer Object para render-to-texture
+    GLuint mFBO;
+    GLuint mSceneTexture;
+    GLuint mRBO; // Render Buffer Object para depth/stencil
+    
     float mScreenWidth;
     float mScreenHeight;
 

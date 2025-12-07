@@ -94,13 +94,17 @@ void Shader::SetFloatUniform(const char* name, float value) const
 	glUniform1f(loc, value);
 }
 
-void Shader::SetTextureUniform(const char *name, int value) const
+void Shader::SetTextureUniform(const char* name, GLuint texture, int textureUnit) const
 {
 	// Find the uniform by this name
 	GLint loc = glGetUniformLocation(mShaderProgram, name);
-
-	// Send the int data to the uniform
-	glUniform1i(loc, value);
+	
+	// Ativa a unidade de textura e vincula a textura
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	// Envia o índice da unidade de textura para o uniform
+	glUniform1i(loc, textureUnit);
 }
 
 bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader)

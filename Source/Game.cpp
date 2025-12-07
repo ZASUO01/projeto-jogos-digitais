@@ -282,6 +282,9 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
 
 void Game::GenerateOutput()
 {
+    // Iniciar renderização para textura (FBO)
+    mRenderer->BeginRenderToTexture();
+    
     mRenderer->Clear();
     
     float currentTime = SDL_GetTicks() / 1000.0f;
@@ -301,6 +304,9 @@ void Game::GenerateOutput()
         }
 
     }
+    
+    // Finalizar renderização para textura e aplicar efeito CRT
+    mRenderer->EndRenderToTexture();
 
     // Swap front buffer and back buffer
     mRenderer->Present();

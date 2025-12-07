@@ -1,4 +1,5 @@
 #include <GL/glew.h>
+#include <SDL.h>
 #include "Renderer.h"
 #include "Shader.h"
 #include "VertexArray.h"
@@ -16,6 +17,10 @@ Renderer::Renderer(SDL_Window *window)
 , mBaseShader(nullptr)
 , mAdvancedGridShader(nullptr)
 , mFullScreenQuad(nullptr)
+, mCRTShader(nullptr)
+, mFBO(0)
+, mSceneTexture(0)
+, mRBO(0)
 , mScreenWidth(0.0f)
 , mScreenHeight(0.0f)
 , mSpriteVerts(nullptr)
@@ -129,6 +134,50 @@ bool Renderer::Initialize(float width, float height)
 		mFullScreenQuad = new VertexArray(vertices, 8, indices, 6);
 		SDL_Log("Shader AdvancedGrid carregado com sucesso.");
 	}
+	
+	// Inicializar shader CRT
+	mCRTShader = new Shader();
+	std::string crtPath = FindShaderPath("CRT");
+	if (!mCRTShader->Load(crtPath)) {
+		SDL_Log("Aviso: Falha ao carregar shader CRT. Efeito de TV antiga não estará disponível.");
+	} else {
+		SDL_Log("Shader CRT carregado com sucesso.");
+	}
+	
+	// Criar Frame Buffer Object para render-to-texture
+	glGenFramebuffers(1, &mFBO);
+	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+	
+	// Criar textura para armazenar a cena renderizada
+	glGenTextures(1, &mSceneTexture);
+	glBindTexture(GL_TEXTURE_2D, mSceneTexture);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 
+	             0, GL_RGB, GL_UNSIGNED_BYTE, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	
+	// Anexar textura ao FBO
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mSceneTexture, 0);
+	
+	// Criar Render Buffer Object para depth/stencil (opcional, mas recomendado)
+	glGenRenderbuffers(1, &mRBO);
+	glBindRenderbuffer(GL_RENDERBUFFER, mRBO);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
+	                      static_cast<GLsizei>(width), static_cast<GLsizei>(height));
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRBO);
+	
+	// Verificar se o FBO está completo
+	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
+		SDL_Log("Erro: Frame Buffer não está completo!");
+		return false;
+	}
+	
+	// Voltar para o framebuffer padrão
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	
+	SDL_Log("Sistema de render-to-texture inicializado com sucesso.");
 
     return true;
 }
@@ -194,9 +243,31 @@ void Renderer::Shutdown()
         mAdvancedGridShader = nullptr;
     }
     
+    if (mCRTShader) {
+        mCRTShader->Unload();
+        delete mCRTShader;
+        mCRTShader = nullptr;
+    }
+    
     if (mFullScreenQuad) {
         delete mFullScreenQuad;
         mFullScreenQuad = nullptr;
+    }
+    
+    // Limpar recursos do FBO
+    if (mSceneTexture != 0) {
+        glDeleteTextures(1, &mSceneTexture);
+        mSceneTexture = 0;
+    }
+    
+    if (mRBO != 0) {
+        glDeleteRenderbuffers(1, &mRBO);
+        mRBO = 0;
+    }
+    
+    if (mFBO != 0) {
+        glDeleteFramebuffers(1, &mFBO);
+        mFBO = 0;
     }
 
     SDL_GL_DeleteContext(mContext);
@@ -318,6 +389,46 @@ void Renderer::DrawAdvancedGrid(float screenWidth, float screenHeight, float tim
 	glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
 	
 	glDisable(GL_BLEND);
+}
+
+void Renderer::BeginRenderToTexture()
+{
+	// Bind do FBO para renderizar a cena na textura
+	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
+	glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
+}
+
+void Renderer::EndRenderToTexture()
+{
+	// Voltar para o framebuffer padrão (tela)
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
+	
+	// Limpar a tela antes de aplicar o efeito CRT
+	glClear(GL_COLOR_BUFFER_BIT);
+	
+	// Aplicar efeito CRT se o shader estiver disponível
+	if (mCRTShader && mFullScreenQuad) {
+		mCRTShader->SetActive();
+		
+		// Configurar uniforms do shader CRT
+		mCRTShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
+		mCRTShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f);
+		mCRTShader->SetTextureUniform("uSceneTexture", mSceneTexture, 0);
+		
+		// Desenhar o quad full-screen com o efeito CRT
+		mFullScreenQuad->SetActive();
+		glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
+	} else {
+		// Se o shader CRT não estiver disponível, apenas copiar a textura diretamente
+		// (fallback simples)
+		glBindTexture(GL_TEXTURE_2D, mSceneTexture);
+		// Nota: Para um fallback completo, seria necessário um shader simples de cópia
+		// Por enquanto, apenas logamos um aviso
+		if (!mCRTShader) {
+			SDL_Log("Aviso: Shader CRT não disponível, efeito não será aplicado.");
+		}
+	}
 }
 
 void Renderer::Present()
