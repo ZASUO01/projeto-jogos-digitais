@@ -15,7 +15,7 @@ LaserBeam::LaserBeam(class Game* game, const Vector2& startPos, float rotation, 
     float screenHeight = static_cast<float>(Game::WINDOW_HEIGHT);
     
     mLaserComponent = new LaserBeamComponent(this, color, 0.5f);
-    mLaserComponent->Activate(startPos, rotation, screenWidth, screenHeight);
+    mLaserComponent->Activate(startPos, rotation, screenWidth, screenHeight, ownerShip);
 }
 
 void LaserBeam::OnUpdate(float deltaTime)

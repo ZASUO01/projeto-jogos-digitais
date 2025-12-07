@@ -114,24 +114,26 @@ bool Renderer::Initialize(float width, float height)
 	mScreenWidth = width;
 	mScreenHeight = height;
 	
+	// Criar fullscreen quad independentemente (necessário tanto para AdvancedGrid quanto para CRT)
+	float vertices[] = {
+		-1.0f, -1.0f,
+		 1.0f, -1.0f,
+		 1.0f,  1.0f,
+		-1.0f,  1.0f
+	};
+	
+	unsigned int indices[] = {
+		0, 1, 2,
+		0, 2, 3
+	};
+	
+	mFullScreenQuad = new VertexArray(vertices, 8, indices, 6);
+	
 	mAdvancedGridShader = new Shader();
 	std::string advancedGridPath = FindShaderPath("AdvancedGrid");
 	if (!mAdvancedGridShader->Load(advancedGridPath)) {
 		SDL_Log("Aviso: Falha ao carregar shader AdvancedGrid. Grid neon não estará disponível.");
 	} else {
-		float vertices[] = {
-			-1.0f, -1.0f,
-			 1.0f, -1.0f,
-			 1.0f,  1.0f,
-			-1.0f,  1.0f
-		};
-		
-		unsigned int indices[] = {
-			0, 1, 2,
-			0, 2, 3
-		};
-		
-		mFullScreenQuad = new VertexArray(vertices, 8, indices, 6);
 		SDL_Log("Shader AdvancedGrid carregado com sucesso.");
 	}
 	
