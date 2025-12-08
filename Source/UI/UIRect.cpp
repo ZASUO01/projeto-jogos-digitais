@@ -39,7 +39,7 @@ void UIRect::Draw(class Shader* shader)
     shader->SetVectorUniform("uBaseColor", mColor);
     
     // Set texture uniform (even though we're not using a texture, the shader expects it)
-    shader->SetTextureUniform("uTexture", 0);
+    shader->SetTextureUniform("uTexture", 0, 0);
 
     // Draw quad
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

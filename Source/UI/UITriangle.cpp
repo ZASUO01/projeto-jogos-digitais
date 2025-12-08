@@ -70,7 +70,7 @@ void UITriangle::Draw(class Shader* shader)
     shader->SetVectorUniform("uBaseColor", mColor);
     
     // Set texture uniform (even though we're not using a texture, the shader expects it)
-    shader->SetTextureUniform("uTexture", 0);
+    shader->SetTextureUniform("uTexture", 0, 0);
     
     // Draw triangle (usar apenas os primeiros 3 índices para formar um triângulo)
     mTriangleVerts->SetActive();

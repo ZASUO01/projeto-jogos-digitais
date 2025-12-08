@@ -25,6 +25,7 @@ public:
     void UnloadData();
 
     void Clear();
+    void Draw();
     void Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
     void DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color);
     void DrawFilledWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha);
@@ -98,8 +99,4 @@ private:
 
     // UI screens to draw
     std::vector<class UIElement*> mUIComps;
-
-    // Width/height of screen
-    float mScreenWidth;
-    float mScreenHeight;
 };

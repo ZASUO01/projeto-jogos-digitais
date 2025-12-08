@@ -21,13 +21,11 @@ Renderer::Renderer(SDL_Window *window)
 , mFBO(0)
 , mSceneTexture(0)
 , mRBO(0)
-, mScreenWidth(0.0f)
-, mScreenHeight(0.0f)
+, mScreenWidth(1024.0f)
+, mScreenHeight(768.0f)
 , mSpriteVerts(nullptr)
 , mWindow(window)
 , mContext(nullptr)
-, mScreenWidth(1024.0f)
-, mScreenHeight(768.0f)
 {
 }
 
@@ -110,9 +108,6 @@ bool Renderer::Initialize(float width, float height)
 
     // Set up sprite shader - needs to be set each frame in Draw()
     // ViewProj is set in Draw() to ensure it's current
-	
-	mScreenWidth = width;
-	mScreenHeight = height;
 	
 	// Criar fullscreen quad independentemente (necessário tanto para AdvancedGrid quanto para CRT)
 	float vertices[] = {

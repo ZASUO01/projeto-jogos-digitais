@@ -61,7 +61,6 @@ bool Game::Initialize()
     // Maximizar a janela
     SDL_MaximizeWindow(mWindow);
 
-<<<<<<< HEAD
     // Obter o tamanho real da janela após maximizar
     int actualWidth, actualHeight;
     SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
@@ -74,7 +73,6 @@ bool Game::Initialize()
 
     // Iniciar com a tela de abertura (vídeo)
     new OpeningScreen(this);
-    InitializeActors();
 
     mTicksCount = SDL_GetTicks();
 
@@ -287,22 +285,51 @@ void Game::GenerateOutput()
     
     mRenderer->Clear();
     
-    float currentTime = SDL_GetTicks() / 1000.0f;
-    mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
-                                mRenderer->GetScreenHeight(), 
-                                currentTime);
-
-    unsigned int size = mDrawables.size();
-    unsigned int size2;
-    for (unsigned int i = 0; i < size; i++) {
-        mDrawables[i]->Draw(mRenderer);
-        if (mIsDebugging) {
-            size2 = mDrawables[i]->GetOwner()->GetComponents().size();
-            for (unsigned int j = 0; j < size2; j++) {
-                mDrawables[i]->GetOwner()->GetComponents()[j]->DebugDraw(mRenderer);
+    // Verificar se há UI screens ativas
+    bool hasActiveUI = false;
+    for (auto ui : mUIStack) {
+        if (ui->GetState() == UIScreen::UIState::Active) {
+            hasActiveUI = true;
+            break;
+        }
+    }
+    
+    // Se houver UI screens ativas, renderizar apenas a UI
+    if (hasActiveUI) {
+        // Renderizar UI screens (começando pela última, que é a mais recente)
+        for (auto it = mUIStack.rbegin(); it != mUIStack.rend(); ++it) {
+            auto ui = *it;
+            if (ui->GetState() == UIScreen::UIState::Active) {
+                // Tentar chamar Draw() diretamente se for OpeningScreen
+                OpeningScreen* openingScreen = dynamic_cast<OpeningScreen*>(ui);
+                if (openingScreen) {
+                    openingScreen->Draw(mRenderer);
+                } else {
+                    // Para outras UI screens, usar o Renderer::Draw() que desenha os elementos UI
+                    mRenderer->Draw();
+                }
+                // Renderizar apenas a UI screen mais recente (a que está por cima)
+                break;
             }
         }
+    } else {
+        // Se não houver UI screens ativas, renderizar o jogo normalmente
+        float currentTime = SDL_GetTicks() / 1000.0f;
+        mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
+                                    mRenderer->GetScreenHeight(), 
+                                    currentTime);
 
+        unsigned int size = mDrawables.size();
+        unsigned int size2;
+        for (unsigned int i = 0; i < size; i++) {
+            mDrawables[i]->Draw(mRenderer);
+            if (mIsDebugging) {
+                size2 = mDrawables[i]->GetOwner()->GetComponents().size();
+                for (unsigned int j = 0; j < size2; j++) {
+                    mDrawables[i]->GetOwner()->GetComponents()[j]->DebugDraw(mRenderer);
+                }
+            }
+        }
     }
     
     // Finalizar renderização para textura e aplicar efeito CRT

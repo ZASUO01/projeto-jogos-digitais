@@ -49,9 +49,7 @@ void UIVideo::Draw(class Shader* shader)
     shader->SetVectorUniform("uBaseColor", Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     
     // Set current texture and texture uniform (usando a textura do vídeo)
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, textureID);
-    shader->SetTextureUniform("uTexture", 0);
+    shader->SetTextureUniform("uTexture", textureID, 0);
     
     // Draw quad (usar os mesmos vertices do sprite que já estão ativos)
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);

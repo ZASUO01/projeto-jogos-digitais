@@ -150,9 +150,7 @@ void OpeningScreen::Draw(class Renderer* renderer)
     spriteShader->SetMatrixUniform("uWorldTransform", world);
     
     // Configurar textura
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, mVideoPlayer->GetTextureID());
-    spriteShader->SetTextureUniform("uTexture", 0);
+    spriteShader->SetTextureUniform("uTexture", mVideoPlayer->GetTextureID(), 0);
     spriteShader->SetFloatUniform("uTextureFactor", 1.0f);
     spriteShader->SetVectorUniform("uBaseColor", Vector4(1.0f, 1.0f, 1.0f, 1.0f));
     

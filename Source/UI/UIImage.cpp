@@ -65,8 +65,7 @@ void UIImage::Draw(class Shader* shader)
     }
 
     // Set current texture and texture uniform
-    mTexture->SetActive();
-    shader->SetTextureUniform("uTexture", 0);
+    shader->SetTextureUniform("uTexture", mTexture->GetTextureID(), 0);
 
     // Draw quad
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
