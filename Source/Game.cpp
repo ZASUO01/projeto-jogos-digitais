@@ -318,12 +318,14 @@ void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
 
             if (other.hasShot) {
                 const auto &enemy = mEnemies[other.id];
-                new LaserBeam(
+                const auto lb = new LaserBeam(
                     this,
                     enemy->GetPosition(),
                     enemy->GetRotation(),
                     Vector3(1, 0, 1),
                     enemy);
+
+                lb->SetType(ActorType::Local);
             }
         }
 
