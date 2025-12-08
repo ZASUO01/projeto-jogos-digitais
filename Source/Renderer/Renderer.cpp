@@ -25,7 +25,7 @@ Renderer::Renderer(SDL_Window *window)
 , mScreenHeight(768.0f)
 , mSpriteVerts(nullptr)
 , mWindow(window)
-, mContext(nullptr)
+,     mContext(nullptr)
 {
 }
 
@@ -33,12 +33,12 @@ Renderer::~Renderer()
 {
 }
 
+// Inicializa o renderer OpenGL, shaders e recursos de renderização
 bool Renderer::Initialize(float width, float height)
 {
     mScreenWidth = width;
     mScreenHeight = height;
 
-    // Specify version 3.3 (core profile)
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
@@ -52,7 +52,6 @@ bool Renderer::Initialize(float width, float height)
         return false;
     }
 
-    // Tornar o contexto atual (necessário no Linux)
     if (SDL_GL_MakeCurrent(mWindow, mContext) != 0) {
         SDL_Log("Failed to make OpenGL context current: %s", SDL_GetError());
         return false;
@@ -65,26 +64,21 @@ bool Renderer::Initialize(float width, float height)
         return false;
     }
 
-    // Initialize SDL_image
     int imgFlags = IMG_INIT_PNG;
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         SDL_Log("Unable to initialize SDL_image: %s", IMG_GetError());
         return false;
     }
 
-    // Initialize SDL_ttf
     if (TTF_Init() != 0) {
         SDL_Log("Failed to initialize SDL_ttf");
         return false;
     }
 
-	// Make sure we can create/compile shaders
-    // Verificar versão do OpenGL
     SDL_Log("OpenGL Version: %s", glGetString(GL_VERSION));
     SDL_Log("OpenGL Renderer: %s", glGetString(GL_RENDERER));
     SDL_Log("GLEW Version: %s", glewGetString(GLEW_VERSION));
 
-    // Configurar viewport (importante no Linux)
     glViewport(0, 0, static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 
 	if (!LoadShaders()) {
@@ -92,24 +86,17 @@ bool Renderer::Initialize(float width, float height)
 		return false;
 	}
 
-    // Create quad for drawing sprites
     CreateSpriteVerts();
 
-    // Set the clear color to black
     glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 
     mOrthoProjection = Matrix4::CreateOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
     
-    // Set up base shader
     if (mBaseShader) {
         mBaseShader->SetMatrixUniform("uOrthoProj", mOrthoProjection);
         mBaseShader->SetActive();
     }
-
-    // Set up sprite shader - needs to be set each frame in Draw()
-    // ViewProj is set in Draw() to ensure it's current
 	
-	// Criar fullscreen quad independentemente (necessário tanto para AdvancedGrid quanto para CRT)
 	float vertices[] = {
 		-1.0f, -1.0f,
 		 1.0f, -1.0f,
@@ -132,7 +119,6 @@ bool Renderer::Initialize(float width, float height)
 		SDL_Log("Shader AdvancedGrid carregado com sucesso.");
 	}
 	
-	// Inicializar shader CRT
 	mCRTShader = new Shader();
 	std::string crtPath = FindShaderPath("CRT");
 	if (!mCRTShader->Load(crtPath)) {
@@ -141,11 +127,9 @@ bool Renderer::Initialize(float width, float height)
 		SDL_Log("Shader CRT carregado com sucesso.");
 	}
 	
-	// Criar Frame Buffer Object para render-to-texture
 	glGenFramebuffers(1, &mFBO);
 	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
 	
-	// Criar textura para armazenar a cena renderizada
 	glGenTextures(1, &mSceneTexture);
 	glBindTexture(GL_TEXTURE_2D, mSceneTexture);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, static_cast<GLsizei>(width), static_cast<GLsizei>(height), 
@@ -155,23 +139,19 @@ bool Renderer::Initialize(float width, float height)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 	
-	// Anexar textura ao FBO
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, mSceneTexture, 0);
 	
-	// Criar Render Buffer Object para depth/stencil (opcional, mas recomendado)
 	glGenRenderbuffers(1, &mRBO);
 	glBindRenderbuffer(GL_RENDERBUFFER, mRBO);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 
 	                      static_cast<GLsizei>(width), static_cast<GLsizei>(height));
 	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mRBO);
 	
-	// Verificar se o FBO está completo
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		SDL_Log("Erro: Frame Buffer não está completo!");
 		return false;
 	}
 	
-	// Voltar para o framebuffer padrão
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	
 	SDL_Log("Sistema de render-to-texture inicializado com sucesso.");
@@ -179,26 +159,24 @@ bool Renderer::Initialize(float width, float height)
     return true;
 }
 
+// Atualiza o tamanho da tela e recalcula a projeção ortográfica
 void Renderer::UpdateScreenSize(float width, float height)
 {
     mScreenWidth = width;
     mScreenHeight = height;
     
-    // Atualizar viewport
     glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
     
-    // Atualizar projeção ortográfica
     mOrthoProjection = Matrix4::CreateOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
     
-    // Atualizar base shader
     if (mBaseShader) {
         mBaseShader->SetMatrixUniform("uOrthoProj", mOrthoProjection);
     }
 }
 
+// Descarrega todas as texturas e fontes carregadas
 void Renderer::UnloadData()
 {
-    // Destroy textures
     for (auto i : mTextures)
     {
         i.second->Unload();
@@ -206,7 +184,6 @@ void Renderer::UnloadData()
     }
     mTextures.clear();
 
-    // Destroy fonts
     for (auto i : mFonts)
     {
         i.second->Unload();
@@ -215,6 +192,7 @@ void Renderer::UnloadData()
     mFonts.clear();
 }
 
+// Limpa todos os recursos do renderer
 void Renderer::Shutdown()
 {
     UnloadData();
@@ -271,12 +249,13 @@ void Renderer::Shutdown()
 	SDL_DestroyWindow(mWindow);
 }
 
+// Limpa os buffers de cor e profundidade
 void Renderer::Clear()
 {
-    // Clear the color buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
+// Desenha uma forma usando linhas (wireframe)
 void Renderer::Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color)
 {
 	mBaseShader->SetActive();
@@ -285,37 +264,29 @@ void Renderer::Draw(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 c
 	mBaseShader->SetFloatUniform("uAlpha", 1.0f);
 
     vertices->SetActive();
-    // For 2D line drawing, we use GL_LINE_LOOP with the base shader
     glDrawElements(GL_LINE_LOOP, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
 }
 
+// Desenha todos os elementos UI usando o sprite shader
 void Renderer::Draw()
 {
-    // Enable depth buffering/disable alpha blend
     glEnable(GL_DEPTH_TEST);
     glDisable(GL_BLEND);
 
-    // Draw game components using base shader would go here if needed
-
-    // Disable depth buffering
     glDisable(GL_DEPTH_TEST);
 
-    // Enable alpha blending on the color buffer
     glEnable(GL_BLEND);
     glBlendEquationSeparate(GL_FUNC_ADD, GL_FUNC_ADD);
     glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ZERO, GL_ONE);
 
-    // Activate sprite shader/verts
     if (mSpriteShader && mSpriteVerts) {
         mSpriteShader->SetActive();
         
-        // Set view projection matrix for sprite shader (center-based coordinates)
         Matrix4 viewProj = Matrix4::CreateSimpleViewProj(mScreenWidth, mScreenHeight);
         mSpriteShader->SetMatrixUniform("uViewProj", viewProj);
         
         mSpriteVerts->SetActive();
 
-        // Draw UI components
         for (auto ui : mUIComps)
         {
             ui->Draw(mSpriteShader);
@@ -323,6 +294,7 @@ void Renderer::Draw()
     }
 }
 
+// Desenha uma forma preenchida (sólida)
 void Renderer::DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color)
 {
 	mBaseShader->SetActive();
@@ -334,6 +306,7 @@ void Renderer::DrawFilled(const Matrix4 &modelMatrix, VertexArray* vertices, Vec
     glDrawElements(GL_TRIANGLE_FAN, vertices->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
 }
 
+// Desenha uma forma preenchida com transparência
 void Renderer::DrawFilledWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha)
 {
 	mBaseShader->SetActive();
@@ -350,6 +323,7 @@ void Renderer::DrawFilledWithAlpha(const Matrix4 &modelMatrix, VertexArray* vert
     glDisable(GL_BLEND);
 }
 
+// Desenha uma forma em wireframe com transparência
 void Renderer::DrawWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha)
 {
 	mBaseShader->SetActive();
@@ -366,6 +340,7 @@ void Renderer::DrawWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, 
     glDisable(GL_BLEND);
 }
 
+// Desenha o grid avançado isométrico neon como fundo
 void Renderer::DrawAdvancedGrid(float screenWidth, float screenHeight, float time)
 {
 	if (!mAdvancedGridShader || !mFullScreenQuad) {
@@ -388,51 +363,45 @@ void Renderer::DrawAdvancedGrid(float screenWidth, float screenHeight, float tim
 	glDisable(GL_BLEND);
 }
 
+// Inicia renderização para textura (FBO)
 void Renderer::BeginRenderToTexture()
 {
-	// Bind do FBO para renderizar a cena na textura
 	glBindFramebuffer(GL_FRAMEBUFFER, mFBO);
 	glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
 }
 
+// Finaliza renderização para textura e aplica efeito CRT
 void Renderer::EndRenderToTexture()
 {
-	// Voltar para o framebuffer padrão (tela)
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 	glViewport(0, 0, static_cast<GLsizei>(mScreenWidth), static_cast<GLsizei>(mScreenHeight));
 	
-	// Limpar a tela antes de aplicar o efeito CRT
 	glClear(GL_COLOR_BUFFER_BIT);
 	
-	// Aplicar efeito CRT se o shader estiver disponível
 	if (mCRTShader && mFullScreenQuad) {
 		mCRTShader->SetActive();
 		
-		// Configurar uniforms do shader CRT
 		mCRTShader->SetVector2Uniform("uResolution", Vector2(mScreenWidth, mScreenHeight));
 		mCRTShader->SetFloatUniform("uTime", SDL_GetTicks() / 1000.0f);
 		mCRTShader->SetTextureUniform("uSceneTexture", mSceneTexture, 0);
 		
-		// Desenhar o quad full-screen com o efeito CRT
 		mFullScreenQuad->SetActive();
 		glDrawElements(GL_TRIANGLES, mFullScreenQuad->GetNumIndices(), GL_UNSIGNED_INT, nullptr);
 	} else {
-		// Se o shader CRT não estiver disponível, apenas copiar a textura diretamente
-		// (fallback simples)
 		glBindTexture(GL_TEXTURE_2D, mSceneTexture);
-		// Nota: Para um fallback completo, seria necessário um shader simples de cópia
-		// Por enquanto, apenas logamos um aviso
 		if (!mCRTShader) {
 			SDL_Log("Aviso: Shader CRT não disponível, efeito não será aplicado.");
 		}
 	}
 }
 
+// Apresenta o frame renderizado na tela
 void Renderer::Present()
 {
 	SDL_GL_SwapWindow(mWindow);
 }
 
+// Adiciona um elemento UI e ordena por ordem de desenho
 void Renderer::AddUIElement(UIElement *comp)
 {
     mUIComps.emplace_back(comp);
@@ -442,6 +411,7 @@ void Renderer::AddUIElement(UIElement *comp)
     });
 }
 
+// Remove um elemento UI da lista
 void Renderer::RemoveUIElement(UIElement *comp)
 {
     auto iter = std::find(mUIComps.begin(), mUIComps.end(), comp);
@@ -450,9 +420,9 @@ void Renderer::RemoveUIElement(UIElement *comp)
     }
 }
 
+// Carrega e retorna uma textura (usa cache se já foi carregada)
 Texture* Renderer::GetTexture(const std::string& fileName)
 {
-    // Make sure OpenGL context is current before loading textures
     SDL_GLContext currentContext = SDL_GL_GetCurrentContext();
     if (currentContext != mContext) {
         if (SDL_GL_MakeCurrent(mWindow, mContext) != 0) {
@@ -484,6 +454,7 @@ Texture* Renderer::GetTexture(const std::string& fileName)
     return tex;
 }
 
+// Carrega e retorna uma fonte (usa cache se já foi carregada)
 Font* Renderer::GetFont(const std::string& fileName)
 {
     auto iter = mFonts.find(fileName);
@@ -508,6 +479,7 @@ Font* Renderer::GetFont(const std::string& fileName)
     }
 }
 
+// Cria os vértices do sprite usado para renderizar UI
 void Renderer::CreateSpriteVerts()
 {
     float vertices[] = {
@@ -522,9 +494,9 @@ void Renderer::CreateSpriteVerts()
     mSpriteVerts = new VertexArray(vertices, 4, indices, 6);
 }
 
+// Carrega todos os shaders necessários
 bool Renderer::LoadShaders()
 {
-    // Create sprite shader for UI
     mSpriteShader = new Shader();
     if (!mSpriteShader->Load("../Shaders/Sprite"))
     {
@@ -533,7 +505,6 @@ bool Renderer::LoadShaders()
 
     mSpriteShader->SetActive();
 
-	// Create base shader for game
 	mBaseShader = new Shader();
 	std::string baseShaderPath = FindShaderPath("Base");
 	if (!mBaseShader->Load(baseShaderPath)) {
@@ -545,26 +516,23 @@ bool Renderer::LoadShaders()
     return true;
 }
 
+// Procura o caminho correto para um shader testando múltiplos locais possíveis
 std::string Renderer::FindShaderPath(const std::string& shaderName)
 {
-	// Lista de possíveis caminhos para os shaders
 	std::vector<std::string> possiblePaths = {
-		"../Shaders/" + shaderName,  // Caminho relativo do executável no build
-		"Shaders/" + shaderName,     // Caminho relativo do diretório de trabalho
-		"./Shaders/" + shaderName,   // Caminho explícito relativo
-		"../../Shaders/" + shaderName, // Se executável estiver em subdiretório
+		"../Shaders/" + shaderName,
+		"Shaders/" + shaderName,
+		"./Shaders/" + shaderName,
+		"../../Shaders/" + shaderName,
 	};
 	
-	// Tentar encontrar o executável e construir caminho absoluto
 	char* basePath = SDL_GetBasePath();
 	if (basePath) {
 		std::string base(basePath);
-		// Remover barra final se existir
 		if (!base.empty() && (base.back() == '/' || base.back() == '\\')) {
 			base.pop_back();
 		}
 		possiblePaths.push_back(base + "/Shaders/" + shaderName);
-		// Tentar diretório pai
 		size_t lastSlash = base.find_last_of("/\\");
 		if (lastSlash != std::string::npos) {
 			std::string parent = base.substr(0, lastSlash);
@@ -573,7 +541,6 @@ std::string Renderer::FindShaderPath(const std::string& shaderName)
 		SDL_free(basePath);
 	}
 	
-	// Verificar cada caminho usando ifstream (mais compatível)
 	for (const auto& path : possiblePaths) {
 		std::string vertPath = path + ".vert";
 		std::string fragPath = path + ".frag";
@@ -592,7 +559,6 @@ std::string Renderer::FindShaderPath(const std::string& shaderName)
 		if (fragFile.is_open()) fragFile.close();
 	}
 	
-	// Se não encontrou, retornar o primeiro caminho (para mostrar erro apropriado)
 	SDL_Log("Aviso: Shader não encontrado em nenhum dos caminhos testados para: %s", shaderName.c_str());
 	SDL_Log("Caminhos testados:");
 	for (const auto& path : possiblePaths) {

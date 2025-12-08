@@ -1,7 +1,3 @@
-//
-// Created for floor with grid
-//
-
 #pragma once
 #include "Actor.h"
 

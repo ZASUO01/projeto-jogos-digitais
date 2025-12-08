@@ -1,15 +1,3 @@
-//
-// Created by pedro-souza on 23/11/2025.
-//
-
-// ----------------------------------------------------------------
-// From Game Programming in C++ by Sanjay Madhav
-// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
-//
-// Released under the BSD License
-// See LICENSE in root directory for full details.
-// ----------------------------------------------------------------
-
 #include <algorithm>
 #include <vector>
 #include "Game.h"
@@ -38,6 +26,7 @@ Game::Game()
         ,mShip2(nullptr)
 {}
 
+// Inicializa o jogo, criando a janela SDL, o renderer e a tela de abertura
 bool Game::Initialize()
 {
     Random::Init();
@@ -48,7 +37,6 @@ bool Game::Initialize()
         return false;
     }
 
-    // Criar janela com flags para permitir maximizar
     mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
                                 WINDOW_WIDTH, WINDOW_HEIGHT, 
                                 SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
@@ -58,10 +46,8 @@ bool Game::Initialize()
         return false;
     }
 
-    // Maximizar a janela
     SDL_MaximizeWindow(mWindow);
 
-    // Obter o tamanho real da janela após maximizar
     int actualWidth, actualHeight;
     SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
 
@@ -71,7 +57,6 @@ bool Game::Initialize()
         return false;
     }
 
-    // Iniciar com a tela de abertura (vídeo)
     new OpeningScreen(this);
 
     mTicksCount = SDL_GetTicks();
@@ -79,13 +64,14 @@ bool Game::Initialize()
     return true;
 }
 
+// Inicializa os atores do jogo: chão e duas naves
 void Game::InitializeActors()
 {
     new Floor(this);
-        // Posicionar a nave no centro da janela atual
+    
     int windowWidth = GetWindowWidth();
     int windowHeight = GetWindowHeight();
-    // Nave 1: canto superior direito (ciano mais escuro)
+    
     mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
     mShip1->SetPosition(Vector2(windowWidth - 100, 100));
     
@@ -95,6 +81,7 @@ void Game::InitializeActors()
     mShip = mShip1;
 }
 
+// Retorna a largura atual da janela
 int Game::GetWindowWidth() const
 {
     int width, height;
@@ -102,6 +89,7 @@ int Game::GetWindowWidth() const
     return width;
 }
 
+// Retorna a altura atual da janela
 int Game::GetWindowHeight() const
 {
     int width, height;
@@ -109,11 +97,11 @@ int Game::GetWindowHeight() const
     return height;
 }
 
+// Executa o loop principal do jogo até que mIsRunning seja false
 void Game::RunLoop()
 {
     while (mIsRunning)
     {
-        // Calculate delta time in seconds
         float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
         if (deltaTime > 0.05f)
         {
@@ -126,7 +114,6 @@ void Game::RunLoop()
         UpdateGame(deltaTime);
         GenerateOutput();
 
-        // Sleep to maintain frame rate
         int sleepTime = (1000 / 60) - (SDL_GetTicks() - mTicksCount);
         if (sleepTime > 0)
         {
@@ -135,6 +122,7 @@ void Game::RunLoop()
     }
 }
 
+// Processa eventos de entrada do usuário (teclado, mouse, janela)
 void Game::ProcessInput()
 {
     SDL_Event event;
@@ -148,22 +136,17 @@ void Game::ProcessInput()
             case SDL_WINDOWEVENT:
                 if (event.window.event == SDL_WINDOWEVENT_RESIZED)
                 {
-                    // Atualizar o renderer quando a janela for redimensionada
                     int newWidth = event.window.data1;
                     int newHeight = event.window.data2;
                     mRenderer->UpdateScreenSize(static_cast<float>(newWidth), static_cast<float>(newHeight));
                 }
                 break;
             case SDL_KEYDOWN:
-                // Check if 'P' key is pressed to show Game Over screen (only in Level1)
                 if (event.key.keysym.sym == SDLK_p && mUIStack.empty()) {
-                    // Check if we're in Level1 by checking if ship exists
                     if (mShip) {
-                        // Por padrão, mostrar como se a nave vermelha tivesse vencido (para teste)
                         new GameOver(this, "../Assets/Fonts/Arial.ttf", true);
                     }
                 }
-                // Handle key press for UI screens
                 if (!mUIStack.empty()) {
                     mUIStack.back()->HandleKeyPress(event.key.keysym.sym);
                 }
@@ -184,9 +167,9 @@ void Game::ProcessInput()
     }
 }
 
+// Atualiza a lógica do jogo: atores, UI e remove elementos fechados
 void Game::UpdateGame(float deltaTime)
 {
-    // Calculate delta time in seconds
     if (deltaTime > 0.05f)
     {
         deltaTime = 0.05f;
@@ -194,17 +177,14 @@ void Game::UpdateGame(float deltaTime)
 
     mTicksCount = SDL_GetTicks();
 
-    // Update all actors and pending actors
     UpdateActors(deltaTime);
 
-    // Update UI screens
     for (auto ui : mUIStack) {
         if (ui->GetState() == UIScreen::UIState::Active) {
             ui->Update(deltaTime);
         }
     }
 
-    // Delete any UI that are closed
     auto iter = mUIStack.begin();
     while (iter != mUIStack.end()) {
         if ((*iter)->GetState() == UIScreen::UIState::Closing) {
@@ -216,6 +196,7 @@ void Game::UpdateGame(float deltaTime)
     }
 }
 
+// Atualiza todos os atores, verifica colisões de laser e condições de vitória
 void Game::UpdateActors(float deltaTime)
 {
     mUpdatingActors = true;
@@ -231,16 +212,12 @@ void Game::UpdateActors(float deltaTime)
 
     CheckLaserCollisions();
 
-    // Verificar se alguma nave perdeu todas as vidas e mostrar tela de vencedor
-    // Verificar apenas se não há UI screens ativas
     if (mUIStack.empty()) {
         if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1->GetLives() <= 0) {
-            // Nave 1 (azul) perdeu, nave 2 (vermelha) venceu
             new GameOver(this, "../Assets/Fonts/Arial.ttf", true);
             mShip1->SetState(ActorState::Destroy);
         }
         else if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2->GetLives() <= 0) {
-            // Nave 2 (vermelha) perdeu, nave 1 (azul) venceu
             new GameOver(this, "../Assets/Fonts/Arial.ttf", false);
             mShip2->SetState(ActorState::Destroy);
         }
@@ -259,6 +236,7 @@ void Game::UpdateActors(float deltaTime)
 
 }
 
+// Adiciona um ator à lista de atores (ou à lista pendente se estiver atualizando)
 void Game::AddActor(Actor* actor)
 {
     if (mUpdatingActors) {
@@ -268,12 +246,14 @@ void Game::AddActor(Actor* actor)
     }
 }
 
+// Remove um ator das listas de atores
 void Game::RemoveActor(Actor* actor)
 {
     RemoveActorFromVector(mActors, actor);
     RemoveActorFromVector(mPendingActors, actor);
 }
 
+// Adiciona um componente desenhavel e ordena por ordem de desenho
 void Game::AddDrawable(class DrawComponent *drawable)
 {
     mDrawables.emplace_back(drawable);
@@ -285,6 +265,7 @@ void Game::AddDrawable(class DrawComponent *drawable)
         });
 }
 
+// Remove um componente desenhavel da lista
 void Game::RemoveDrawable(class DrawComponent *drawable)
 {
     std::vector<class DrawComponent *>::iterator it;
@@ -294,14 +275,12 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
     }
 }
 
+// Renderiza o frame atual: UI ou cena do jogo com grid e atores
 void Game::GenerateOutput()
 {
-    // Iniciar renderização para textura (FBO)
     mRenderer->BeginRenderToTexture();
-    
     mRenderer->Clear();
     
-    // Verificar se há UI screens ativas
     bool hasActiveUI = false;
     for (auto ui : mUIStack) {
         if (ui->GetState() == UIScreen::UIState::Active) {
@@ -310,21 +289,16 @@ void Game::GenerateOutput()
         }
     }
     
-    // Se houver UI screens ativas, renderizar apenas a UI
     if (hasActiveUI) {
-        // Renderizar UI screens (começando pela última, que é a mais recente)
         for (auto it = mUIStack.rbegin(); it != mUIStack.rend(); ++it) {
             auto ui = *it;
             if (ui->GetState() == UIScreen::UIState::Active) {
-                // Tentar chamar Draw() diretamente se for OpeningScreen
                 OpeningScreen* openingScreen = dynamic_cast<OpeningScreen*>(ui);
                 if (openingScreen) {
                     openingScreen->Draw(mRenderer);
                 } else {
-                    // Para outras UI screens, usar o Renderer::Draw() que desenha os elementos UI
                     mRenderer->Draw();
                 }
-                // Renderizar apenas a UI screen mais recente (a que está por cima)
                 break;
             }
         }
@@ -347,27 +321,24 @@ void Game::GenerateOutput()
         }
     }
     
-    // Finalizar renderização para textura e aplicar efeito CRT
     mRenderer->EndRenderToTexture();
-
-    // Swap front buffer and back buffer
     mRenderer->Present();
 }
 
+// Remove todos os atores e telas UI da cena atual
 void Game::UnloadScene()
 {
-    // Use state so we can call this from within an actor update
     for(auto *actor : mActors) {
         actor->SetState(ActorState::Destroy);
     }
 
-    // Delete UI screens
     for (auto ui : mUIStack) {
         delete ui;
     }
     mUIStack.clear();
 }
 
+// Carrega uma nova cena do jogo, descarregando a anterior
 void Game::SetScene(GameScene nextScene)
 {
     UnloadScene();
@@ -381,21 +352,19 @@ void Game::SetScene(GameScene nextScene)
         }
         case GameScene::Level1:
         {
-            // Init all game actors
             InitializeActors();
             break;
         }
     }
 }
 
+// Limpa todos os recursos do jogo antes de encerrar
 void Game::Shutdown()
 {
-    // Because ~Actor calls RemoveActor, have to use a different style loop
     while (!mActors.empty()) {
         delete mActors.back();
     }
 
-    // Delete UI screens
     for (auto ui : mUIStack) {
         delete ui;
     }
@@ -411,6 +380,7 @@ void Game::Shutdown()
     SDL_Quit();
 }
 
+// Remove um ator de um vetor usando swap com o último elemento para eficiência
 void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor *actor) {
     auto it = std::find(actors.begin(), actors.end(), actor);
     if (it != actors.end()) {
@@ -419,6 +389,7 @@ void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor 
     }
 }
 
+// Verifica colisões entre lasers ativos e as naves
 void Game::CheckLaserCollisions()
 {
     for (auto actor : mActors) {

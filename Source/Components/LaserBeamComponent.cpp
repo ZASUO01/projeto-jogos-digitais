@@ -6,13 +6,15 @@
 #include "../Math.h"
 #include "../Actors/Ship.h"
 
+// Constrói o componente de desenho do laser
 LaserDrawComponent::LaserDrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color, class LaserBeamComponent* laserComp)
     : DrawComponent(owner, vertices, drawOrder, color, true)
     , mAlpha(1.0f)
-    , mLaserComponent(laserComp)
+    ,     mLaserComponent(laserComp)
 {
 }
 
+// Desenha o laser com múltiplas camadas de brilho e efeitos visuais
 void LaserDrawComponent::Draw(Renderer* renderer)
 {
     if (mOwner->GetState() != ActorState::Active || !mIsVisible) {
@@ -27,10 +29,7 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     Vector2 baseScale = mOwner->GetScale();
     float currentTime = SDL_GetTicks() / 1000.0f;
     
-    // Efeito de pulso sutil para simular energia do laser
     float pulse = 0.95f + Math::Sin(currentTime * 20.0f) * 0.05f;
-    
-    // Camada externa - Halo brilhante muito largo (efeito de bloom)
     Vector2 outerGlowScale = baseScale;
     outerGlowScale.y *= 6.0f;
     Matrix4 outerGlowTransform = Matrix4::CreateScale(outerGlowScale.x, outerGlowScale.y, 1.0f);
@@ -38,8 +37,6 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     outerGlowTransform = outerGlowTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     float outerGlowAlpha = mAlpha * 0.15f * pulse;
     renderer->DrawFilledWithAlpha(outerGlowTransform, vertexArray, mColor, outerGlowAlpha);
-    
-    // Camada de glow média - Brilho intermediário
     Vector2 glowScale = baseScale;
     glowScale.y *= 4.0f;
     Matrix4 glowTransform = Matrix4::CreateScale(glowScale.x, glowScale.y, 1.0f);
@@ -47,8 +44,6 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     glowTransform = glowTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     float glowAlpha = mAlpha * 0.35f * pulse;
     renderer->DrawFilledWithAlpha(glowTransform, vertexArray, mColor, glowAlpha);
-    
-    // Camada média - Brilho mais intenso
     Vector2 midScale = baseScale;
     midScale.y *= 2.5f;
     Matrix4 midTransform = Matrix4::CreateScale(midScale.x, midScale.y, 1.0f);
@@ -56,12 +51,8 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     midTransform = midTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     float midAlpha = mAlpha * 0.7f * pulse;
     renderer->DrawFilledWithAlpha(midTransform, vertexArray, mColor, midAlpha);
-    
-    // Core do laser - Linha central brilhante e intensa
     float coreAlpha = mAlpha * pulse;
     renderer->DrawFilledWithAlpha(mOwner->GetModelMatrix(), vertexArray, mColor, coreAlpha);
-    
-    // Adicionar linha branca brilhante no centro para efeito de "hot core"
     Vector3 whiteCore(1.0f, 1.0f, 1.0f);
     Vector2 coreScale = baseScale;
     coreScale.y *= 0.3f; // Muito fino no centro
@@ -70,21 +61,17 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     coreTransform = coreTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     float whiteCoreAlpha = mAlpha * 0.8f * pulse;
     renderer->DrawFilledWithAlpha(coreTransform, vertexArray, whiteCore, whiteCoreAlpha);
-    
-    // Desenhar flare no início do raio (ponto de origem - efeito de "muzzle flash")
     Vector2 startPos = mLaserComponent ? mLaserComponent->GetStartPos() : mOwner->GetPosition();
     DrawLaserFlare(renderer, startPos, mColor, mAlpha * pulse, 12.0f);
-    
-    // Desenhar efeito de impacto no final do raio se atingiu um objeto
     if (mLaserComponent && mLaserComponent->HitObject()) {
         Vector2 endPos = mLaserComponent->GetEndPos();
         DrawLaserImpact(renderer, endPos, mColor, mAlpha * pulse);
     }
 }
 
+// Desenha um efeito de flare no início do laser
 void LaserDrawComponent::DrawLaserFlare(Renderer* renderer, const Vector2& position, Vector3 color, float alpha, float size)
 {
-    // Criar vértices para um círculo (flare no início do raio)
     const int numSegments = 16;
     std::vector<Vector2> flareVertices;
     
@@ -111,23 +98,18 @@ void LaserDrawComponent::DrawLaserFlare(Renderer* renderer, const Vector2& posit
                                                     indices.data(), 
                                                     static_cast<unsigned int>(indices.size()));
     
-    // Desenhar múltiplas camadas para efeito de brilho intenso
-    // Camada externa muito grande e suave
     Matrix4 outerFlareTransform = Matrix4::CreateScale(2.5f, 2.5f, 1.0f) * 
                                    Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(outerFlareTransform, flareArray, color, alpha * 0.2f);
     
-    // Camada média
     Matrix4 midFlareTransform = Matrix4::CreateScale(1.8f, 1.8f, 1.0f) * 
                                  Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(midFlareTransform, flareArray, color, alpha * 0.4f);
     
-    // Camada interna brilhante
     Matrix4 innerFlareTransform = Matrix4::CreateScale(1.2f, 1.2f, 1.0f) * 
                                   Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(innerFlareTransform, flareArray, color, alpha * 0.7f);
     
-    // Core branco brilhante
     Vector3 whiteCore(1.0f, 1.0f, 1.0f);
     Matrix4 coreFlareTransform = Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(coreFlareTransform, flareArray, whiteCore, alpha * 0.9f);
@@ -135,9 +117,9 @@ void LaserDrawComponent::DrawLaserFlare(Renderer* renderer, const Vector2& posit
     delete flareArray;
 }
 
+// Desenha um efeito de impacto quando o laser atinge um objeto
 void LaserDrawComponent::DrawLaserImpact(Renderer* renderer, const Vector2& position, Vector3 color, float alpha)
 {
-    // Criar vértices para um círculo no ponto de impacto
     const float impactSize = 10.0f;
     const int numSegments = 16;
     std::vector<Vector2> impactVertices;
@@ -159,34 +141,27 @@ void LaserDrawComponent::DrawLaserImpact(Renderer* renderer, const Vector2& posi
         indices.push_back(static_cast<unsigned int>(i));
     }
     
-    // Criar VertexArray temporário para o impacto
     class VertexArray* impactArray = new VertexArray(floatVertices.data(), 
                                                       static_cast<unsigned int>(floatVertices.size()), 
                                                       indices.data(), 
                                                       static_cast<unsigned int>(indices.size()));
     
-    // Desenhar múltiplas camadas para efeito de flash de impacto intenso
-    // Camada externa muito grande (explosão de luz)
     Matrix4 outerImpactTransform = Matrix4::CreateScale(3.0f, 3.0f, 1.0f) * 
                                     Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(outerImpactTransform, impactArray, color, alpha * 0.25f);
     
-    // Camada grande
     Matrix4 largeImpactTransform = Matrix4::CreateScale(2.2f, 2.2f, 1.0f) * 
                                    Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(largeImpactTransform, impactArray, color, alpha * 0.45f);
     
-    // Camada média
     Matrix4 midImpactTransform = Matrix4::CreateScale(1.5f, 1.5f, 1.0f) * 
                                   Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(midImpactTransform, impactArray, color, alpha * 0.7f);
     
-    // Camada interna brilhante
     Matrix4 innerImpactTransform = Matrix4::CreateScale(1.1f, 1.1f, 1.0f) * 
                                    Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(innerImpactTransform, impactArray, color, alpha * 0.9f);
     
-    // Core branco super brilhante (ponto de impacto intenso)
     Vector3 whiteCore(1.0f, 1.0f, 1.0f);
     Matrix4 coreImpactTransform = Matrix4::CreateTranslation(Vector3(position.x, position.y, 0.0f));
     renderer->DrawFilledWithAlpha(coreImpactTransform, impactArray, whiteCore, alpha);
@@ -194,11 +169,13 @@ void LaserDrawComponent::DrawLaserImpact(Renderer* renderer, const Vector2& posi
     delete impactArray;
 }
 
+// Constrói o componente de desenho do colisor
 ColliderDrawComponent::ColliderDrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color)
     : DrawComponent(owner, vertices, drawOrder, color, false)
 {
 }
 
+// Desenha o colisor com efeito de pulso animado
 void ColliderDrawComponent::Draw(Renderer* renderer)
 {
     if (mOwner->GetState() != ActorState::Active || !mIsVisible) {
@@ -210,12 +187,9 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
         return;
     }
     
-    // Calcular pulso animado (mais rápido e sutil que o do chão)
-    // Chão usa: sin(time * 2.0) com variação 0.7-1.0
-    // Aqui usamos: sin(time * 3.5) com variação mais rápida e sutil
     float currentTime = SDL_GetTicks() / 1000.0f;
-    float pulseSin = Math::Sin(currentTime * 3.5f); // Varia de -1 a 1
-    float pulse = 0.8f + (pulseSin + 1.0f) * 0.15f; // Varia entre 0.8 e 0.95
+    float pulseSin = Math::Sin(currentTime * 3.5f);
+    float pulse = 0.8f + (pulseSin + 1.0f) * 0.15f;
     
     Vector2 baseScale = mOwner->GetScale();
     
@@ -227,8 +201,7 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
     glowTransform = glowTransform * Matrix4::CreateRotationZ(mOwner->GetRotation());
     glowTransform = glowTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     
-    // Aplicar pulso ao alpha do glow (varia de 0.28 a 0.38 - mais visível)
-    float glowAlpha = 0.28f + (pulse - 0.8f) * 0.67f; // Mapeia 0.8-0.95 para 0.28-0.38
+    float glowAlpha = 0.28f + (pulse - 0.8f) * 0.67f;
     renderer->DrawFilledWithAlpha(glowTransform, vertexArray, mColor, glowAlpha);
     
     Vector2 midScale = baseScale;
@@ -238,16 +211,15 @@ void ColliderDrawComponent::Draw(Renderer* renderer)
     midTransform = midTransform * Matrix4::CreateRotationZ(mOwner->GetRotation());
     midTransform = midTransform * Matrix4::CreateTranslation(Vector3(mOwner->GetPosition().x, mOwner->GetPosition().y, 0.0f));
     
-    // Aplicar pulso ao alpha do meio (varia de 0.56 a 0.665 - mais visível)
-    float midAlpha = 0.56f + (pulse - 0.8f) * 0.7f; // Mapeia 0.8-0.95 para 0.56-0.665
+    float midAlpha = 0.56f + (pulse - 0.8f) * 0.7f;
     renderer->DrawFilledWithAlpha(midTransform, vertexArray, mColor, midAlpha);
     
-    // Core mantém alpha fixo para contraste
     float coreAlpha = 1.0f;
     renderer->DrawFilledWithAlpha(mOwner->GetModelMatrix(), vertexArray, mColor, coreAlpha);
     renderer->Draw(mOwner->GetModelMatrix(), vertexArray, mColor);
 }
 
+// Constrói o componente de raio laser
 LaserBeamComponent::LaserBeamComponent(class Actor* owner, Vector3 color, float lifetime)
     : Component(owner, 10)
     , mColor(color)
@@ -269,6 +241,7 @@ LaserBeamComponent::~LaserBeamComponent()
 {
 }
 
+// Atualiza o tempo de vida do laser e sua visibilidade
 void LaserBeamComponent::Update(float deltaTime)
 {
     if (mIsActive && mLifetime > 0.0f) {
@@ -286,6 +259,7 @@ void LaserBeamComponent::Update(float deltaTime)
     }
 }
 
+// Ativa o laser na posição inicial com rotação especificada
 void LaserBeamComponent::Activate(const Vector2& startPos, float rotation, float screenWidth, float screenHeight, class Ship* ownerShip)
 {
     mStartPos = startPos;
@@ -306,50 +280,43 @@ void LaserBeamComponent::Activate(const Vector2& startPos, float rotation, float
     mDrawComponent->SetVisible(true);
 }
 
+// Calcula a distância até a interseção de um raio com um círculo, retorna -1 se não houver interseção
 float LaserBeamComponent::RayCastToCircle(const Vector2& rayStart, const Vector2& rayDir, 
                                           const Vector2& circleCenter, float radius) const
 {
-    // Vetor do início do raio até o centro do círculo
     Vector2 toCircle = circleCenter - rayStart;
     
-    // Projeção do vetor toCircle na direção do raio
     float projection = toCircle.x * rayDir.x + toCircle.y * rayDir.y;
     
-    // Se a projeção for negativa, o círculo está atrás do raio
     if (projection < 0.0f) {
         return -1.0f;
     }
     
-    // Ponto mais próximo do círculo na linha do raio
     Vector2 closestPoint;
     closestPoint.x = rayStart.x + rayDir.x * projection;
     closestPoint.y = rayStart.y + rayDir.y * projection;
     
-    // Distância do ponto mais próximo até o centro do círculo
     Vector2 toClosest = circleCenter - closestPoint;
     float distSq = toClosest.x * toClosest.x + toClosest.y * toClosest.y;
     float radiusSq = radius * radius;
     
-    // Se a distância for maior que o raio, não há interseção
     if (distSq > radiusSq) {
         return -1.0f;
     }
     
-    // Calcular a distância até o ponto de entrada do raio no círculo
     float halfChord = Math::Sqrt(radiusSq - distSq);
     float distToIntersection = projection - halfChord;
     
-    // Retornar a distância (sempre positiva pois projection >= 0)
     return distToIntersection;
 }
 
+// Calcula o ponto final do laser considerando bordas da tela e colisões com naves
 void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight, class Ship* ownerShip)
 {
     float cosR = Math::Cos(mRotation);
     float sinR = Math::Sin(mRotation);
     Vector2 rayDir(cosR, sinR);
     
-    // Primeiro, calcular a distância até as bordas da tela
     float rightEdge = screenWidth;
     float leftEdge = 0.0f;
     float topEdge = 0.0f;
@@ -358,7 +325,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
     float minDist = screenWidth + screenHeight;
     float t;
     
-    // Verificar interseção com borda direita
     if (Math::Abs(cosR) > 0.0001f) {
         t = (rightEdge - mStartPos.x) / cosR;
         if (t > 0.0f) {
@@ -369,7 +335,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Verificar interseção com borda esquerda
     if (Math::Abs(cosR) > 0.0001f) {
         t = (leftEdge - mStartPos.x) / cosR;
         if (t > 0.0f) {
@@ -380,7 +345,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Verificar interseção com borda superior
     if (Math::Abs(sinR) > 0.0001f) {
         t = (topEdge - mStartPos.y) / sinR;
         if (t > 0.0f) {
@@ -391,7 +355,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Verificar interseção com borda inferior
     if (Math::Abs(sinR) > 0.0001f) {
         t = (bottomEdge - mStartPos.y) / sinR;
         if (t > 0.0f) {
@@ -402,20 +365,16 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Guardar distância até a borda para comparação
     float edgeDist = minDist;
     
-    // Se não encontrou borda válida, usar distância máxima
     if (minDist >= screenWidth + screenHeight) {
         minDist = Math::Sqrt(screenWidth * screenWidth + screenHeight * screenHeight);
         edgeDist = minDist;
     }
     
-    // Agora fazer ray casting para verificar colisões com objetos
     mHitObject = false;
     class Game* game = mOwner->GetGame();
     if (game) {
-        // Verificar Ship1
         class Ship* ship1 = game->GetShip1();
         if (ship1 && ship1 != ownerShip && ship1->GetState() == ActorState::Active) {
             class CircleColliderComponent* collider = ship1->GetComponent<CircleColliderComponent>();
@@ -428,7 +387,6 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
             }
         }
         
-        // Verificar Ship2
         class Ship* ship2 = game->GetShip2();
         if (ship2 && ship2 != ownerShip && ship2->GetState() == ActorState::Active) {
             class CircleColliderComponent* collider = ship2->GetComponent<CircleColliderComponent>();
@@ -442,11 +400,11 @@ void LaserBeamComponent::CalculateEndPoint(float screenWidth, float screenHeight
         }
     }
     
-    // Calcular ponto final baseado na distância mínima encontrada
     mEndPos.x = mStartPos.x + cosR * minDist;
     mEndPos.y = mStartPos.y + sinR * minDist;
 }
 
+// Verifica se o laser intersecta com um círculo
 bool LaserBeamComponent::IntersectCircle(const Vector2& circleCenter, float radius) const
 {
     if (!mIsActive || mLifetime <= 0.0f) {
@@ -478,6 +436,7 @@ bool LaserBeamComponent::IntersectCircle(const Vector2& circleCenter, float radi
     return distSq <= (radius * radius);
 }
 
+// Cria vértices para uma linha retangular (usado para o laser)
 std::vector<Vector2> LaserBeamComponent::CreateLineVertices(float width)
 {
     std::vector<Vector2> vertices;

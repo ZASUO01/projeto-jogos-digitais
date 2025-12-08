@@ -1,7 +1,3 @@
-//
-// Created by pedro-souza on 23/11/2025.
-//
-
 #pragma once
 #include <GL/glew.h>
 #include <string>
@@ -31,12 +27,9 @@ public:
     void DrawFilledWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha);
     void DrawWithAlpha(const Matrix4 &modelMatrix, VertexArray* vertices, Vector3 color, float alpha);
     
-    // Desenha o grid isométrico neon como fundo
     void DrawAdvancedGrid(float screenWidth, float screenHeight, float time);
 
-    // Inicia renderização para textura (para efeito CRT)
     void BeginRenderToTexture();
-    // Finaliza renderização para textura e aplica efeito CRT
     void EndRenderToTexture();
     
     void Present();
@@ -44,7 +37,6 @@ public:
     void AddUIElement(class UIElement *comp);
     void RemoveUIElement(class UIElement *comp);
 
-    // Getters
     class Shader* GetBaseShader() const { return mBaseShader; }
     float GetScreenWidth() const { return mScreenWidth; }
     float GetScreenHeight() const { return mScreenHeight; }
@@ -57,46 +49,33 @@ private:
     void CreateSpriteVerts();
     std::string FindShaderPath(const std::string& shaderName);
 
-    // Game
     class Game* mGame;
 
-    // Sprite shader for UI
     class Shader* mSpriteShader;
-    // Base shader for game
     class Shader* mBaseShader;
     
-    // Advanced Grid shader e recursos
     class Shader* mAdvancedGridShader;
     class VertexArray* mFullScreenQuad;
     
-    // CRT shader e recursos para efeito de TV antiga
     class Shader* mCRTShader;
     
-    // Frame Buffer Object para render-to-texture
     GLuint mFBO;
     GLuint mSceneTexture;
-    GLuint mRBO; // Render Buffer Object para depth/stencil
+    GLuint mRBO;
     
     float mScreenWidth;
     float mScreenHeight;
 
-    // Sprite vertex array
     class VertexArray *mSpriteVerts;
 
-    // Window
     SDL_Window* mWindow;
 
-    // OpenGL context
     SDL_GLContext mContext;
 
-    // Ortho projection for 2D shaders
     Matrix4 mOrthoProjection;
 
-    // Map of textures loaded
     std::unordered_map<std::string, class Texture*> mTextures;
-    // Map of fonts loaded
     std::unordered_map<std::string, class Font*> mFonts;
 
-    // UI screens to draw
     std::vector<class UIElement*> mUIComps;
 };

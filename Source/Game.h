@@ -1,11 +1,3 @@
-// ----------------------------------------------------------------
-// From Game Programming in C++ by Sanjay Madhav
-// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
-//
-// Released under the BSD License
-// See LICENSE in root directory for full details.
-// ----------------------------------------------------------------
-
 #pragma once
 #include <SDL.h>
 #include <vector>
@@ -29,29 +21,22 @@ public:
     void Shutdown();
     void Quit() { mIsRunning = false; }
 
-    // Actor functions
     void InitializeActors();
     void UpdateActors(float deltaTime);
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
 
-    // UI functions
     void PushUI(class UIScreen* screen) { mUIStack.emplace_back(screen); }
     const std::vector<class UIScreen*>& GetUIStack() { return mUIStack; }
 
-    // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
 
-    // Window
     SDL_Window* GetWindow() { return mWindow; }
     int GetWindowWidth() const;
     int GetWindowHeight() const;
 
-    // Aumente a resolução base
-    static const int WINDOW_WIDTH = 1920;  // Aumentado de 1280
-    static const int WINDOW_HEIGHT = 1080; // Aumentado de 720
-
-    // Adicione suporte a diferentes resoluções
+    static const int WINDOW_WIDTH = 1920;
+    static const int WINDOW_HEIGHT = 1080;
     static const int RENDER_WIDTH = 1920;
     static const int RENDER_HEIGHT = 1080;
     void AddDrawable(class DrawComponent* drawable);
@@ -63,7 +48,6 @@ public:
     Ship *GetShip1() const {return mShip1; }
     Ship *GetShip2() const {return mShip2; }
 
-    // Scene Handling
     void SetScene(GameScene scene);
     void UnloadScene();
 
@@ -78,10 +62,8 @@ private:
     std::vector<class Actor*> mPendingActors;
     std::vector<class DrawComponent*> mDrawables;
 
-    // All UI screens in the game
     std::vector<class UIScreen*> mUIStack;
 
-    // SDL stuff
     SDL_Window* mWindow;
     class Renderer* mRenderer;
     Uint32 mTicksCount;

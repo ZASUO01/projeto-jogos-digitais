@@ -4,7 +4,6 @@
 #include "../Math.h"
 #include <vector>
 
-// Forward declaration
 class LaserBeamComponent;
 
 class LaserDrawComponent : public DrawComponent

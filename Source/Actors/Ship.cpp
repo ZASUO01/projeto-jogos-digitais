@@ -47,13 +47,13 @@ Ship::Ship(Game* game,
     mColliderDrawComponent = new ColliderDrawComponent(this, circleVertices, 97, glowColor);
     mColliderDrawComponent->SetVisible(true);
 
-    // Criar rastro da nave (cor do motor baseada na cor da nave)
     Vector3 trailColor = mIsRedShip ? Vector3(1.0f, 0.5f, 0.3f) : Vector3(0.3f, 0.8f, 1.0f);
     mTrailComponent = new TrailComponent(this, trailColor, 0.6f, 0.015f);
 
     UpdateLivesDisplay();
 }
 
+// Processa entrada do teclado para movimento e disparo da nave
 void Ship::OnProcessInput(const uint8_t* state)
 {
     bool up, down, left, right;
@@ -88,15 +88,12 @@ void Ship::OnProcessInput(const uint8_t* state)
         }
         
         if (velocity.x != 0.0f || velocity.y != 0.0f) {
-            // Normalizar velocidade para manter velocidade constante nas diagonais
             if (velocity.x != 0.0f && velocity.y != 0.0f) {
                 float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
                 velocity.x = (velocity.x / length) * mForwardSpeed;
                 velocity.y = (velocity.y / length) * mForwardSpeed;
             }
             
-            // Calcular rotação diretamente do vetor de velocidade usando atan2
-            // Isso garante que a nave aponte exatamente na direção do movimento
             float rotation = Math::Atan2(velocity.y, velocity.x);
             SetRotation(rotation);
         }
@@ -115,6 +112,7 @@ void Ship::OnProcessInput(const uint8_t* state)
     }
 }
 
+// Atualiza timers, invencibilidade e posição dos indicadores de vida
 void Ship::OnUpdate(float deltaTime)
 {
     mLaserCooldown -= deltaTime;
@@ -162,6 +160,7 @@ void Ship::OnUpdate(float deltaTime)
     }
 }
 
+// Cria os vértices que formam o formato da nave
 std::vector<Vector2> Ship::CreateShipVertices() {
     std::vector<Vector2> vertices;
 
@@ -175,6 +174,7 @@ std::vector<Vector2> Ship::CreateShipVertices() {
     return vertices;
 }
 
+// Cria vértices para partículas quadradas
 std::vector<Vector2> Ship::CreateParticleVertices(float size) {
     std::vector<Vector2> vertices;
 
@@ -186,6 +186,7 @@ std::vector<Vector2> Ship::CreateParticleVertices(float size) {
     return vertices;
 }
 
+// Retorna a direção mais próxima de uma rotação dada
 Ship::Direction Ship::GetClosestDirection(float rotation) const {
     float normalizedRotation = Math::Fmod(rotation, Math::TwoPi);
     if (normalizedRotation < 0.0f) {
@@ -219,6 +220,7 @@ Ship::Direction Ship::GetClosestDirection(float rotation) const {
     return closest;
 }
 
+// Converte uma direção enum para radianos
 float Ship::DirectionToRadians(Direction dir) const {
     switch (dir) {
         case Direction::Right:      return Math::ToRadians(0.0f);
@@ -233,6 +235,7 @@ float Ship::DirectionToRadians(Direction dir) const {
     }
 }
 
+// Retorna a próxima direção na sequência (horário ou anti-horário)
 Ship::Direction Ship::GetNextDirection(Direction current, bool clockwise) const {
     Direction sequence[] = {
         Direction::Right,
@@ -267,6 +270,7 @@ Ship::Direction Ship::GetNextDirection(Direction current, bool clockwise) const 
     return sequence[nextIndex];
 }
 
+// Cria vértices para os quadrados que representam vidas
 std::vector<Vector2> Ship::CreateLifeSquareVertices() {
     std::vector<Vector2> vertices;
     float size = 8.0f;
@@ -277,6 +281,7 @@ std::vector<Vector2> Ship::CreateLifeSquareVertices() {
     return vertices;
 }
 
+// Cria vértices para desenhar o círculo do colisor
 std::vector<Vector2> Ship::CreateColliderCircleVertices(float radius) {
     std::vector<Vector2> vertices;
     constexpr int numSides = 32;
@@ -290,6 +295,7 @@ std::vector<Vector2> Ship::CreateColliderCircleVertices(float radius) {
     return vertices;
 }
 
+// Atualiza a exibição visual das vidas da nave
 void Ship::UpdateLivesDisplay() {
     for (int i = 0; i < 4; i++) {
         if (mLivesActors[i] != nullptr) {
