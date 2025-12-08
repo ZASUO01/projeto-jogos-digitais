@@ -14,8 +14,8 @@ Ship::Ship(Game* game,
            const float height,
            const float forwardForce,
            const float rotationForce,
-           Vector3 color,
-           bool isRedShip)
+           const Vector3 color,
+           const bool isRedShip)
         : Actor(game)
         , mForwardSpeed(forwardForce)
         , mRotationForce(rotationForce)
@@ -31,8 +31,8 @@ Ship::Ship(Game* game,
         , mRigidBodyComponent(nullptr)
         , mCircleColliderComponent(nullptr)
 {
-    for (int i = 0; i < 3; i++) {
-        mLivesActors[i] = nullptr;
+    for (auto & mLivesActor : mLivesActors) {
+        mLivesActor = nullptr;
     }
 
     std::vector<Vector2> vertices = CreateShipVertices();
@@ -41,11 +41,11 @@ Ship::Ship(Game* game,
     mDrawComponent = new DrawComponent(this, vertices, 100, Vector3(1.0f, 1.0f, 1.0f), false);
 
     mRigidBodyComponent = new RigidBodyComponent(this);
-    float colliderRadius = mHeight * 1.0f;
+    const float colliderRadius = mHeight * 1.0f;
     mCircleColliderComponent = new CircleColliderComponent(this, colliderRadius);
 
     std::vector<Vector2> circleVertices = CreateColliderCircleVertices(colliderRadius);
-    Vector3 glowColor = mIsRedShip ? Vector3(1.0f, 0.3f, 0.3f) : Vector3(0.3f, 1.0f, 1.0f);
+    const Vector3 glowColor = mIsRedShip ? Vector3(1.0f, 0.3f, 0.3f) : Vector3(0.3f, 1.0f, 1.0f);
     mColliderDrawComponent = new ColliderDrawComponent(this, circleVertices, 97, glowColor);
     mColliderDrawComponent->SetVisible(true);
 
@@ -153,15 +153,15 @@ void Ship::OnUpdate(const float deltaTime){
     */
 }
 
-std::vector<Vector2> Ship::CreateShipVertices() {
+std::vector<Vector2> Ship::CreateShipVertices() const {
     std::vector<Vector2> vertices;
 
-    float step = mHeight / 4;
-    vertices.emplace_back(Vector2(2 * step, 0.0));
-    vertices.emplace_back(Vector2(2 * -step, 2 * step));
-    vertices.emplace_back(Vector2(-step, step));
-    vertices.emplace_back(Vector2(-step, -step));
-    vertices.emplace_back(Vector2(2* -step, 2 * -step));
+    const float step = mHeight / 4;
+    vertices.emplace_back(2 * step, 0.0);
+    vertices.emplace_back(2 * -step, 2 * step);
+    vertices.emplace_back(-step, step);
+    vertices.emplace_back(-step, -step);
+    vertices.emplace_back(2* -step, 2 * -step);
 
     return vertices;
 }

@@ -284,7 +284,13 @@ bool Game::IsEnemySet(const int id) {
 }
 
 void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) {
-        auto enemy = new Ship(this, 50);
+        auto enemy = new Ship(
+            this,
+            50,
+            500,
+            5,
+            Vector3(1, 0, 1),
+            true);
         enemy->SetPosition(position);
         enemy->SetRotation(rotation);
         mEnemies.emplace(id, enemy);

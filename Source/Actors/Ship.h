@@ -61,7 +61,7 @@ private:
     class RigidBodyComponent* mRigidBodyComponent;
     class CircleColliderComponent* mCircleColliderComponent;
 
-    std::vector<Vector2> CreateShipVertices();
+    std::vector<Vector2> CreateShipVertices() const;
     std::vector<Vector2> CreateParticleVertices(float size);
     std::vector<Vector2> CreateLifeSquareVertices();
     std::vector<Vector2> CreateColliderCircleVertices(float radius);
