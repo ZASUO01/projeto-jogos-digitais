@@ -1,6 +1,7 @@
 #include <GL/glew.h>
 #include <SDL.h>
 #include "Renderer.h"
+#include "PlatformCompatibility.h"
 #include "Shader.h"
 #include "VertexArray.h"
 #include "Texture.h"
@@ -39,21 +40,36 @@ bool Renderer::Initialize(float width, float height)
     mScreenWidth = width;
     mScreenHeight = height;
 
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    // Configurar atributos OpenGL com fallback para compatibilidade cross-platform
+    // Tentar OpenGL 3.3 primeiro, depois 3.2 se falhar (necessário para macOS)
+    int majorVersion = 3;
+    int minorVersion = 3;
+    
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, majorVersion);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minorVersion);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
     SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1);
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
     SDL_GL_SetSwapInterval(1);
 
     mContext = SDL_GL_CreateContext(mWindow);
     if (!mContext) {
-        SDL_Log("Failed to create OpenGL context: %s", SDL_GetError());
-        return false;
+        // Tentar fallback para OpenGL 3.2 (necessário para macOS mais antigo)
+        SDL_Log("Failed to create OpenGL 3.3 context, trying 3.2: %s", SDL_GetError());
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 2);
+        mContext = SDL_GL_CreateContext(mWindow);
+        if (!mContext) {
+            SDL_Log("Failed to create OpenGL context: %s", SDL_GetError());
+            return false;
+        }
+        minorVersion = 2;
     }
 
-    if (SDL_GL_MakeCurrent(mWindow, mContext) != 0) {
-        SDL_Log("Failed to make OpenGL context current: %s", SDL_GetError());
+    if (!EnsureOpenGLContextCurrent(mWindow, mContext)) {
+        SDL_Log("Failed to make OpenGL context current");
         return false;
     }
 
@@ -423,12 +439,11 @@ void Renderer::RemoveUIElement(UIElement *comp)
 // Carrega e retorna uma textura (usa cache se já foi carregada)
 Texture* Renderer::GetTexture(const std::string& fileName)
 {
-    SDL_GLContext currentContext = SDL_GL_GetCurrentContext();
-    if (currentContext != mContext) {
-        if (SDL_GL_MakeCurrent(mWindow, mContext) != 0) {
-            SDL_Log("Failed to make OpenGL context current when loading texture: %s", SDL_GetError());
-            return nullptr;
-        }
+    // Garantir que o contexto OpenGL está atual antes de carregar texturas
+    // Importante para macOS e Linux onde o contexto pode ser perdido
+    if (!EnsureOpenGLContextCurrent(mWindow, mContext)) {
+        SDL_Log("Failed to make OpenGL context current when loading texture");
+        return nullptr;
     }
     
     Texture* tex = nullptr;
@@ -498,7 +513,7 @@ void Renderer::CreateSpriteVerts()
 bool Renderer::LoadShaders()
 {
     mSpriteShader = new Shader();
-    if (!mSpriteShader->Load("../Shaders/Sprite"))
+    if (!mSpriteShader->Load(FindShaderPath("Sprite")))
     {
         return false;
     }
@@ -529,16 +544,20 @@ std::string Renderer::FindShaderPath(const std::string& shaderName)
 	char* basePath = SDL_GetBasePath();
 	if (basePath) {
 		std::string base(basePath);
-		if (!base.empty() && (base.back() == '/' || base.back() == '\\')) {
+		SDL_free(basePath);
+		
+		// Normalizar separadores de caminho para compatibilidade cross-platform
+		std::replace(base.begin(), base.end(), '\\', '/');
+		
+		if (!base.empty() && base.back() == '/') {
 			base.pop_back();
 		}
 		possiblePaths.push_back(base + "/Shaders/" + shaderName);
-		size_t lastSlash = base.find_last_of("/\\");
+		size_t lastSlash = base.find_last_of('/');
 		if (lastSlash != std::string::npos) {
 			std::string parent = base.substr(0, lastSlash);
 			possiblePaths.push_back(parent + "/Shaders/" + shaderName);
 		}
-		SDL_free(basePath);
 	}
 	
 	for (const auto& path : possiblePaths) {

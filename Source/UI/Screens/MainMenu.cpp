@@ -7,6 +7,7 @@
 #include "../../Math.h"
 #include "../../Renderer/VideoPlayer.h"
 #include "../../Renderer/AudioPlayer.h"
+#include "../../PathResolver.h"
 #include "../UIVideo.h"
 #include "../UITriangle.h"
 #include <SDL.h>
@@ -24,7 +25,7 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
     mVideoPlayer = new VideoPlayer();
     
     // Carregar vídeo abertura.mp4
-    std::string videoPath = "../Opening/abertura.mp4";
+    std::string videoPath = PathResolver::ResolvePath("Opening/abertura.mp4");
     if (!mVideoPlayer->Load(videoPath))
     {
         SDL_Log("Erro ao carregar vídeo de background: %s", videoPath.c_str());
@@ -53,7 +54,7 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
     mAudioPlayer = new AudioPlayer();
     
     // Carregar áudio abertura.wav
-    std::string audioPath = "../Opening/abertura.wav";
+    std::string audioPath = PathResolver::ResolvePath("Opening/abertura.wav");
     if (!mAudioPlayer->Load(audioPath))
     {
         SDL_Log("Erro ao carregar áudio de background: %s", audioPath.c_str());

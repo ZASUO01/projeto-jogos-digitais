@@ -3,6 +3,7 @@
 #include "../Components/LaserBeamComponent.h"
 #include "Ship.h"
 #include "../Renderer/AudioPlayer.h"
+#include "../PathResolver.h"
 
 // Constrói um raio laser na posição inicial com rotação e cor especificadas
 LaserBeam::LaserBeam(class Game* game, const Vector2& startPos, float rotation, Vector3 color, class Ship* ownerShip)
@@ -22,7 +23,7 @@ LaserBeam::LaserBeam(class Game* game, const Vector2& startPos, float rotation, 
     
     // Criar e tocar som de tiro
     mShootSound = new AudioPlayer();
-    if (mShootSound->Load("../Assets/Sounds/Shoot.wav"))
+    if (mShootSound->Load(PathResolver::ResolvePath("Assets/Sounds/Shoot.wav")))
     {
         mShootSound->SetVolume(64); // Volume reduzido (50% do máximo)
         mShootSound->Play(false);

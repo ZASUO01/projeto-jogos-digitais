@@ -4,6 +4,7 @@
 
 #include "HUD.h"
 #include "../../Game.h"
+#include "../../PathResolver.h"
 #include <string>
 
 HUD::HUD(class Game* game, const std::string& fontName)
@@ -24,13 +25,13 @@ HUD::HUD(class Game* game, const std::string& fontName)
 	// Add health bar images in specified order (Orange, Red, Blue, ShieldBar)
 	// ShieldBar is the background (drawOrder 0 = drawn first), progress segments drawn on top
 	// Set transparency for health bar images (alpha = 0.6 for more transparency)
-	UIImage* shieldBar = AddImage("../Assets/HUD/ShieldBar.png", Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 0);
+	UIImage* shieldBar = AddImage(PathResolver::ResolvePath("Assets/HUD/ShieldBar.png"), Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 0);
 	shieldBar->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.6f)); // Background drawn first
-	mHealth1 = AddImage("../Assets/HUD/ShieldOrange.png", Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 1);
+	mHealth1 = AddImage(PathResolver::ResolvePath("Assets/HUD/ShieldOrange.png"), Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 1);
 	mHealth1->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.6f));
-	mHealth2 = AddImage("../Assets/HUD/ShieldRed.png", Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 2);
+	mHealth2 = AddImage(PathResolver::ResolvePath("Assets/HUD/ShieldRed.png"), Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 2);
 	mHealth2->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.6f));
-	mHealth3 = AddImage("../Assets/HUD/ShieldBlue.png", Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 3);
+	mHealth3 = AddImage(PathResolver::ResolvePath("Assets/HUD/ShieldBlue.png"), Vector2(topLeftX, healthBarY), 0.75f, 0.0f, 3);
 	mHealth3->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.6f));
 	
 	// Add score text label and counter below health bar

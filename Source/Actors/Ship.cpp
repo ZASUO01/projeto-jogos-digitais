@@ -7,6 +7,7 @@
 #include "../Components/TrailComponent.h"
 #include "../Actors/LaserBeam.h"
 #include "../Renderer/AudioPlayer.h"
+#include "../PathResolver.h"
 
 Ship::Ship(Game* game,
            const float height,
@@ -77,7 +78,7 @@ void Ship::TakeDamage()
         if (!mHitSound)
         {
             mHitSound = new AudioPlayer();
-            if (!mHitSound->Load("../Assets/Sounds/ShipHit.wav"))
+            if (!mHitSound->Load(PathResolver::ResolvePath("Assets/Sounds/ShipHit.wav")))
             {
                 delete mHitSound;
                 mHitSound = nullptr;

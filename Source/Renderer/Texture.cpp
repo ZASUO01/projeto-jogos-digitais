@@ -1,4 +1,5 @@
 #include "Texture.h"
+#include "PlatformCompatibility.h"
 #include <SDL_image.h>
 
 Texture::Texture()
@@ -14,10 +15,10 @@ Texture::~Texture()
 
 bool Texture::Load(const std::string &filePath)
 {
-    // Verify OpenGL context is current
-    SDL_GLContext currentContext = SDL_GL_GetCurrentContext();
-    if (!currentContext) {
-        SDL_Log("Failed to load texture %s: No OpenGL context is current", filePath.c_str());
+    // Verificar se o contexto OpenGL está válido e atual
+    // Importante para macOS e Linux onde o contexto pode ser perdido
+    if (!IsOpenGLContextValid()) {
+        SDL_Log("Failed to load texture %s: No valid OpenGL context", filePath.c_str());
         return false;
     }
 

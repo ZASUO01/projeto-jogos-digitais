@@ -14,6 +14,7 @@
 #include "UI/Screens/UIScreen.h"
 #include "UI/Screens/OpeningScreen.h"
 #include "Renderer/AudioPlayer.h"
+#include "PathResolver.h"
 #include <SDL_mixer.h>
 
 Game::Game()
@@ -154,7 +155,7 @@ void Game::ProcessInput()
             case SDL_KEYDOWN:
                 if (event.key.keysym.sym == SDLK_p && mUIStack.empty()) {
                     if (mShip) {
-                        new GameOver(this, "../Assets/Fonts/Arial.ttf", true);
+                        new GameOver(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"), true);
                     }
                 }
                 if (!mUIStack.empty()) {
@@ -224,11 +225,11 @@ void Game::UpdateActors(float deltaTime)
 
     if (mUIStack.empty()) {
         if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1->GetLives() <= 0) {
-            new GameOver(this, "../Assets/Fonts/Arial.ttf", true);
+            new GameOver(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"), true);
             mShip1->SetState(ActorState::Destroy);
         }
         else if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2->GetLives() <= 0) {
-            new GameOver(this, "../Assets/Fonts/Arial.ttf", false);
+            new GameOver(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"), false);
             mShip2->SetState(ActorState::Destroy);
         }
     }
@@ -362,7 +363,7 @@ void Game::SetScene(GameScene nextScene)
             {
                 mBackgroundAudio->Stop();
             }
-            new MainMenu(this, "../Assets/Fonts/Arial.ttf");
+            new MainMenu(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"));
             break;
         }
         case GameScene::Level1:
@@ -380,7 +381,7 @@ void Game::SetScene(GameScene nextScene)
                 mBackgroundAudio = new AudioPlayer();
             }
             
-            std::string audioPath = "../Opening/abertura.wav";
+            std::string audioPath = PathResolver::ResolvePath("Opening/abertura.wav");
             if (!mBackgroundAudio->Load(audioPath))
             {
                 SDL_Log("Erro ao carregar áudio de fundo: %s", audioPath.c_str());

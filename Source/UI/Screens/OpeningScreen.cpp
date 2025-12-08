@@ -6,13 +6,14 @@
 #include "../../Renderer/Shader.h"
 #include "../../Renderer/VertexArray.h"
 #include "../../Math.h"
+#include "../../PathResolver.h"
 #include "../UIImage.h"
 #include <SDL.h>
 #include <GL/glew.h>
 #include <iostream>
 
 OpeningScreen::OpeningScreen(class Game* game)
-    : UIScreen(game, "../Assets/Fonts/Arial.ttf")
+    : UIScreen(game, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"))
     , mVideoPlayer(nullptr)
     , mAudioPlayer(nullptr)
     , mIsLooping(false)
@@ -23,7 +24,7 @@ OpeningScreen::OpeningScreen(class Game* game)
     mVideoPlayer = new VideoPlayer();
     
     // Carregar vídeo begin.mp4
-    std::string videoPath = "../Opening/begin.mp4";
+    std::string videoPath = PathResolver::ResolvePath("Opening/begin.mp4");
     if (!mVideoPlayer->Load(videoPath))
     {
         SDL_Log("Erro ao carregar vídeo: %s", videoPath.c_str());
@@ -37,7 +38,7 @@ OpeningScreen::OpeningScreen(class Game* game)
     mAudioPlayer = new AudioPlayer();
     
     // Carregar áudio begin.wav
-    std::string audioPath = "../Opening/begin.wav";
+    std::string audioPath = PathResolver::ResolvePath("Opening/begin.wav");
     if (!mAudioPlayer->Load(audioPath))
     {
         SDL_Log("Erro ao carregar áudio: %s", audioPath.c_str());

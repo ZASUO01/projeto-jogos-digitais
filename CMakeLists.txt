@@ -32,6 +32,10 @@ add_executable(${PROJECT_NAME}
         Source/Renderer/VideoPlayer.h
         Source/Renderer/AudioPlayer.cpp
         Source/Renderer/AudioPlayer.h
+        Source/Renderer/PlatformCompatibility.cpp
+        Source/Renderer/PlatformCompatibility.h
+        Source/PathResolver.cpp
+        Source/PathResolver.h
         Source/Actors/Actor.cpp
         Source/Actors/Actor.h
         Source/Game.cpp
