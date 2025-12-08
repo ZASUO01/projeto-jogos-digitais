@@ -50,7 +50,7 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
 	UIButton* startButton = AddButton("Iniciar Jogo", [this]() {
 		Close();
 		GetGame()->SetScene(GameScene::Level1);
-	}, Vector2(0.0f, -50.0f));
+	}, Vector2(0.0f, -80.0f));
 
 	// Tornar botão transparente (background e texto totalmente transparentes)
 	startButton->SetTextColor(Color::White);
@@ -59,7 +59,7 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
 
 	UIButton* quitButton = AddButton("Fechar Jogo", [this]() {
 		GetGame()->Quit();
-	}, Vector2(0.0f, -150.0f));
+	}, Vector2(0.0f, -280.0f));
 
 	// Tornar botão transparente (background e texto totalmente transparentes)
 	quitButton->SetTextColor(Color::White);
