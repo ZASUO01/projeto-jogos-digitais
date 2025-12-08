@@ -315,6 +315,16 @@ void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
             mEnemiesTargets[other.id].targetPosX = other.posX;
             mEnemiesTargets[other.id].targetPosY = other.posY;
             mEnemiesTargets[other.id].targetRotation = other.rotation;
+
+            if (other.hasShot) {
+                const auto &enemy = mEnemies[other.id];
+                new LaserBeam(
+                    this,
+                    enemy->GetPosition(),
+                    enemy->GetRotation(),
+                    Vector3(1, 0, 1),
+                    enemy);
+            }
         }
 
         if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {
