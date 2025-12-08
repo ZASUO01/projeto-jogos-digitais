@@ -13,6 +13,8 @@
 #include "UI/Screens/GameOver.h"
 #include "UI/Screens/UIScreen.h"
 #include "UI/Screens/OpeningScreen.h"
+#include "Renderer/AudioPlayer.h"
+#include <SDL_mixer.h>
 
 Game::Game()
         :mWindow(nullptr)
@@ -24,6 +26,7 @@ Game::Game()
         ,mShip(nullptr)
         ,mShip1(nullptr)
         ,mShip2(nullptr)
+        ,mBackgroundAudio(nullptr)
 {}
 
 // Inicializa o jogo, criando a janela SDL, o renderer e a tela de abertura
@@ -31,9 +34,16 @@ bool Game::Initialize()
 {
     Random::Init();
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+        return false;
+    }
+    
+    // Inicializar SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        SDL_Log("Erro ao inicializar SDL_mixer: %s", Mix_GetError());
         return false;
     }
 
@@ -347,11 +357,41 @@ void Game::SetScene(GameScene nextScene)
     {
         case GameScene::MainMenu:
         {
+            // Parar áudio de fundo quando voltar ao menu
+            if (mBackgroundAudio)
+            {
+                mBackgroundAudio->Stop();
+            }
             new MainMenu(this, "../Assets/Fonts/Arial.ttf");
             break;
         }
         case GameScene::Level1:
         {
+            // Parar e descarregar áudio anterior se existir (para reiniciar do zero)
+            if (mBackgroundAudio)
+            {
+                mBackgroundAudio->Stop();
+                mBackgroundAudio->Unload();
+            }
+            
+            // Criar ou recriar áudio de fundo quando o jogo começar/reiniciar
+            if (!mBackgroundAudio)
+            {
+                mBackgroundAudio = new AudioPlayer();
+            }
+            
+            std::string audioPath = "../Opening/abertura.wav";
+            if (!mBackgroundAudio->Load(audioPath))
+            {
+                SDL_Log("Erro ao carregar áudio de fundo: %s", audioPath.c_str());
+                delete mBackgroundAudio;
+                mBackgroundAudio = nullptr;
+            }
+            else
+            {
+                mBackgroundAudio->SetVolume(11);
+                mBackgroundAudio->Play(true);
+            }
             InitializeActors();
             break;
         }
@@ -372,10 +412,19 @@ void Game::Shutdown()
 
     mDrawables.clear();
 
+    // Parar e liberar áudio de fundo
+    if (mBackgroundAudio)
+    {
+        mBackgroundAudio->Stop();
+        delete mBackgroundAudio;
+        mBackgroundAudio = nullptr;
+    }
+
     mRenderer->Shutdown();
     delete mRenderer;
     mRenderer = nullptr;
 
+    Mix_CloseAudio();
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
 }
@@ -399,19 +448,27 @@ void Game::CheckLaserCollisions()
             Ship* ownerShip = laser->GetOwnerShip();
             if (laserComp && laserComp->IsActive()) {
                 if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1 != ownerShip && !mShip1->IsInvincible()) {
-                    CircleColliderComponent* collider = mShip1->GetComponent<CircleColliderComponent>();
-                    if (collider) {
-                        if (laserComp->IntersectCircle(mShip1->GetPosition(), collider->GetRadius())) {
-                            mShip1->TakeDamage();
+                    // Verificar se este laser já atingiu esta nave
+                    if (!laserComp->HasHitShip(mShip1)) {
+                        CircleColliderComponent* collider = mShip1->GetComponent<CircleColliderComponent>();
+                        if (collider) {
+                            if (laserComp->IntersectCircle(mShip1->GetPosition(), collider->GetRadius())) {
+                                mShip1->TakeDamage();
+                                laserComp->MarkShipHit(mShip1);
+                            }
                         }
                     }
                 }
                 
                 if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2 != ownerShip && !mShip2->IsInvincible()) {
-                    CircleColliderComponent* collider = mShip2->GetComponent<CircleColliderComponent>();
-                    if (collider) {
-                        if (laserComp->IntersectCircle(mShip2->GetPosition(), collider->GetRadius())) {
-                            mShip2->TakeDamage();
+                    // Verificar se este laser já atingiu esta nave
+                    if (!laserComp->HasHitShip(mShip2)) {
+                        CircleColliderComponent* collider = mShip2->GetComponent<CircleColliderComponent>();
+                        if (collider) {
+                            if (laserComp->IntersectCircle(mShip2->GetPosition(), collider->GetRadius())) {
+                                mShip2->TakeDamage();
+                                laserComp->MarkShipHit(mShip2);
+                            }
                         }
                     }
                 }

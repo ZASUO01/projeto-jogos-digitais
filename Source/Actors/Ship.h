@@ -9,6 +9,7 @@ public:
                   float rotationForce = 5.0,
                   Vector3 color = Vector3(0.0f, 1.0f, 1.0f),
                   bool isRedShip = false);
+    ~Ship();
 
     void OnProcessInput(const Uint8* keyState) override;
     void OnUpdate(float deltaTime) override;
@@ -20,13 +21,7 @@ public:
             UpdateLivesDisplay();
         }
     }
-    void TakeDamage() { 
-        if (mLives > 0 && mInvincibilityTimer <= 0.0f) {
-            mLives--; 
-            mInvincibilityTimer = 2.0f;
-            UpdateLivesDisplay();
-        }
-    }
+    void TakeDamage();
     
     bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
     bool IsRedShip() const { return mIsRedShip; }
@@ -62,6 +57,7 @@ private:
     class RigidBodyComponent* mRigidBodyComponent;
     class CircleColliderComponent* mCircleColliderComponent;
     class TrailComponent* mTrailComponent;
+    class AudioPlayer* mHitSound;
 
     std::vector<Vector2> CreateShipVertices();
     std::vector<Vector2> CreateParticleVertices(float size);

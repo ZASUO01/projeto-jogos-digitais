@@ -16,6 +16,7 @@ public:
 
 private:
     class VideoPlayer* mVideoPlayer;
+    class AudioPlayer* mAudioPlayer;
     bool mIsLooping;
     bool mHasPlayedOnce;
     class VertexArray* mVideoVerts;

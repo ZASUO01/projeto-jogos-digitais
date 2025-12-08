@@ -6,6 +6,7 @@
 #include "../Components/LaserBeamComponent.h"
 #include "../Components/TrailComponent.h"
 #include "../Actors/LaserBeam.h"
+#include "../Renderer/AudioPlayer.h"
 
 Ship::Ship(Game* game,
            const float height,
@@ -28,6 +29,7 @@ Ship::Ship(Game* game,
         , mRigidBodyComponent(nullptr)
         , mCircleColliderComponent(nullptr)
         , mTrailComponent(nullptr)
+        , mHitSound(nullptr)
 {
     for (int i = 0; i < 4; i++) {
         mLivesActors[i] = nullptr;
@@ -51,6 +53,43 @@ Ship::Ship(Game* game,
     mTrailComponent = new TrailComponent(this, trailColor, 0.6f, 0.015f);
 
     UpdateLivesDisplay();
+}
+
+Ship::~Ship()
+{
+    if (mHitSound)
+    {
+        mHitSound->Stop();
+        delete mHitSound;
+        mHitSound = nullptr;
+    }
+}
+
+// Aplica dano à nave e toca o som de impacto
+void Ship::TakeDamage()
+{
+    if (mLives > 0 && mInvincibilityTimer <= 0.0f) {
+        mLives--; 
+        mInvincibilityTimer = 2.0f;
+        UpdateLivesDisplay();
+        
+        // Criar e tocar som de dano
+        if (!mHitSound)
+        {
+            mHitSound = new AudioPlayer();
+            if (!mHitSound->Load("../Assets/Sounds/ShipHit.wav"))
+            {
+                delete mHitSound;
+                mHitSound = nullptr;
+            }
+        }
+        
+        if (mHitSound)
+        {
+            mHitSound->Stop(); // Parar se já estiver tocando
+            mHitSound->Play(false);
+        }
+    }
 }
 
 // Processa entrada do teclado para movimento e disparo da nave

@@ -231,6 +231,7 @@ LaserBeamComponent::LaserBeamComponent(class Actor* owner, Vector3 color, float 
     , mRotation(0.0f)
     , mHitObject(false)
     , mDrawComponent(nullptr)
+    , mHitShips()
 {
     std::vector<Vector2> vertices = CreateLineVertices(3.0f);
     mDrawComponent = new LaserDrawComponent(mOwner, vertices, 98, mColor, this);
@@ -446,5 +447,34 @@ std::vector<Vector2> LaserBeamComponent::CreateLineVertices(float width)
     vertices.emplace_back(Vector2(1.0f, halfWidth));
     vertices.emplace_back(Vector2(0.0f, halfWidth));
     return vertices;
+}
+
+// Verifica se o laser já atingiu uma nave específica
+bool LaserBeamComponent::HasHitShip(class Ship* ship) const
+{
+    if (!ship) {
+        return false;
+    }
+    
+    for (auto hitShip : mHitShips) {
+        if (hitShip == ship) {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+// Marca que uma nave foi atingida por este laser
+void LaserBeamComponent::MarkShipHit(class Ship* ship)
+{
+    if (!ship) {
+        return;
+    }
+    
+    // Verificar se já foi marcada para evitar duplicatas
+    if (!HasHitShip(ship)) {
+        mHitShips.push_back(ship);
+    }
 }
 

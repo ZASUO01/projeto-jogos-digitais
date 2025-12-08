@@ -19,6 +19,7 @@ private:
     void UpdateArrows();
     
     class VideoPlayer* mVideoPlayer;
+    class AudioPlayer* mAudioPlayer;
     class UIVideo* mVideoImage;
     class UITriangle* mLeftArrow;
     class UITriangle* mRightArrow;

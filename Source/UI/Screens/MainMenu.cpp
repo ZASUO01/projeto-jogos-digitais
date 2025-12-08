@@ -6,6 +6,7 @@
 #include "../../Game.h"
 #include "../../Math.h"
 #include "../../Renderer/VideoPlayer.h"
+#include "../../Renderer/AudioPlayer.h"
 #include "../UIVideo.h"
 #include "../UITriangle.h"
 #include <SDL.h>
@@ -14,6 +15,7 @@
 MainMenu::MainMenu(class Game* game, const std::string& fontName)
         :UIScreen(game, fontName)
         , mVideoPlayer(nullptr)
+        , mAudioPlayer(nullptr)
         , mVideoImage(nullptr)
         , mLeftArrow(nullptr)
         , mRightArrow(nullptr)
@@ -45,6 +47,22 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
         
         // Criar imagem de vídeo centralizada que preenche toda a tela
         mVideoImage = new UIVideo(GetGame(), mVideoPlayer, Vector2(0.0f, 0.0f), scale, 0.0f, 0);
+    }
+    
+    // Criar AudioPlayer
+    mAudioPlayer = new AudioPlayer();
+    
+    // Carregar áudio abertura.wav
+    std::string audioPath = "../Opening/abertura.wav";
+    if (!mAudioPlayer->Load(audioPath))
+    {
+        SDL_Log("Erro ao carregar áudio de background: %s", audioPath.c_str());
+        // Continuar mesmo sem áudio
+    }
+    else
+    {
+        // Tocar áudio em loop junto com o vídeo
+        mAudioPlayer->Play(true);
     }
 
 	UIButton* startButton = AddButton("Iniciar Jogo", [this]() {
@@ -85,6 +103,13 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
 
 MainMenu::~MainMenu()
 {
+    if (mAudioPlayer)
+    {
+        mAudioPlayer->Stop();
+        delete mAudioPlayer;
+        mAudioPlayer = nullptr;
+    }
+    
     if (mVideoImage)
     {
         delete mVideoImage;
@@ -110,6 +135,13 @@ void MainMenu::Update(float deltaTime)
         {
             mVideoPlayer->SeekToTime(0.0);
             mVideoPlayer->ResetFinished();
+            
+            // Reiniciar áudio para sincronizar com o loop do vídeo
+            if (mAudioPlayer)
+            {
+                mAudioPlayer->Stop();
+                mAudioPlayer->Play(true);
+            }
         }
     }
 }

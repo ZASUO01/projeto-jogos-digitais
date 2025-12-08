@@ -9,6 +9,7 @@ project(${PROJECT_NAME})
 find_package(SDL2 2.32.2 EXACT REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
+find_package(SDL2_mixer REQUIRED)
 find_package(GLEW REQUIRED)
 find_package(OpenGL REQUIRED)
 
@@ -29,6 +30,8 @@ add_executable(${PROJECT_NAME}
         Source/Renderer/Font.h
         Source/Renderer/VideoPlayer.cpp
         Source/Renderer/VideoPlayer.h
+        Source/Renderer/AudioPlayer.cpp
+        Source/Renderer/AudioPlayer.h
         Source/Actors/Actor.cpp
         Source/Actors/Actor.h
         Source/Game.cpp
@@ -105,6 +108,7 @@ if(AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND AVUTIL_INCLUDE_DIR AND SWSCA
         SDL2::SDL2 
         SDL2_image::SDL2_image 
         SDL2_ttf::SDL2_ttf 
+        SDL2_mixer::SDL2_mixer
         OpenGL::GL
         ${AVCODEC_LIBRARY}
         ${AVFORMAT_LIBRARY}
@@ -113,5 +117,5 @@ if(AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND AVUTIL_INCLUDE_DIR AND SWSCA
     )
 else()
     message(WARNING "FFmpeg libraries not found. Video playback will not work.")
-    target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf OpenGL::GL)
+    target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf SDL2_mixer::SDL2_mixer OpenGL::GL)
 endif()

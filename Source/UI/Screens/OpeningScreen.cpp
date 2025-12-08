@@ -1,6 +1,7 @@
 #include "OpeningScreen.h"
 #include "../../Game.h"
 #include "../../Renderer/VideoPlayer.h"
+#include "../../Renderer/AudioPlayer.h"
 #include "../../Renderer/Renderer.h"
 #include "../../Renderer/Shader.h"
 #include "../../Renderer/VertexArray.h"
@@ -13,6 +14,7 @@
 OpeningScreen::OpeningScreen(class Game* game)
     : UIScreen(game, "../Assets/Fonts/Arial.ttf")
     , mVideoPlayer(nullptr)
+    , mAudioPlayer(nullptr)
     , mIsLooping(false)
     , mHasPlayedOnce(false)
     , mVideoVerts(nullptr)
@@ -31,6 +33,22 @@ OpeningScreen::OpeningScreen(class Game* game)
         return;
     }
     
+    // Criar AudioPlayer
+    mAudioPlayer = new AudioPlayer();
+    
+    // Carregar áudio begin.wav
+    std::string audioPath = "../Opening/begin.wav";
+    if (!mAudioPlayer->Load(audioPath))
+    {
+        SDL_Log("Erro ao carregar áudio: %s", audioPath.c_str());
+        // Continuar mesmo sem áudio
+    }
+    else
+    {
+        // Tocar áudio em loop junto com o vídeo
+        mAudioPlayer->Play(true);
+    }
+    
     // Criar vertex array para renderizar o vídeo
     // Usar coordenadas normalizadas como no sprite shader (-0.5 a 0.5)
     float vertices[] = {
@@ -46,6 +64,13 @@ OpeningScreen::OpeningScreen(class Game* game)
 
 OpeningScreen::~OpeningScreen()
 {
+    if (mAudioPlayer)
+    {
+        mAudioPlayer->Stop();
+        delete mAudioPlayer;
+        mAudioPlayer = nullptr;
+    }
+    
     if (mVideoPlayer)
     {
         delete mVideoPlayer;
@@ -75,6 +100,13 @@ void OpeningScreen::Update(float deltaTime)
         {
             mVideoPlayer->SeekToTime(loopTime);
             mVideoPlayer->ResetFinished();
+            
+            // Reiniciar áudio para sincronizar com o loop do vídeo
+            if (mAudioPlayer)
+            {
+                mAudioPlayer->Stop();
+                mAudioPlayer->Play(true);
+            }
         }
         return;
     }
@@ -86,6 +118,13 @@ void OpeningScreen::Update(float deltaTime)
         {
             mVideoPlayer->SeekToTime(loopTime);
             mVideoPlayer->ResetFinished();
+            
+            // Reiniciar áudio para sincronizar com o loop do vídeo
+            if (mAudioPlayer)
+            {
+                mAudioPlayer->Stop();
+                mAudioPlayer->Play(true);
+            }
         }
         return;
     }
@@ -99,6 +138,11 @@ void OpeningScreen::HandleKeyPress(int key)
     // Se Enter for pressionado, ir para o menu principal
     if (key == SDLK_RETURN || key == SDLK_RETURN2)
     {
+        // Parar áudio antes de fechar
+        if (mAudioPlayer)
+        {
+            mAudioPlayer->Stop();
+        }
         Close();
         GetGame()->SetScene(GameScene::MainMenu);
     }

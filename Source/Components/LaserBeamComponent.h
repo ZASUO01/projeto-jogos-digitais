@@ -46,6 +46,9 @@ public:
     Vector2 GetStartPos() const { return mStartPos; }
     Vector2 GetEndPos() const { return mEndPos; }
     bool HitObject() const { return mHitObject; }
+    
+    bool HasHitShip(class Ship* ship) const;
+    void MarkShipHit(class Ship* ship);
 
 private:
     Vector3 mColor;
@@ -65,5 +68,8 @@ private:
     // Retorna -1 se não houver interseção, ou a distância se houver
     float RayCastToCircle(const Vector2& rayStart, const Vector2& rayDir, 
                           const Vector2& circleCenter, float radius) const;
+    
+    // Rastreia quais naves já foram atingidas por este laser
+    std::vector<class Ship*> mHitShips;
 };
 

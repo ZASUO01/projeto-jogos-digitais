@@ -74,4 +74,6 @@ private:
     Ship* mShip;
     Ship* mShip1;
     Ship* mShip2;
+    
+    class AudioPlayer* mBackgroundAudio;
 };
