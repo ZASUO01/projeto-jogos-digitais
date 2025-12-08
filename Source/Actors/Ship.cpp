@@ -131,6 +131,7 @@ void Ship::OnUpdate(const float deltaTime){
             mColliderDrawComponent->SetVisible(true);
         }
     }
+    */
     float spacing = 20.0f;
     float startX = -(spacing * (mLives - 1)) / 2.0f;
     float offsetY = mHeight / 2 + 20.0f;
@@ -141,7 +142,6 @@ void Ship::OnUpdate(const float deltaTime){
             mLivesActors[i]->SetPosition(GetPosition() + Vector2(offsetX, -offsetY));
         }
     }
-    */
 }
 
 std::vector<Vector2> Ship::CreateShipVertices() const {

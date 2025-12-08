@@ -27,8 +27,8 @@ public:
             UpdateLivesDisplay();
         }
     }
-    
-    bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
+
+    [[nodiscard]] bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
 
 private:
     enum class Direction {

@@ -301,10 +301,13 @@ void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) 
 
 void Game::SetPlayerState(const RawState& raw) const {
     const auto newPlayerPos = Vector2(raw.posX, raw.posY);
-    const auto rotation = raw.rotation;
 
     mPlayer->SetPosition(newPlayerPos);
-    mPlayer->SetRotation(rotation);
+    mPlayer->SetRotation(raw.rotation);
+    mPlayer->SetLives(raw.life);
+    if (raw.invulnerable) {
+        mPlayer->ToggleInvincibility();
+    }
 }
 
 void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
