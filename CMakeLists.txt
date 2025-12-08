@@ -27,6 +27,8 @@ add_executable(${PROJECT_NAME}
         Source/Renderer/Texture.h
         Source/Renderer/Font.cpp
         Source/Renderer/Font.h
+        Source/Renderer/VideoPlayer.cpp
+        Source/Renderer/VideoPlayer.h
         Source/Actors/Actor.cpp
         Source/Actors/Actor.h
         Source/Game.cpp
@@ -53,6 +55,10 @@ add_executable(${PROJECT_NAME}
         Source/UI/UIButton.h
         Source/UI/UIRect.cpp
         Source/UI/UIRect.h
+        Source/UI/UITriangle.cpp
+        Source/UI/UITriangle.h
+        Source/UI/UIVideo.cpp
+        Source/UI/UIVideo.h
         Source/UI/Screens/UIScreen.cpp
         Source/UI/Screens/UIScreen.h
         Source/UI/Screens/MainMenu.cpp
@@ -61,6 +67,41 @@ add_executable(${PROJECT_NAME}
         Source/UI/Screens/GameOver.h
         Source/UI/Screens/HUD.cpp
         Source/UI/Screens/HUD.h
+        Source/UI/Screens/OpeningScreen.cpp
+        Source/UI/Screens/OpeningScreen.h
         Source/Main.cpp)
 
-target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf OpenGL::GL)
+# Procurar por FFmpeg
+find_path(AVCODEC_INCLUDE_DIR libavcodec/avcodec.h)
+find_path(AVFORMAT_INCLUDE_DIR libavformat/avformat.h)
+find_path(AVUTIL_INCLUDE_DIR libavutil/avutil.h)
+find_path(SWSCALE_INCLUDE_DIR libswscale/swscale.h)
+
+find_library(AVCODEC_LIBRARY avcodec)
+find_library(AVFORMAT_LIBRARY avformat)
+find_library(AVUTIL_LIBRARY avutil)
+find_library(SWSCALE_LIBRARY swscale)
+
+if(AVCODEC_INCLUDE_DIR AND AVFORMAT_INCLUDE_DIR AND AVUTIL_INCLUDE_DIR AND SWSCALE_INCLUDE_DIR
+   AND AVCODEC_LIBRARY AND AVFORMAT_LIBRARY AND AVUTIL_LIBRARY AND SWSCALE_LIBRARY)
+    target_include_directories(${PROJECT_NAME} PRIVATE 
+        ${AVCODEC_INCLUDE_DIR}
+        ${AVFORMAT_INCLUDE_DIR}
+        ${AVUTIL_INCLUDE_DIR}
+        ${SWSCALE_INCLUDE_DIR}
+    )
+    target_link_libraries(${PROJECT_NAME} PRIVATE 
+        GLEW::GLEW 
+        SDL2::SDL2 
+        SDL2_image::SDL2_image 
+        SDL2_ttf::SDL2_ttf 
+        OpenGL::GL
+        ${AVCODEC_LIBRARY}
+        ${AVFORMAT_LIBRARY}
+        ${AVUTIL_LIBRARY}
+        ${SWSCALE_LIBRARY}
+    )
+else()
+    message(WARNING "FFmpeg libraries not found. Video playback will not work.")
+    target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf OpenGL::GL)
+endif()

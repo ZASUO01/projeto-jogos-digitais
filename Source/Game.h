@@ -41,6 +41,11 @@ public:
 
     // Renderer
     class Renderer* GetRenderer() { return mRenderer; }
+    
+    // Window
+    SDL_Window* GetWindow() { return mWindow; }
+    int GetWindowWidth() const;
+    int GetWindowHeight() const;
 
     static const int WINDOW_WIDTH = 1024;
     static const int WINDOW_HEIGHT = 768;

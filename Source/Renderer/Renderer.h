@@ -19,6 +19,7 @@ public:
     ~Renderer();
 
     bool Initialize(float width, float height);
+    void UpdateScreenSize(float width, float height);
     void Shutdown();
     void UnloadData();
 
@@ -33,6 +34,9 @@ public:
 
     // Getters
     class Shader* GetBaseShader() const { return mBaseShader; }
+    class Shader* GetSpriteShader() const { return mSpriteShader; }
+    float GetScreenWidth() const { return mScreenWidth; }
+    float GetScreenHeight() const { return mScreenHeight; }
     class Texture* GetTexture(const std::string& fileName);
     class Font* GetFont(const std::string& fileName);
 

@@ -103,6 +103,23 @@ bool Renderer::Initialize(float width, float height)
     return true;
 }
 
+void Renderer::UpdateScreenSize(float width, float height)
+{
+    mScreenWidth = width;
+    mScreenHeight = height;
+    
+    // Atualizar viewport
+    glViewport(0, 0, static_cast<int>(width), static_cast<int>(height));
+    
+    // Atualizar projeção ortográfica
+    mOrthoProjection = Matrix4::CreateOrtho(0.0f, width, height, 0.0f, -1.0f, 1.0f);
+    
+    // Atualizar base shader
+    if (mBaseShader) {
+        mBaseShader->SetMatrixUniform("uOrthoProj", mOrthoProjection);
+    }
+}
+
 void Renderer::UnloadData()
 {
     // Destroy textures

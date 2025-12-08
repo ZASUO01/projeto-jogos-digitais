@@ -30,12 +30,8 @@ void UIButton::OnClick()
 
 void UIButton::Draw(class Shader* shader)
 {
-    if(mHighlighted) {
-        mBackgroundColor.w = 1.0f;
-    }
-    else {
-        mBackgroundColor.w = 0.5f;
-    }
+    // Tornar background sempre transparente
+    mBackgroundColor.w = 0.0f;
 
     UIText::Draw(shader);
 }

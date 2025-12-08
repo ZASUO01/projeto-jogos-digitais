@@ -42,6 +42,11 @@ UIScreen::~UIScreen()
         delete rect;
     }
     mRects.clear();
+
+    for (auto triangle : mTriangles) {
+        delete triangle;
+    }
+    mTriangles.clear();
 }
 
 void UIScreen::Update(float deltaTime)
@@ -92,4 +97,11 @@ UIRect *UIScreen::AddRect(const Vector2 &offset, const Vector2 &size, float scal
 	UIRect* rect = new UIRect(mGame, offset, size, scale, angle, drawOrder);
 	mRects.push_back(rect);
 	return rect;
+}
+
+UITriangle* UIScreen::AddTriangle(const Vector2& offset, float size, float angle, int drawOrder)
+{
+	UITriangle* triangle = new UITriangle(mGame, offset, size, angle, drawOrder);
+	mTriangles.push_back(triangle);
+	return triangle;
 }

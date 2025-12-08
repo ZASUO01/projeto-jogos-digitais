@@ -20,6 +20,7 @@
 #include "UI/Screens/MainMenu.h"
 #include "UI/Screens/GameOver.h"
 #include "UI/Screens/UIScreen.h"
+#include "UI/Screens/OpeningScreen.h"
 
 Game::Game()
         :mWindow(nullptr)
@@ -41,17 +42,28 @@ bool Game::Initialize()
         return false;
     }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 100, 100, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    // Criar janela com flags para permitir maximizar
+    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                WINDOW_WIDTH, WINDOW_HEIGHT, 
+                                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
 
-    mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    // Maximizar a janela
+    SDL_MaximizeWindow(mWindow);
 
-    SetScene(GameScene::MainMenu);
+    // Obter o tamanho real da janela após maximizar
+    int actualWidth, actualHeight;
+    SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
+
+    mRenderer = new Renderer(mWindow);
+    mRenderer->Initialize(actualWidth, actualHeight);
+
+    // Iniciar com a tela de abertura (vídeo)
+    new OpeningScreen(this);
 
     mTicksCount = SDL_GetTicks();
 
@@ -61,7 +73,24 @@ bool Game::Initialize()
 void Game::InitializeActors()
 {
     mShip = new Ship(this, 40, 300, 3);
-    mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
+    // Posicionar a nave no centro da janela atual
+    int windowWidth = GetWindowWidth();
+    int windowHeight = GetWindowHeight();
+    mShip->SetPosition(Vector2(static_cast<float>(windowWidth) / 2.0f, static_cast<float>(windowHeight) / 2.0f));
+}
+
+int Game::GetWindowWidth() const
+{
+    int width, height;
+    SDL_GetWindowSize(mWindow, &width, &height);
+    return width;
+}
+
+int Game::GetWindowHeight() const
+{
+    int width, height;
+    SDL_GetWindowSize(mWindow, &width, &height);
+    return height;
 }
 
 void Game::RunLoop()
@@ -99,6 +128,15 @@ void Game::ProcessInput()
         {
             case SDL_QUIT:
                 Quit();
+                break;
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+                {
+                    // Atualizar o renderer quando a janela for redimensionada
+                    int newWidth = event.window.data1;
+                    int newHeight = event.window.data2;
+                    mRenderer->UpdateScreenSize(static_cast<float>(newWidth), static_cast<float>(newHeight));
+                }
                 break;
             case SDL_KEYDOWN:
                 // Check if 'P' key is pressed to show Game Over screen (only in Level1)
@@ -233,6 +271,20 @@ void Game::GenerateOutput()
     }
 
     // Draw UI screens
+    // Se houver OpeningScreen, desenhar o vídeo primeiro
+    for (auto ui : mUIStack) {
+        if (ui->GetState() == UIScreen::UIState::Active) {
+            OpeningScreen* openingScreen = dynamic_cast<OpeningScreen*>(ui);
+            if (openingScreen) {
+                openingScreen->Draw(mRenderer);
+                // Não desenhar outros elementos UI quando estiver na tela de abertura
+                mRenderer->Present();
+                return;
+            }
+            
+        }
+    }
+    
     mRenderer->Draw();
 
     // Swap front buffer and back buffer
