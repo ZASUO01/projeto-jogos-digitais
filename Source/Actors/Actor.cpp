@@ -28,7 +28,7 @@ Actor::Actor(Game* game)
 Actor::~Actor()
 {
     mGame->RemoveActor(this);
-    unsigned int size = mComponents.size();
+    const unsigned int size = mComponents.size();
     for (unsigned int i = 0; i < size; i++) {
         delete mComponents[i];
     }

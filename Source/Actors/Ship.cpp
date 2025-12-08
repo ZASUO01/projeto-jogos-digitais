@@ -53,19 +53,11 @@ Ship::Ship(Game* game,
 }
 
 void Ship::OnProcessInput(const Uint8* keyState){
-    bool up, down, left, right;
-
-    if (mIsRedShip) {
-        up = keyState[SDL_SCANCODE_UP];
-        down = keyState[SDL_SCANCODE_DOWN];
-        left = keyState[SDL_SCANCODE_LEFT];
-        right = keyState[SDL_SCANCODE_RIGHT];
-    } else {
-        up = keyState[SDL_SCANCODE_W];
-        down = keyState[SDL_SCANCODE_S];
-        left = keyState[SDL_SCANCODE_A];
-        right = keyState[SDL_SCANCODE_D];
-    }
+    const bool up = keyState[SDL_SCANCODE_W];
+    const bool down = keyState[SDL_SCANCODE_S];
+    const bool left = keyState[SDL_SCANCODE_A];
+    const bool right = keyState[SDL_SCANCODE_D];
+    const bool space = keyState[SDL_SCANCODE_SPACE];
 
     Vector2 velocity = Vector2::Zero;
 
@@ -92,25 +84,24 @@ void Ship::OnProcessInput(const Uint8* keyState){
     }
     mRigidBodyComponent->SetVelocity(velocity);
 
-    /*
-    bool shoot = mIsRedShip ? (keyState[SDL_SCANCODE_RETURN] || keyState[SDL_SCANCODE_RCTRL]) : keyState[SDL_SCANCODE_SPACE];
-    if (shoot) {
+    if (space) {
         if (mLaserCooldown <= 0.f) {
-            Vector3 laserColor = mIsRedShip ? Vector3(1.0f, 0.0f, 0.0f) : Vector3(0.0f, 1.0f, 0.0f);
-            Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f);
-            new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this);
+            const Vector3 laserColor = mIsRedShip ? Vector3(1.0f, 0.0f, 0.0f) : Vector3(0.0f, 1.0f, 0.0f);
+            const Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f);
+            const auto lb = new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this);
+            lb->SetType(ActorType::Local);
             mLaserCooldown = 0.2f;
         }
     }
-    */
 }
 
 void Ship::OnUpdate(const float deltaTime){
-    /*
+
     mLaserCooldown -= deltaTime;
     if (mLaserCooldown <= 0) {
         mLaserCooldown = 0.f;
     }
+    /*
 
     mRotationCooldown -= deltaTime;
     if (mRotationCooldown <= 0) {
@@ -162,17 +153,6 @@ std::vector<Vector2> Ship::CreateShipVertices() const {
     vertices.emplace_back(-step, step);
     vertices.emplace_back(-step, -step);
     vertices.emplace_back(2* -step, 2 * -step);
-
-    return vertices;
-}
-
-std::vector<Vector2> Ship::CreateParticleVertices(float size) {
-    std::vector<Vector2> vertices;
-
-    vertices.emplace_back(Vector2(-size, -size));
-    vertices.emplace_back(Vector2(size, -size));
-    vertices.emplace_back(Vector2(size, size));
-    vertices.emplace_back(Vector2(-size, size));
 
     return vertices;
 }

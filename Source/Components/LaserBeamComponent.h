@@ -45,9 +45,10 @@ private:
     Vector2 mStartPos;
     Vector2 mEndPos;
     float mRotation;
-    
-    class LaserDrawComponent* mDrawComponent;
-    std::vector<Vector2> CreateLineVertices(float width);
+
+    LaserDrawComponent* mDrawComponent;
+
+    static std::vector<Vector2> CreateLineVertices(float width);
     void CalculateEndPoint(float screenWidth, float screenHeight);
 };
 

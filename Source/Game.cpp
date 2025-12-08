@@ -116,6 +116,7 @@ void Game::UpdateGame(){
     if (mIsPlayerSet) {
         mPlayer->Update(SIM_DELTA_TIME);
     }
+    UpdateLocalActors(SIM_DELTA_TIME);
 
     // Receive packets
     mClient->ReceiveStateFromServer();
@@ -162,17 +163,14 @@ void Game::AddDrawable(class DrawComponent *drawable)
         });
 }
 
-void Game::RemoveDrawable(class DrawComponent *drawable)
+void Game::RemoveDrawable(const class DrawComponent *drawable)
 {
-    std::vector<class DrawComponent *>::iterator it;
-    it = std::find(mDrawables.begin(), mDrawables.end(), drawable);
-    if (it != mDrawables.end()) {
+    if (const auto it = std::find(mDrawables.begin(), mDrawables.end(), drawable); it != mDrawables.end()) {
         mDrawables.erase(it);
     }
 }
 
-void Game::GenerateOutput()
-{
+void Game::GenerateOutput() const {
     mRenderer->Clear();
 
     float currentTime = SDL_GetTicks() / 1000.0f;
@@ -271,6 +269,7 @@ void Game::SetPlayer(const Vector2 &position, const float rotation) {
     }
 
     mPlayer = new Ship(this, 50);
+    mPlayer->SetType(ActorType::Network);
     mPlayer->SetPosition(position);
     mPlayer->SetRotation(rotation);
     mIsPlayerSet = true;
@@ -291,6 +290,7 @@ void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) 
             5,
             Vector3(1, 0, 1),
             true);
+        enemy->SetType(ActorType::Network);
         enemy->SetPosition(position);
         enemy->SetRotation(rotation);
         mEnemies.emplace(id, enemy);
@@ -365,6 +365,14 @@ void Game::RemoveInactiveEnemies() {
             it = mEnemiesLastUpdate.erase(it);
         } else {
             ++it;
+        }
+    }
+}
+
+void Game::UpdateLocalActors(const float deltaTime) const {
+    for (const auto& actor : mActors) {
+        if (actor->GetType() == ActorType::Local) {
+            actor->Update(deltaTime);
         }
     }
 }

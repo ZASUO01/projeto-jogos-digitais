@@ -15,6 +15,7 @@
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
 #include "../Client/Client.h"
+#include "Actors/LaserBeam.h"
 
 class Game{
 public:
@@ -41,7 +42,7 @@ public:
     static constexpr float SIM_DELTA_TIME = 1.0f / 60.0f;
 
     void AddDrawable(class DrawComponent* drawable);
-    void RemoveDrawable(class DrawComponent* drawable);
+    void RemoveDrawable(const class DrawComponent* drawable);
 
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
@@ -51,6 +52,9 @@ public:
     Ship* GetPlayer() const { return mPlayer; }
     bool IsEnemySet(int id);
     void SetEnemy(int id, const Vector2 &position, float rotation);
+    void CleanLaserBeams() const;
+    void AddLaserBeam(LaserBeam* laserBeam);
+    void RemoveLaserBeam(LaserBeam* laser);
 
     // Game State
     void SetPlayerState(const RawState& raw) const;
@@ -59,13 +63,16 @@ public:
 private:
     void ProcessInput();
     void UpdateGame();
-    void GenerateOutput();
+    void GenerateOutput() const;
     void RemoveActorFromVector(std::vector< Actor*> &actors,  Actor *actor);
     void CheckLaserCollisions();
 
     std::vector<class Actor*> mActors;
     std::vector<class Actor*> mPendingActors;
     std::vector<class DrawComponent*> mDrawables;
+
+    // lasers control
+    std::vector<LaserBeam*> mLasers;
 
     SDL_Window* mWindow;
     class Renderer* mRenderer;
@@ -89,4 +96,5 @@ private:
     static constexpr float INTERPOLATION_FACTOR = 0.2f;
     void InterpolateEnemies();
     void RemoveInactiveEnemies();
+    void UpdateLocalActors(float deltaTime) const;
 };

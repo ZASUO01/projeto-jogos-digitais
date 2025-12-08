@@ -35,6 +35,10 @@ InputData SDLInputParser::parse(const Uint8 *keyState) {
         input.SetKeyActive(KeyValue::MOVE_RIGHT);
     }
 
+    if (keyState[SDL_SCANCODE_SPACE]) {
+        input.SetKeyActive(KeyValue::SHOOT);
+    }
+
     return input;
 }
 

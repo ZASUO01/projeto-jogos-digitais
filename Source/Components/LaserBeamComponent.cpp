@@ -20,8 +20,8 @@ void LaserDrawComponent::Draw(Renderer* renderer)
     if (!vertexArray) {
         return;
     }
-    
-    Vector2 baseScale = mOwner->GetScale();
+
+    const Vector2 baseScale = mOwner->GetScale();
     
     Vector2 glowScale = baseScale;
     glowScale.y *= 3.0f;
@@ -238,14 +238,14 @@ bool LaserBeamComponent::IntersectCircle(const Vector2& circleCenter, float radi
     return distSq <= (radius * radius);
 }
 
-std::vector<Vector2> LaserBeamComponent::CreateLineVertices(float width)
+std::vector<Vector2> LaserBeamComponent::CreateLineVertices( float width)
 {
     std::vector<Vector2> vertices;
-    float halfWidth = width / 2.0f;
-    vertices.emplace_back(Vector2(0.0f, -halfWidth));
-    vertices.emplace_back(Vector2(1.0f, -halfWidth));
-    vertices.emplace_back(Vector2(1.0f, halfWidth));
-    vertices.emplace_back(Vector2(0.0f, halfWidth));
+    const float halfWidth = width / 2.0f;
+    vertices.emplace_back(0.0f, -halfWidth);
+    vertices.emplace_back(1.0f, -halfWidth);
+    vertices.emplace_back(1.0f, halfWidth);
+    vertices.emplace_back(0.0f, halfWidth);
     return vertices;
 }
 

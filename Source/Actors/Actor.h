@@ -19,6 +19,11 @@ enum class ActorState
     Destroy
 };
 
+enum class ActorType {
+    Network,
+    Local
+};
+
 class Actor
 {
 public:
@@ -46,6 +51,9 @@ public:
     // State getter/setter
     ActorState GetState() const { return mState; }
     void SetState(ActorState state) { mState = state; }
+
+    ActorType GetType() const { return mType;}
+    void SetType(const ActorType type) { mType = type; }
 
     // Get Forward vector
     Vector2 GetForward() const { return Vector2(Math::Cos(mRotation), Math::Sin(mRotation)); }
@@ -85,6 +93,8 @@ protected:
 
     // Actor's state
     ActorState mState;
+
+    ActorType mType;
 
     // Transform
     Vector2 mPosition;

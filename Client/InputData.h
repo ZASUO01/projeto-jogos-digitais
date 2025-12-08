@@ -10,6 +10,7 @@ enum class KeyValue : uint8_t{
     MOVE_BACKWARD = 1 << 1, // 0000 0010
     MOVE_LEFT = 1 << 2, // 0000 0100
     MOVE_RIGHT = 1 << 3, // 0000 1000
+    SHOOT = 1 << 4, // 0001 0000
 };
 
 class InputData {
