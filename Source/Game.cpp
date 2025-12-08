@@ -305,9 +305,7 @@ void Game::SetPlayerState(const RawState& raw) const {
     mPlayer->SetPosition(newPlayerPos);
     mPlayer->SetRotation(raw.rotation);
     mPlayer->SetLives(raw.life);
-    if (raw.invulnerable) {
-        mPlayer->ToggleInvincibility();
-    }
+    mPlayer->SetInvincibilityTimer(raw.invulnerableTimer);
 }
 
 void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
@@ -330,6 +328,9 @@ void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
 
                 lb->SetType(ActorType::Local);
             }
+
+            mEnemies[other.id]->SetLives(other.life);
+            mEnemies[other.id]->SetInvincibilityTimer(other.invulnerableTimer);
         }
 
         if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {

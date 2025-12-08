@@ -28,6 +28,7 @@ public:
         }
     }
 
+    void SetInvincibilityTimer(const float timer) { mInvincibilityTimer = timer; }
     [[nodiscard]] bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
 
 private:
