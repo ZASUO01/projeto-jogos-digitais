@@ -99,7 +99,7 @@ void Ship::OnUpdate(const float deltaTime){
 
     mLaserCooldown -= deltaTime;
     if (mLaserCooldown <= 0) {
-        mLaserCooldown = 0.f;
+        mLaserCooldown = 0.0f;
     }
     /*
 

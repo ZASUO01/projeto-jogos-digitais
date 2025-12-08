@@ -18,9 +18,10 @@ struct Command {
 };
 
 struct RawState {
+    bool active;
     float posX, posY, rotation;
 
-    RawState() : posX(0), posY(0), rotation(0) {}
+    RawState() : active(false), posX(0), posY(0), rotation(0) {}
 };
 
 struct OtherState {

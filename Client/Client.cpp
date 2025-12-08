@@ -151,6 +151,10 @@ void Client::ReceiveStateFromServer()  {
         return;
     }
 
+    if (!mRawState.active) {
+        mGame->Quit();
+    }
+
     // set the player if not set yet
     if (!mGame->IsPlayerSet()) {
         mGame->SetPlayer(Vector2(mRawState.posX, mRawState.posY), mRawState.rotation);
