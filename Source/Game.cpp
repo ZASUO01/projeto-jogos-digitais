@@ -159,7 +159,8 @@ void Game::ProcessInput()
                 if (event.key.keysym.sym == SDLK_p && mUIStack.empty()) {
                     // Check if we're in Level1 by checking if ship exists
                     if (mShip) {
-                        new GameOver(this, "../Assets/Fonts/Arial.ttf");
+                        // Por padrão, mostrar como se a nave vermelha tivesse vencido (para teste)
+                        new GameOver(this, "../Assets/Fonts/Arial.ttf", true);
                     }
                 }
                 // Handle key press for UI screens
@@ -229,6 +230,21 @@ void Game::UpdateActors(float deltaTime)
     mPendingActors.clear();
 
     CheckLaserCollisions();
+
+    // Verificar se alguma nave perdeu todas as vidas e mostrar tela de vencedor
+    // Verificar apenas se não há UI screens ativas
+    if (mUIStack.empty()) {
+        if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1->GetLives() <= 0) {
+            // Nave 1 (azul) perdeu, nave 2 (vermelha) venceu
+            new GameOver(this, "../Assets/Fonts/Arial.ttf", true);
+            mShip1->SetState(ActorState::Destroy);
+        }
+        else if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2->GetLives() <= 0) {
+            // Nave 2 (vermelha) perdeu, nave 1 (azul) venceu
+            new GameOver(this, "../Assets/Fonts/Arial.ttf", false);
+            mShip2->SetState(ActorState::Destroy);
+        }
+    }
 
     std::vector<Actor*> deadActors;
     for (auto &actor : mActors) {
@@ -313,7 +329,6 @@ void Game::GenerateOutput()
             }
         }
     } else {
-        // Se não houver UI screens ativas, renderizar o jogo normalmente
         float currentTime = SDL_GetTicks() / 1000.0f;
         mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
                                     mRenderer->GetScreenHeight(), 

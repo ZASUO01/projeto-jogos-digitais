@@ -29,6 +29,7 @@ public:
     }
     
     bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
+    bool IsRedShip() const { return mIsRedShip; }
 
 private:
     enum class Direction {

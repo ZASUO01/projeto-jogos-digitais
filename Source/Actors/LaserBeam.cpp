@@ -11,8 +11,8 @@ LaserBeam::LaserBeam(class Game* game, const Vector2& startPos, float rotation, 
     SetPosition(startPos);
     SetRotation(rotation);
     
-    float screenWidth = static_cast<float>(Game::WINDOW_WIDTH);
-    float screenHeight = static_cast<float>(Game::WINDOW_HEIGHT);
+    float screenWidth = static_cast<float>(GetGame()->GetWindowWidth());
+    float screenHeight = static_cast<float>(GetGame()->GetWindowHeight());
     
     mLaserComponent = new LaserBeamComponent(this, color, 0.5f);
     mLaserComponent->Activate(startPos, rotation, screenWidth, screenHeight, ownerShip);
