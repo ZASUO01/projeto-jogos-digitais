@@ -293,6 +293,7 @@ void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) 
         enemy->SetType(ActorType::Network);
         enemy->SetPosition(position);
         enemy->SetRotation(rotation);
+        enemy->SetType(ActorType::Local);
         mEnemies.emplace(id, enemy);
         mEnemiesLastUpdate.emplace(id, std::chrono::steady_clock::now());
 
