@@ -1,15 +1,13 @@
-//
-// Created by Lucas N. Ferreira on 03/08/23.
-//
-
 #include "DrawComponent.h"
 #include "CircleColliderComponent.h"
 #include "../Game.h"
 
-DrawComponent::DrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color)
+// Constrói um componente de desenho com os vértices especificados
+DrawComponent::DrawComponent(class Actor* owner, std::vector<Vector2> &vertices, int drawOrder, Vector3 color, bool filled)
     :Component(owner)
     ,mDrawOrder(drawOrder)
     ,mIsVisible(true)
+    ,mIsFilled(filled)
     ,mColor(color)
 {
     mOwner->GetGame()->AddDrawable(this);
@@ -33,13 +31,22 @@ DrawComponent::~DrawComponent()
     mDrawArray = nullptr;
 }
 
+// Desenha o componente se o ator estiver ativo e visível
 void DrawComponent::Draw(Renderer *renderer)
 {
     if (mOwner->GetState() == ActorState::Active) {
-        renderer->Draw(
-            mOwner->GetModelMatrix(),
-            mDrawArray,
-            mColor
-        );
+        if (mIsFilled) {
+            renderer->DrawFilled(
+                mOwner->GetModelMatrix(),
+                mDrawArray,
+                mColor
+            );
+        } else {
+            renderer->Draw(
+                mOwner->GetModelMatrix(),
+                mDrawArray,
+                mColor
+            );
+        }
     }
 }

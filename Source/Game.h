@@ -1,11 +1,3 @@
-// ----------------------------------------------------------------
-// From Game Programming in C++ by Sanjay Madhav
-// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
-//
-// Released under the BSD License
-// See LICENSE in root directory for full details.
-// ----------------------------------------------------------------
-
 #pragma once
 #include <SDL.h>
 #include <vector>
@@ -13,6 +5,12 @@
 #include "Actors/Ship.h"
 #include "Actors/Actor.h"
 #include "Renderer/Renderer.h"
+
+enum class GameScene
+{
+    MainMenu,
+    Level1
+};
 
 class Game{
 public:
@@ -23,50 +21,59 @@ public:
     void Shutdown();
     void Quit() { mIsRunning = false; }
 
-    // Actor functions
     void InitializeActors();
     void UpdateActors(float deltaTime);
     void AddActor(class Actor* actor);
     void RemoveActor(class Actor* actor);
 
-    // Renderer
+    void PushUI(class UIScreen* screen) { mUIStack.emplace_back(screen); }
+    const std::vector<class UIScreen*>& GetUIStack() { return mUIStack; }
+
     class Renderer* GetRenderer() { return mRenderer; }
 
-    static const int WINDOW_WIDTH = 1024;
-    static const int WINDOW_HEIGHT = 768;
+    SDL_Window* GetWindow() { return mWindow; }
+    int GetWindowWidth() const;
+    int GetWindowHeight() const;
 
-    // Draw functions
+    static const int WINDOW_WIDTH = 1920;
+    static const int WINDOW_HEIGHT = 1080;
+    static const int RENDER_WIDTH = 1920;
+    static const int RENDER_HEIGHT = 1080;
     void AddDrawable(class DrawComponent* drawable);
     void RemoveDrawable(class DrawComponent* drawable);
 
     std::vector<class DrawComponent*>& GetDrawables() { return mDrawables; }
 
     Ship *GetShip() const {return mShip; }
+    Ship *GetShip1() const {return mShip1; }
+    Ship *GetShip2() const {return mShip2; }
+
+    void SetScene(GameScene scene);
+    void UnloadScene();
+
 private:
     void ProcessInput();
-    void UpdateGame();
+    void UpdateGame(float deltaTime);
     void GenerateOutput();
     void RemoveActorFromVector(std::vector< Actor*> &actors,  Actor *actor);
+    void CheckLaserCollisions();
 
-    // All the actors in the game
     std::vector<class Actor*> mActors;
     std::vector<class Actor*> mPendingActors;
-
-    // All the draw components
     std::vector<class DrawComponent*> mDrawables;
 
-    // SDL stuff
+    std::vector<class UIScreen*> mUIStack;
+
     SDL_Window* mWindow;
     class Renderer* mRenderer;
-
-    // Track elapsed time since game start
     Uint32 mTicksCount;
-
-    // Track if we're updating actors right now
     bool mIsRunning;
     bool mIsDebugging;
     bool mUpdatingActors;
-
-    // Game-specific
+    
     Ship* mShip;
+    Ship* mShip1;
+    Ship* mShip2;
+    
+    class AudioPlayer* mBackgroundAudio;
 };

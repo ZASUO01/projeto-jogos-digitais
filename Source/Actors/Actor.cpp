@@ -1,20 +1,9 @@
-//
-// Created by pedro-souza on 23/11/2025.
-//
-
-// ----------------------------------------------------------------
-// From Game Programming in C++ by Sanjay Madhav
-// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
-//
-// Released under the BSD License
-// See LICENSE in root directory for full details.
-// ----------------------------------------------------------------
-
 #include "Actor.h"
 #include "../Game.h"
 #include "../Components/Component.h"
 #include <algorithm>
 
+// Constrói um ator e o adiciona ao jogo
 Actor::Actor(Game* game)
         : mState(ActorState::Active)
         , mPosition(Vector2::Zero)
@@ -25,6 +14,7 @@ Actor::Actor(Game* game)
     mGame->AddActor(this);
 }
 
+// Remove o ator do jogo e deleta todos os seus componentes
 Actor::~Actor()
 {
     mGame->RemoveActor(this);
@@ -35,6 +25,7 @@ Actor::~Actor()
     mComponents.clear();
 }
 
+// Atualiza o ator e seus componentes se estiver ativo
 void Actor::Update(float deltaTime)
 {
     if (mState == ActorState::Active)
@@ -47,8 +38,10 @@ void Actor::Update(float deltaTime)
     }
 }
 
+// Método virtual para atualização específica do ator (pode ser sobrescrito)
 void Actor::OnUpdate(float deltaTime){}
 
+// Processa entrada do teclado para o ator e seus componentes se estiver ativo
 void Actor::ProcessInput(const Uint8* keyState)
 {
    if (mState == ActorState::Active)
@@ -61,8 +54,10 @@ void Actor::ProcessInput(const Uint8* keyState)
     }
 }
 
+// Método virtual para processamento de entrada específico do ator (pode ser sobrescrito)
 void Actor::OnProcessInput(const Uint8* keyState){}
 
+// Adiciona um componente ao ator e ordena por ordem de atualização
 void Actor::AddComponent(Component* c)
 {
     mComponents.emplace_back(c);
@@ -74,6 +69,7 @@ void Actor::AddComponent(Component* c)
         });
 }
 
+// Calcula e retorna a matriz de transformação do modelo (escala * rotação * translação)
 Matrix4 Actor::GetModelMatrix() const
 {
     Matrix4 scaleMat = Matrix4::CreateScale(mScale.x, mScale.y, 1.0f);

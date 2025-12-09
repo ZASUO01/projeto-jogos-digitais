@@ -1,22 +1,21 @@
-//
-// Created by pedro-souza on 23/11/2025.
-//
-
-// ----------------------------------------------------------------
-// From Game Programming in C++ by Sanjay Madhav
-// Copyright (C) 2017 Sanjay Madhav. All rights reserved.
-//
-// Released under the BSD License
-// See LICENSE in root directory for full details.
-// ----------------------------------------------------------------
-
 #include <algorithm>
 #include <vector>
 #include "Game.h"
 #include "Actors/Ship.h"
+#include "Actors/Floor.h"
+#include "Actors/LaserBeam.h"
 #include "Components/DrawComponent.h"
 #include "Components/RigidBodyComponent.h"
+#include "Components/LaserBeamComponent.h"
+#include "Components/CircleColliderComponent.h"
 #include "Random.h"
+#include "UI/Screens/MainMenu.h"
+#include "UI/Screens/GameOver.h"
+#include "UI/Screens/UIScreen.h"
+#include "UI/Screens/OpeningScreen.h"
+#include "Renderer/AudioPlayer.h"
+#include "PathResolver.h"
+#include <SDL_mixer.h>
 
 Game::Game()
         :mWindow(nullptr)
@@ -26,52 +25,115 @@ Game::Game()
         ,mIsDebugging(false)
         ,mUpdatingActors(false)
         ,mShip(nullptr)
+        ,mShip1(nullptr)
+        ,mShip2(nullptr)
+        ,mBackgroundAudio(nullptr)
 {}
 
+// Inicializa o jogo, criando a janela SDL, o renderer e a tela de abertura
 bool Game::Initialize()
 {
     Random::Init();
 
-    if (SDL_Init(SDL_INIT_VIDEO) != 0)
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) != 0)
     {
         SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
         return false;
     }
+    
+    // Inicializar SDL_mixer
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
+    {
+        SDL_Log("Erro ao inicializar SDL_mixer: %s", Mix_GetError());
+        return false;
+    }
 
-    mWindow = SDL_CreateWindow("TP2: Asteroids", 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_OPENGL);
+    mWindow = SDL_CreateWindow("TP2: Asteroids", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
+                                WINDOW_WIDTH, WINDOW_HEIGHT, 
+                                SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE);
     if (!mWindow)
     {
         SDL_Log("Failed to create window: %s", SDL_GetError());
         return false;
     }
 
-    mRenderer = new Renderer(mWindow);
-    mRenderer->Initialize(WINDOW_WIDTH, WINDOW_HEIGHT);
+    SDL_MaximizeWindow(mWindow);
 
-    // Init all game actors
-    InitializeActors();
+    int actualWidth, actualHeight;
+    SDL_GetWindowSize(mWindow, &actualWidth, &actualHeight);
+
+    mRenderer = new Renderer(mWindow);
+    if (!mRenderer->Initialize(actualWidth, actualHeight)) {
+        SDL_Log("Failed to initialize renderer.");
+        return false;
+    }
+
+    new OpeningScreen(this);
 
     mTicksCount = SDL_GetTicks();
 
     return true;
 }
 
+// Inicializa os atores do jogo: chão e duas naves
 void Game::InitializeActors()
 {
-    mShip = new Ship(this, 40, 300, 3);
-    mShip->SetPosition(Vector2(Game::WINDOW_WIDTH / 2, Game::WINDOW_HEIGHT / 2));
+    new Floor(this);
+    
+    int windowWidth = GetWindowWidth();
+    int windowHeight = GetWindowHeight();
+    
+    mShip1 = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
+    mShip1->SetPosition(Vector2(windowWidth - 100, 100));
+    
+    mShip2 = new Ship(this, 40, 300, 3, Vector3(1.0f, 0.0f, 0.0f), true);
+    mShip2->SetPosition(Vector2(100, windowHeight - 100));
+    
+    mShip = mShip1;
 }
 
+// Retorna a largura atual da janela
+int Game::GetWindowWidth() const
+{
+    int width, height;
+    SDL_GetWindowSize(mWindow, &width, &height);
+    return width;
+}
+
+// Retorna a altura atual da janela
+int Game::GetWindowHeight() const
+{
+    int width, height;
+    SDL_GetWindowSize(mWindow, &width, &height);
+    return height;
+}
+
+// Executa o loop principal do jogo até que mIsRunning seja false
 void Game::RunLoop()
 {
     while (mIsRunning)
     {
+        float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
+        if (deltaTime > 0.05f)
+        {
+            deltaTime = 0.05f;
+        }
+
+        mTicksCount = SDL_GetTicks();
+
         ProcessInput();
-        UpdateGame();
+        UpdateGame(deltaTime);
         GenerateOutput();
+
+        int sleepTime = (1000 / 60) - (SDL_GetTicks() - mTicksCount);
+        if (sleepTime > 0)
+        {
+            SDL_Delay(sleepTime);
+        }
     }
 }
 
+// Processa eventos de entrada do usuário (teclado, mouse, janela)
 void Game::ProcessInput()
 {
     SDL_Event event;
@@ -82,10 +144,33 @@ void Game::ProcessInput()
             case SDL_QUIT:
                 Quit();
                 break;
+            case SDL_WINDOWEVENT:
+                if (event.window.event == SDL_WINDOWEVENT_RESIZED)
+                {
+                    int newWidth = event.window.data1;
+                    int newHeight = event.window.data2;
+                    mRenderer->UpdateScreenSize(static_cast<float>(newWidth), static_cast<float>(newHeight));
+                }
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.sym == SDLK_p && mUIStack.empty()) {
+                    if (mShip) {
+                        new GameOver(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"), true);
+                    }
+                }
+                if (!mUIStack.empty()) {
+                    mUIStack.back()->HandleKeyPress(event.key.keysym.sym);
+                }
+                break;
         }
     }
 
     const Uint8* state = SDL_GetKeyboardState(nullptr);
+    
+    if (state[SDL_SCANCODE_ESCAPE])
+    {
+        Quit();
+    }
 
     unsigned int size = mActors.size();
     for (unsigned int i = 0; i < size; ++i) {
@@ -93,11 +178,9 @@ void Game::ProcessInput()
     }
 }
 
-void Game::UpdateGame()
+// Atualiza a lógica do jogo: atores, UI e remove elementos fechados
+void Game::UpdateGame(float deltaTime)
 {
-    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16));
-
-    float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
     if (deltaTime > 0.05f)
     {
         deltaTime = 0.05f;
@@ -105,10 +188,26 @@ void Game::UpdateGame()
 
     mTicksCount = SDL_GetTicks();
 
-    // Update all actors and pending actors
     UpdateActors(deltaTime);
+
+    for (auto ui : mUIStack) {
+        if (ui->GetState() == UIScreen::UIState::Active) {
+            ui->Update(deltaTime);
+        }
+    }
+
+    auto iter = mUIStack.begin();
+    while (iter != mUIStack.end()) {
+        if ((*iter)->GetState() == UIScreen::UIState::Closing) {
+            delete *iter;
+            iter = mUIStack.erase(iter);
+        } else {
+            ++iter;
+        }
+    }
 }
 
+// Atualiza todos os atores, verifica colisões de laser e condições de vitória
 void Game::UpdateActors(float deltaTime)
 {
     mUpdatingActors = true;
@@ -121,6 +220,19 @@ void Game::UpdateActors(float deltaTime)
         mActors.emplace_back(pending);
     }
     mPendingActors.clear();
+
+    CheckLaserCollisions();
+
+    if (mUIStack.empty()) {
+        if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1->GetLives() <= 0) {
+            new GameOver(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"), true);
+            mShip1->SetState(ActorState::Destroy);
+        }
+        else if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2->GetLives() <= 0) {
+            new GameOver(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"), false);
+            mShip2->SetState(ActorState::Destroy);
+        }
+    }
 
     std::vector<Actor*> deadActors;
     for (auto &actor : mActors) {
@@ -135,6 +247,7 @@ void Game::UpdateActors(float deltaTime)
 
 }
 
+// Adiciona um ator à lista de atores (ou à lista pendente se estiver atualizando)
 void Game::AddActor(Actor* actor)
 {
     if (mUpdatingActors) {
@@ -144,12 +257,14 @@ void Game::AddActor(Actor* actor)
     }
 }
 
+// Remove um ator das listas de atores
 void Game::RemoveActor(Actor* actor)
 {
     RemoveActorFromVector(mActors, actor);
     RemoveActorFromVector(mPendingActors, actor);
 }
 
+// Adiciona um componente desenhavel e ordena por ordem de desenho
 void Game::AddDrawable(class DrawComponent *drawable)
 {
     mDrawables.emplace_back(drawable);
@@ -161,6 +276,7 @@ void Game::AddDrawable(class DrawComponent *drawable)
         });
 }
 
+// Remove um componente desenhavel da lista
 void Game::RemoveDrawable(class DrawComponent *drawable)
 {
     std::vector<class DrawComponent *>::iterator it;
@@ -170,57 +286,194 @@ void Game::RemoveDrawable(class DrawComponent *drawable)
     }
 }
 
+// Renderiza o frame atual: UI ou cena do jogo com grid e atores
 void Game::GenerateOutput()
 {
-    // Clear back buffer
+    mRenderer->BeginRenderToTexture();
     mRenderer->Clear();
-
-    unsigned int size = mDrawables.size();
-    unsigned int size2;
-    for (unsigned int i = 0; i < size; i++) {
-        mDrawables[i]->Draw(mRenderer);
-        if (mIsDebugging) {
-            size2 = mDrawables[i]->GetOwner()->GetComponents().size();
-            for (unsigned int j = 0; j < size2; j++) {
-                mDrawables[i]->GetOwner()->GetComponents()[j]->DebugDraw(mRenderer);
+    
+    bool hasActiveUI = false;
+    for (auto ui : mUIStack) {
+        if (ui->GetState() == UIScreen::UIState::Active) {
+            hasActiveUI = true;
+            break;
+        }
+    }
+    
+    if (hasActiveUI) {
+        for (auto it = mUIStack.rbegin(); it != mUIStack.rend(); ++it) {
+            auto ui = *it;
+            if (ui->GetState() == UIScreen::UIState::Active) {
+                OpeningScreen* openingScreen = dynamic_cast<OpeningScreen*>(ui);
+                if (openingScreen) {
+                    openingScreen->Draw(mRenderer);
+                } else {
+                    mRenderer->Draw();
+                }
+                break;
             }
         }
+    } else {
+        float currentTime = SDL_GetTicks() / 1000.0f;
+        mRenderer->DrawAdvancedGrid(mRenderer->GetScreenWidth(), 
+                                    mRenderer->GetScreenHeight(), 
+                                    currentTime);
 
+        unsigned int size = mDrawables.size();
+        unsigned int size2;
+        for (unsigned int i = 0; i < size; i++) {
+            mDrawables[i]->Draw(mRenderer);
+            if (mIsDebugging) {
+                size2 = mDrawables[i]->GetOwner()->GetComponents().size();
+                for (unsigned int j = 0; j < size2; j++) {
+                    mDrawables[i]->GetOwner()->GetComponents()[j]->DebugDraw(mRenderer);
+                }
+            }
+        }
     }
-
-    // Swap front buffer and back buffer
+    
+    mRenderer->EndRenderToTexture();
     mRenderer->Present();
 }
 
+// Remove todos os atores e telas UI da cena atual
+void Game::UnloadScene()
+{
+    for(auto *actor : mActors) {
+        actor->SetState(ActorState::Destroy);
+    }
+
+    for (auto ui : mUIStack) {
+        delete ui;
+    }
+    mUIStack.clear();
+}
+
+// Carrega uma nova cena do jogo, descarregando a anterior
+void Game::SetScene(GameScene nextScene)
+{
+    UnloadScene();
+
+    switch (nextScene)
+    {
+        case GameScene::MainMenu:
+        {
+            // Parar áudio de fundo quando voltar ao menu
+            if (mBackgroundAudio)
+            {
+                mBackgroundAudio->Stop();
+            }
+            new MainMenu(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"));
+            break;
+        }
+        case GameScene::Level1:
+        {
+            // Parar e descarregar áudio anterior se existir (para reiniciar do zero)
+            if (mBackgroundAudio)
+            {
+                mBackgroundAudio->Stop();
+                mBackgroundAudio->Unload();
+            }
+            
+            // Criar ou recriar áudio de fundo quando o jogo começar/reiniciar
+            if (!mBackgroundAudio)
+            {
+                mBackgroundAudio = new AudioPlayer();
+            }
+            
+            std::string audioPath = PathResolver::ResolvePath("Opening/abertura.wav");
+            if (!mBackgroundAudio->Load(audioPath))
+            {
+                SDL_Log("Erro ao carregar áudio de fundo: %s", audioPath.c_str());
+                delete mBackgroundAudio;
+                mBackgroundAudio = nullptr;
+            }
+            else
+            {
+                mBackgroundAudio->SetVolume(11);
+                mBackgroundAudio->Play(true);
+            }
+            InitializeActors();
+            break;
+        }
+    }
+}
+
+// Limpa todos os recursos do jogo antes de encerrar
 void Game::Shutdown()
 {
-    std::vector<Actor*> actorsToDelete = mActors;
-    mActors.clear();
-
-    for (auto actor : actorsToDelete) {
-        delete actor;
+    while (!mActors.empty()) {
+        delete mActors.back();
     }
 
-    std::vector<Actor*> pendingToDelete = mPendingActors;
-    mPendingActors.clear();
-    for (auto actor : pendingToDelete) {
-        delete actor;
+    for (auto ui : mUIStack) {
+        delete ui;
     }
+    mUIStack.clear();
 
     mDrawables.clear();
+
+    // Parar e liberar áudio de fundo
+    if (mBackgroundAudio)
+    {
+        mBackgroundAudio->Stop();
+        delete mBackgroundAudio;
+        mBackgroundAudio = nullptr;
+    }
 
     mRenderer->Shutdown();
     delete mRenderer;
     mRenderer = nullptr;
 
+    Mix_CloseAudio();
     SDL_DestroyWindow(mWindow);
     SDL_Quit();
 }
 
+// Remove um ator de um vetor usando swap com o último elemento para eficiência
 void Game::RemoveActorFromVector(std::vector<class Actor*> &actors, class Actor *actor) {
     auto it = std::find(actors.begin(), actors.end(), actor);
     if (it != actors.end()) {
         std::iter_swap(it, actors.end() - 1);
         actors.pop_back();
+    }
+}
+
+// Verifica colisões entre lasers ativos e as naves
+void Game::CheckLaserCollisions()
+{
+    for (auto actor : mActors) {
+        LaserBeam* laser = dynamic_cast<LaserBeam*>(actor);
+        if (laser && laser->GetState() == ActorState::Active) {
+            LaserBeamComponent* laserComp = laser->GetLaserComponent();
+            Ship* ownerShip = laser->GetOwnerShip();
+            if (laserComp && laserComp->IsActive()) {
+                if (mShip1 && mShip1->GetState() == ActorState::Active && mShip1 != ownerShip && !mShip1->IsInvincible()) {
+                    // Verificar se este laser já atingiu esta nave
+                    if (!laserComp->HasHitShip(mShip1)) {
+                        CircleColliderComponent* collider = mShip1->GetComponent<CircleColliderComponent>();
+                        if (collider) {
+                            if (laserComp->IntersectCircle(mShip1->GetPosition(), collider->GetRadius())) {
+                                mShip1->TakeDamage();
+                                laserComp->MarkShipHit(mShip1);
+                            }
+                        }
+                    }
+                }
+                
+                if (mShip2 && mShip2->GetState() == ActorState::Active && mShip2 != ownerShip && !mShip2->IsInvincible()) {
+                    // Verificar se este laser já atingiu esta nave
+                    if (!laserComp->HasHitShip(mShip2)) {
+                        CircleColliderComponent* collider = mShip2->GetComponent<CircleColliderComponent>();
+                        if (collider) {
+                            if (laserComp->IntersectCircle(mShip2->GetPosition(), collider->GetRadius())) {
+                                mShip2->TakeDamage();
+                                laserComp->MarkShipHit(mShip2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 }

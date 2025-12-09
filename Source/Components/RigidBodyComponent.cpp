@@ -68,15 +68,20 @@ void RigidBodyComponent::Update(float deltaTime)
 
 void RigidBodyComponent::ScreenWrap(Vector2 &position)
 {
-        if (position.x > Game::WINDOW_WIDTH) {
+        // Obter o tamanho atual da janela
+        Game* game = mOwner->GetGame();
+        int windowWidth = game->GetWindowWidth();
+        int windowHeight = game->GetWindowHeight();
+        
+        if (position.x > static_cast<float>(windowWidth)) {
                 position.x = 0;
         }else if (position.x < 0) {
-                position.x = Game::WINDOW_WIDTH;
+                position.x = static_cast<float>(windowWidth);
         }
 
-        if (position.y > Game::WINDOW_HEIGHT) {
+        if (position.y > static_cast<float>(windowHeight)) {
                 position.y = 0;
         }else if (position.y < 0) {
-                position.y = Game::WINDOW_HEIGHT;
+                position.y = static_cast<float>(windowHeight);
         }
 }

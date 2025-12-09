@@ -52,6 +52,15 @@ void Shader::SetActive() const
 	glUseProgram(mShaderProgram);
 }
 
+void Shader::SetVectorUniform(const char* name, const Vector2& vector) const
+{
+	// Find the uniform by this name
+	GLint loc = glGetUniformLocation(mShaderProgram, name);
+
+	// Send the vector data to the uniform
+	glUniform2fv(loc, 1, vector.GetAsFloatPtr());
+}
+
 void Shader::SetVectorUniform(const char* name, const Vector3& vector) const
 {
 	// Find the uniform by this name
@@ -61,6 +70,21 @@ void Shader::SetVectorUniform(const char* name, const Vector3& vector) const
 	glUniform3fv(loc, 1, vector.GetAsFloatPtr());
 }
 
+void Shader::SetVectorUniform(const char* name, const Vector4& vector) const
+{
+	// Find the uniform by this name
+	GLint loc = glGetUniformLocation(mShaderProgram, name);
+
+	// Send the vector data to the uniform
+	glUniform4fv(loc, 1, vector.GetAsFloatPtr());
+}
+
+void Shader::SetVector2Uniform(const char* name, const Vector2& vector) const
+{
+	GLint loc = glGetUniformLocation(mShaderProgram, name);
+	glUniform2f(loc, vector.x, vector.y);
+}
+
 void Shader::SetMatrixUniform(const char* name, const Matrix4& matrix) const
 {
 	// Find the uniform by this name
@@ -68,6 +92,28 @@ void Shader::SetMatrixUniform(const char* name, const Matrix4& matrix) const
 
     // Send the matrix data to the uniform
 	glUniformMatrix4fv(loc, 1, GL_FALSE, matrix.GetAsFloatPtr());
+}
+
+void Shader::SetFloatUniform(const char* name, float value) const
+{
+	// Find the uniform by this name
+	GLint loc = glGetUniformLocation(mShaderProgram, name);
+
+	// Send the float data to the uniform
+	glUniform1f(loc, value);
+}
+
+void Shader::SetTextureUniform(const char* name, GLuint texture, int textureUnit) const
+{
+	// Find the uniform by this name
+	GLint loc = glGetUniformLocation(mShaderProgram, name);
+	
+	// Ativa a unidade de textura e vincula a textura
+	glActiveTexture(GL_TEXTURE0 + textureUnit);
+	glBindTexture(GL_TEXTURE_2D, texture);
+	
+	// Envia o índice da unidade de textura para o uniform
+	glUniform1i(loc, textureUnit);
 }
 
 bool Shader::CompileShader(const std::string& fileName, GLenum shaderType, GLuint& outShader)
