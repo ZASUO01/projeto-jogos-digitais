@@ -194,10 +194,10 @@ void Game::UpdateGame()
         mClient->ReceiveStateFromServer();
 
         // execute enemies state interpolation
-        //InterpolateEnemies();
+        InterpolateEnemies();
 
         // control enemies list
-        //RemoveInactiveEnemies();
+        RemoveInactiveEnemies();
 
         // Wait 100ms to send the next inputs batch
         if (SDL_TICKS_PASSED(SDL_GetTicks(), mNetTicksCount + 100)) {
@@ -552,12 +552,11 @@ bool Game::IsEnemySet(const int id) {
 void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) {
         auto enemy = new Ship(
             this,
-            50,
-            500,
-            5,
-            Vector3(1, 0, 1),
+            40,
+            300,
+            3,
+            Vector3(1.0f, 0.0f, 0.0f),
             true);
-        enemy->SetType(ActorType::Network);
         enemy->SetPosition(position);
         enemy->SetRotation(rotation);
         enemy->SetType(ActorType::Local);
