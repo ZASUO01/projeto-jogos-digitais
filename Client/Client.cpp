@@ -10,6 +10,8 @@
 #include "SDL.h"
 #include "SDLInputParser.h"
 #include "../Network/NetUtils.h"
+#include "../Source/PathResolver.h"
+#include "../Source/UI/Screens/Endgame.h"
 
 uint32_t Client::mCurrentCommandSequence = 0;
 
@@ -155,7 +157,7 @@ void Client::ReceiveStateFromServer()  {
     }
 
     if (!mRawState.active) {
-
+       mGame->Quit();
     }
 
     // set the player if not set yet

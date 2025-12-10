@@ -17,6 +17,7 @@
 #include "PathResolver.h"
 #include <SDL_mixer.h>
 #include "UI/Screens/Connect.h"
+#include "UI/Screens/Endgame.h"
 
 
 Game::Game()
@@ -392,6 +393,10 @@ void Game::SetScene(GameScene nextScene)
             inMultiplayer = false;
             break;
         }
+        case GameScene::End: {
+            new EndGame(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"));
+            break;
+        }
         case GameScene::Multiplayer: {
             ResetBackgroundAudio();
             new Floor(this);
@@ -636,7 +641,6 @@ void Game::RemoveInactiveEnemies() {
                 delete enemyIt->second;
                 mEnemies.erase(enemyIt);
             }
-
             it = mEnemiesLastUpdate.erase(it);
         } else {
             ++it;

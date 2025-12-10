@@ -64,6 +64,10 @@ Ship::~Ship()
         delete mHitSound;
         mHitSound = nullptr;
     }
+
+    for (const auto& life: mLivesActors) {
+        delete life;
+    }
 }
 
 // Aplica dano à nave e toca o som de impacto

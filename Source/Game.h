@@ -13,6 +13,7 @@ enum class GameScene
 {
     MainMenu,
     Connect,
+    End,
     Level1,
     Multiplayer
 };
