@@ -3,10 +3,10 @@ cmake_minimum_required(VERSION 3.26)
 set(CMAKE_CXX_STANDARD 17)
 
 # Configurando o nome e executável do projeto
-set(PROJECT_NAME "lion-casters")
+set(PROJECT_NAME "line-casters")
 project(${PROJECT_NAME})
 
-find_package(SDL2 2.32.2 EXACT REQUIRED)
+find_package(SDL2 REQUIRED)
 find_package(SDL2_image REQUIRED)
 find_package(SDL2_ttf REQUIRED)
 find_package(SDL2_mixer REQUIRED)
@@ -86,7 +86,34 @@ add_executable(${PROJECT_NAME}
         Source/UI/Screens/HUD.h
         Source/UI/Screens/OpeningScreen.cpp
         Source/UI/Screens/OpeningScreen.h
-        Source/Main.cpp)
+        Source/Main.cpp
+        Network/Platforms.h
+        Network/Addresses.cpp
+        Network/Addresses.h
+        Network/Defs.h
+        Network/Logger.cpp
+        Network/Logger.h
+        Network/NetUtils.cpp
+        Network/NetUtils.h
+        Network/Packet.cpp
+        Network/Packet.h
+        Network/Socket.cpp
+        Network/Socket.h
+        Client/Client.cpp
+        Client/Client.h
+        Client/DataObjects.h
+        Client/InputData.h
+        Client/SDLInputParser.cpp
+        Client/SDLInputParser.h
+        Client/ClientOperations.cpp
+        Client/ClientOperations.h
+        Source/UI/Screens/Connect.cpp
+        Source/UI/Screens/Connect.h
+        Source/UI/UIInputField.cpp
+        Source/UI/UIInputField.h
+        Source/UI/Screens/Endgame.cpp
+        Source/UI/Screens/Endgame.h
+)
 
 # Procurar por FFmpeg
 find_path(AVCODEC_INCLUDE_DIR libavcodec/avcodec.h)
@@ -123,3 +150,7 @@ else()
     message(WARNING "FFmpeg libraries not found. Video playback will not work.")
     target_link_libraries(${PROJECT_NAME} PRIVATE GLEW::GLEW SDL2::SDL2 SDL2_image::SDL2_image SDL2_ttf::SDL2_ttf SDL2_mixer::SDL2_mixer OpenGL::GL)
 endif()
+
+if(WIN32)
+    target_link_libraries(${PROJECT_NAME} PRIVATE ws2_32)
+endif ()

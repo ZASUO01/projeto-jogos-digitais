@@ -17,6 +17,7 @@
 #include "../UIText.h"
 #include "../UIButton.h"
 #include "../UIImage.h"
+#include "../UIInputField.h"
 #include "../UIRect.h"
 #include "../UITriangle.h"
 
@@ -52,7 +53,7 @@ public:
     UIImage* AddImage(const std::string& imagePath, const Vector2& offset, float scale = 1.0f, float angle = 0.0f, int drawOrder = 100);
     UIRect* AddRect(const Vector2 &offset, const Vector2 &size, float scale = 1.0f, float angle = 0.0f, int drawOrder = 100);
     UITriangle* AddTriangle(const Vector2& offset, float size, float angle = 0.0f, int drawOrder = 100);
-
+	UIInputField* AddInput(const Vector2& offset);
 protected:
     // Sets the mouse mode to relative or not
 	class Game* mGame;
@@ -72,4 +73,5 @@ protected:
     std::vector<UIImage *> mImages;
     std::vector<UIRect *> mRects;
     std::vector<UITriangle *> mTriangles;
+	std::vector<UIInputField *> mInputFields;
 };

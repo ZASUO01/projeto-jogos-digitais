@@ -16,6 +16,9 @@
 #include "Renderer/AudioPlayer.h"
 #include "PathResolver.h"
 #include <SDL_mixer.h>
+#include "UI/Screens/Connect.h"
+#include "UI/Screens/Endgame.h"
+
 
 Game::Game()
         :mWindow(nullptr)
@@ -28,6 +31,11 @@ Game::Game()
         ,mShip1(nullptr)
         ,mShip2(nullptr)
         ,mBackgroundAudio(nullptr)
+        ,mClient(nullptr)
+        ,inMultiplayer(false)
+        ,mNetTicksCount(0)
+        ,mPlayer(nullptr)
+        ,mIsPlayerSet(false)
 {}
 
 // Inicializa o jogo, criando a janela SDL, o renderer e a tela de abertura
@@ -68,9 +76,13 @@ bool Game::Initialize()
         return false;
     }
 
+    mClient = new Client(this);
+    mClient->Initialize();
+
     new OpeningScreen(this);
 
     mTicksCount = SDL_GetTicks();
+    mNetTicksCount = mTicksCount;
 
     return true;
 }
@@ -111,25 +123,10 @@ int Game::GetWindowHeight() const
 // Executa o loop principal do jogo até que mIsRunning seja false
 void Game::RunLoop()
 {
-    while (mIsRunning)
-    {
-        float deltaTime = (SDL_GetTicks() - mTicksCount) / 1000.0f;
-        if (deltaTime > 0.05f)
-        {
-            deltaTime = 0.05f;
-        }
-
-        mTicksCount = SDL_GetTicks();
-
+    while (mIsRunning){
         ProcessInput();
-        UpdateGame(deltaTime);
+        UpdateGame();
         GenerateOutput();
-
-        int sleepTime = (1000 / 60) - (SDL_GetTicks() - mTicksCount);
-        if (sleepTime > 0)
-        {
-            SDL_Delay(sleepTime);
-        }
     }
 }
 
@@ -172,27 +169,48 @@ void Game::ProcessInput()
         Quit();
     }
 
-    unsigned int size = mActors.size();
-    for (unsigned int i = 0; i < size; ++i) {
-        mActors[i]->ProcessInput(state);
+    if (inMultiplayer) {
+        mClient->AddInput(state);
+
+        if (mIsPlayerSet) {
+            mPlayer->ProcessInput(state);
+        }
+    }else {
+        unsigned int size = mActors.size();
+        for (unsigned int i = 0; i < size; ++i) {
+            mActors[i]->ProcessInput(state);
+        }
     }
 }
 
 // Atualiza a lógica do jogo: atores, UI e remove elementos fechados
-void Game::UpdateGame(float deltaTime)
+void Game::UpdateGame()
 {
-    if (deltaTime > 0.05f)
-    {
-        deltaTime = 0.05f;
+    if (inMultiplayer) {
+        if (mIsPlayerSet) {
+            mPlayer->Update(SIM_DELTA_TIME);
+        }
+        UpdateLocalActors(SIM_DELTA_TIME);
+
+        mClient->ReceiveStateFromServer();
+
+        // execute enemies state interpolation
+        InterpolateEnemies();
+
+        // control enemies list
+        RemoveInactiveEnemies();
+
+        // Wait 100ms to send the next inputs batch
+        if (SDL_TICKS_PASSED(SDL_GetTicks(), mNetTicksCount + 100)) {
+            mClient->SendCommandsToServer();
+            mNetTicksCount = SDL_GetTicks();
+        }
+    }else {
+        UpdateActors(SIM_DELTA_TIME);
     }
-
-    mTicksCount = SDL_GetTicks();
-
-    UpdateActors(deltaTime);
-
     for (auto ui : mUIStack) {
         if (ui->GetState() == UIScreen::UIState::Active) {
-            ui->Update(deltaTime);
+            ui->Update(SIM_DELTA_TIME);
         }
     }
 
@@ -205,6 +223,9 @@ void Game::UpdateGame(float deltaTime)
             ++iter;
         }
     }
+
+    while (!SDL_TICKS_PASSED(SDL_GetTicks(), mTicksCount + 16)) {}
+    mTicksCount = SDL_GetTicks();
 }
 
 // Atualiza todos os atores, verifica colisões de laser e condições de vitória
@@ -364,36 +385,29 @@ void Game::SetScene(GameScene nextScene)
                 mBackgroundAudio->Stop();
             }
             new MainMenu(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"));
+            inMultiplayer = false;
+            break;
+        }
+        case GameScene::Connect: {
+            new Connect(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"));
+            inMultiplayer = false;
+            break;
+        }
+        case GameScene::End: {
+            new EndGame(this, PathResolver::ResolvePath("Assets/Fonts/Arial.ttf"));
+            break;
+        }
+        case GameScene::Multiplayer: {
+            ResetBackgroundAudio();
+            new Floor(this);
+            inMultiplayer = true;
             break;
         }
         case GameScene::Level1:
         {
-            // Parar e descarregar áudio anterior se existir (para reiniciar do zero)
-            if (mBackgroundAudio)
-            {
-                mBackgroundAudio->Stop();
-                mBackgroundAudio->Unload();
-            }
-            
-            // Criar ou recriar áudio de fundo quando o jogo começar/reiniciar
-            if (!mBackgroundAudio)
-            {
-                mBackgroundAudio = new AudioPlayer();
-            }
-            
-            std::string audioPath = PathResolver::ResolvePath("Opening/abertura.wav");
-            if (!mBackgroundAudio->Load(audioPath))
-            {
-                SDL_Log("Erro ao carregar áudio de fundo: %s", audioPath.c_str());
-                delete mBackgroundAudio;
-                mBackgroundAudio = nullptr;
-            }
-            else
-            {
-                mBackgroundAudio->SetVolume(11);
-                mBackgroundAudio->Play(true);
-            }
+            ResetBackgroundAudio();
             InitializeActors();
+            inMultiplayer = false;
             break;
         }
     }
@@ -424,6 +438,11 @@ void Game::Shutdown()
     mRenderer->Shutdown();
     delete mRenderer;
     mRenderer = nullptr;
+
+    mClient->Disconnect();
+    mClient->Shutdown();
+    delete mClient;
+    mClient = nullptr;
 
     Mix_CloseAudio();
     SDL_DestroyWindow(mWindow);
@@ -474,6 +493,165 @@ void Game::CheckLaserCollisions()
                     }
                 }
             }
+        }
+    }
+}
+
+
+void Game::ResetBackgroundAudio() {
+    // Parar e descarregar áudio anterior se existir (para reiniciar do zero)
+    if (mBackgroundAudio)
+    {
+        mBackgroundAudio->Stop();
+        mBackgroundAudio->Unload();
+    }
+
+    // Criar ou recriar áudio de fundo quando o jogo começar/reiniciar
+    if (!mBackgroundAudio)
+    {
+        mBackgroundAudio = new AudioPlayer();
+    }
+
+    std::string audioPath = PathResolver::ResolvePath("Opening/abertura.wav");
+    if (!mBackgroundAudio->Load(audioPath))
+    {
+        SDL_Log("Erro ao carregar áudio de fundo: %s", audioPath.c_str());
+        delete mBackgroundAudio;
+        mBackgroundAudio = nullptr;
+    }
+    else
+    {
+        mBackgroundAudio->SetVolume(11);
+        mBackgroundAudio->Play(true);
+    }
+}
+
+void Game::SetPlayer(const Vector2 &position, const float rotation) {
+    if (mIsPlayerSet) {
+        return;
+    }
+
+    mPlayer = new Ship(this, 40, 300, 3, Vector3(0.0f, 0.7f, 0.7f), false);
+    mPlayer->SetType(ActorType::Network);
+    mPlayer->SetPosition(position);
+    mPlayer->SetRotation(rotation);
+    mIsPlayerSet = true;
+}
+
+void Game::SetPlayerState(const RawState& raw) const {
+    const auto newPlayerPos = Vector2(raw.posX, raw.posY);
+
+    mPlayer->SetPosition(newPlayerPos);
+    mPlayer->SetRotation(raw.rotation);
+    mPlayer->SetLives(raw.life);
+    mPlayer->SetInvincibilityTimer(raw.invulnerableTimer);
+}
+
+bool Game::IsEnemySet(const int id) {
+    if (mEnemies.find(id) == mEnemies.end()) {
+        return false;
+    }
+    return true;
+}
+
+void Game::SetEnemy(const int id,const Vector2 &position, const float rotation) {
+        auto enemy = new Ship(
+            this,
+            40,
+            300,
+            3,
+            Vector3(1.0f, 0.0f, 0.0f),
+            true);
+        enemy->SetPosition(position);
+        enemy->SetRotation(rotation);
+        enemy->SetType(ActorType::Local);
+        mEnemies.emplace(id, enemy);
+        mEnemiesLastUpdate.emplace(id, std::chrono::steady_clock::now());
+
+        mEnemiesTargets[id] = {position.x, position.y, rotation};
+}
+
+
+void Game::SetEnemiesState(const std::vector<OtherState> &others)  {
+    for (const auto& other : others) {
+        if (mEnemiesTargets.find(other.id) == mEnemiesTargets.end()) {
+            mEnemiesTargets[other.id] = {other.posX, other.posY, other.rotation};
+        } else {
+            mEnemiesTargets[other.id].targetPosX = other.posX;
+            mEnemiesTargets[other.id].targetPosY = other.posY;
+            mEnemiesTargets[other.id].targetRotation = other.rotation;
+
+            if (other.hasShot) {
+                const auto &enemy = mEnemies[other.id];
+                const auto lb = new LaserBeam(
+                    this,
+                    enemy->GetPosition(),
+                    enemy->GetRotation(),
+                    Vector3(1, 0, 1),
+                    enemy);
+
+                lb->SetType(ActorType::Local);
+            }
+
+            mEnemies[other.id]->SetLives(other.life);
+            mEnemies[other.id]->SetInvincibilityTimer(other.invulnerableTimer);
+        }
+
+        if (auto it1 = mEnemiesLastUpdate.find(other.id); it1 != mEnemiesLastUpdate.end()) {
+            it1->second = std::chrono::steady_clock::now();
+        }
+    }
+}
+
+void Game::InterpolateEnemies() {
+    for (auto& [id, enemy] : mEnemies) {
+        if (mEnemiesTargets.find(id) == mEnemiesTargets.end()) {
+            continue;
+        }
+
+        const auto&[targetPosX, targetPosY, targetRotation] = mEnemiesTargets[id];
+        const Vector2 currentPos = enemy->GetPosition();
+        const float currentRot = enemy->GetRotation();
+
+        // Position interpolation (Lerp)
+        // curent + (target - current) * fator
+        const float diffX = targetPosX - currentPos.x;
+        const float diffY = targetPosY - currentPos.y;
+
+        const float newPosX = currentPos.x + (diffX * INTERPOLATION_FACTOR);
+        const float newPosY = currentPos.y + (diffY * INTERPOLATION_FACTOR);
+
+        const auto newPos = Vector2(newPosX, newPosY);
+        enemy->SetPosition(newPos);
+
+        // Rotation interpolation
+        const float rotDiff = targetRotation - currentRot;
+        const float newRot = currentRot + (rotDiff * INTERPOLATION_FACTOR);
+        enemy->SetRotation(newRot);
+    }
+}
+
+void Game::RemoveInactiveEnemies() {
+    const auto now = std::chrono::steady_clock::now();
+    const auto timeout = std::chrono::milliseconds(ENEMY_RESPONSE_TIMEOUT_MS);
+
+    for (auto it = mEnemiesLastUpdate.begin(); it != mEnemiesLastUpdate.end();) {
+        if (const auto secondsPassed= std::chrono::duration_cast<std::chrono::milliseconds>(now - it->second); secondsPassed > timeout) {
+            if (const auto enemyIt = mEnemies.find(it->first); enemyIt!= mEnemies.end()) {
+                delete enemyIt->second;
+                mEnemies.erase(enemyIt);
+            }
+            it = mEnemiesLastUpdate.erase(it);
+        } else {
+            ++it;
+        }
+    }
+}
+
+void Game::UpdateLocalActors(const float deltaTime) const {
+    for (const auto& actor : mActors) {
+        if (actor->GetType() == ActorType::Local) {
+            actor->Update(deltaTime);
         }
     }
 }
