@@ -77,13 +77,14 @@ MainMenu::MainMenu(class Game* game, const std::string& fontName)
 	startButton->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.0f)); // Texto totalmente transparente
 
 	UIButton* quitButton = AddButton("Fechar Jogo", [this]() {
-		GetGame()->Quit();
+		Close();
+		GetGame()->SetScene(GameScene::Connect);
 	}, Vector2(0.0f, -280.0f));
 
 	// Tornar botão transparente (background e texto totalmente transparentes)
 	quitButton->SetTextColor(Color::White);
 	quitButton->SetBackgroundColor(Vector4(0.0f, 0.0f, 0.0f, 0.0f)); // Background transparente
-	quitButton->SetColor(Vector4(1.0f, 1.0f, 1.0f, 0.0f)); // Texto totalmente transparente
+	quitButton->SetColor(Vector4(1.0f, 1.0f, 0.0f, 0.0f)); // Texto totalmente transparente
 	
 	// Criar setas triangulares (inicialmente invisíveis, serão atualizadas quando houver seleção)
 	// Setas apontando para o botão (esquerda aponta para direita, direita aponta para esquerda)

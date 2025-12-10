@@ -47,6 +47,11 @@ UIScreen::~UIScreen()
         delete triangle;
     }
     mTriangles.clear();
+
+	for (auto input :mInputFields) {
+		delete input;
+	}
+	mInputFields.clear();
 }
 
 void UIScreen::Update(float deltaTime)
@@ -104,4 +109,10 @@ UITriangle* UIScreen::AddTriangle(const Vector2& offset, float size, float angle
 	UITriangle* triangle = new UITriangle(mGame, offset, size, angle, drawOrder);
 	mTriangles.push_back(triangle);
 	return triangle;
+}
+
+UIInputField *UIScreen::AddInput(const Vector2& offset) {
+	const auto input = new UIInputField(mGame, offset, mFont);
+	mInputFields.push_back(input);
+	return input;
 }

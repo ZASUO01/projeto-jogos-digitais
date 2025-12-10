@@ -22,7 +22,8 @@ public:
         }
     }
     void TakeDamage();
-    
+
+    void SetInvincibilityTimer(const float timer) { mInvincibilityTimer = timer; }
     bool IsInvincible() const { return mInvincibilityTimer > 0.0f; }
     bool IsRedShip() const { return mIsRedShip; }
 

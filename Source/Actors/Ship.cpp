@@ -96,6 +96,50 @@ void Ship::TakeDamage()
 // Processa entrada do teclado para movimento e disparo da nave
 void Ship::OnProcessInput(const uint8_t* state)
 {
+    if (mGame->IsMultiplayer()) {
+        const bool up = state[SDL_SCANCODE_W];
+        const bool down = state[SDL_SCANCODE_S];
+        const bool left = state[SDL_SCANCODE_A];
+        const bool right = state[SDL_SCANCODE_D];
+        const bool space = state[SDL_SCANCODE_SPACE];
+
+        Vector2 velocity = Vector2::Zero;
+
+        if (up && !down) {
+            velocity.y = -mForwardSpeed;
+        } else if (down && !up) {
+            velocity.y = mForwardSpeed;
+        }
+
+        if (left && !right) {
+            velocity.x = -mForwardSpeed;
+        } else if (right && !left) {
+            velocity.x = mForwardSpeed;
+        }
+
+        if (velocity.x != 0.0f || velocity.y != 0.0f) {
+            SetRotation(Math::Atan2(velocity.y, velocity.x));
+            if (velocity.x != 0.0f && velocity.y != 0.0f) {
+                const float length = Math::Sqrt(velocity.x * velocity.x + velocity.y * velocity.y);
+
+                velocity.x = (velocity.x / length) * mForwardSpeed;
+                velocity.y = (velocity.y / length) * mForwardSpeed;
+            }
+        }
+        mRigidBodyComponent->SetVelocity(velocity);
+
+        if (space) {
+            if (mLaserCooldown <= 0.f) {
+                constexpr auto laserColor =  Vector3(0.0f, 1.0f, 0.0f);
+                const Vector2 laserStart = GetPosition() + GetForward() * (mHeight / 2.0f);
+                const auto lb = new LaserBeam(GetGame(), laserStart, GetRotation(), laserColor, this);
+                lb->SetType(ActorType::Local);
+                mLaserCooldown = 0.2f;
+            }
+        }
+        return;
+    }
+
     bool up, down, left, right;
     
     if (mIsRedShip) {
