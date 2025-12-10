@@ -155,7 +155,7 @@ void Client::ReceiveStateFromServer()  {
     }
 
     if (!mRawState.active) {
-        mGame->Quit();
+
     }
 
     // set the player if not set yet

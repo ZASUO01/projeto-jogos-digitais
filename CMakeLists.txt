@@ -111,6 +111,8 @@ add_executable(${PROJECT_NAME}
         Source/UI/Screens/Connect.h
         Source/UI/UIInputField.cpp
         Source/UI/UIInputField.h
+        Source/UI/Screens/Endgame.cpp
+        Source/UI/Screens/Endgame.h
 )
 
 # Procurar por FFmpeg
