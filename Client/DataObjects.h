@@ -4,10 +4,14 @@
 
 #pragma once
 #include <cstdint>
-#include <vector>
 
 #include "InputData.h"
 
+struct InterpolationState {
+    float targetPosX, targetPosY, targetRotation;
+};
+
+#pragma pack(1)
 // Commands to be sent to the server
 struct Command {
     uint32_t sequence;
@@ -57,7 +61,4 @@ struct FullState {
     FullState(const RawState &raw,const uint32_t sequence)
     :rawState(raw), otherStateSize(0), lastConfirmedInputSequence(sequence) {}
 };
-
-struct InterpolationState {
-    float targetPosX, targetPosY, targetRotation;
-};
+#pragma pack(0)
